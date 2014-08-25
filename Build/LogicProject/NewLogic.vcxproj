@@ -97,6 +97,35 @@ copy /y "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\libraries\$(TargetFi
     <ClInclude Include="..\..\include\logicpool.h" />
     <ClInclude Include="..\..\include\objectManage.h" />
     <ClInclude Include="..\..\publicInclude\basedefine.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\aes\aes.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\aes\aestab.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\aes\aes_options.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\autolink.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\config.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\features.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\forwards.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\json.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\reader.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\value.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\writer.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\macro.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\md5\md5.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\allocators.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\document.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\encodedstream.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\encodings.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\filereadstream.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\filestream.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\filewritestream.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\internal\pow10.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\internal\stack.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\internal\strfunc.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\prettywriter.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\rapidjson.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\reader.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\stringbuffer.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\writer.h" />
+    <ClInclude Include="..\..\publicInclude\cantools\tools.h" />
     <ClInclude Include="..\..\publicInclude\logicfactroy.h" />
     <ClInclude Include="..\..\publicInclude\macro.h" />
     <ClInclude Include="..\..\publicInclude\publicpro.h" />
@@ -121,6 +150,9 @@ copy /y "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\libraries\$(TargetFi
     <None Include="..\..\source\logicd.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\publicInclude\cantools\aes\aes_crypt.c" />
+    <ClCompile Include="..\..\publicInclude\cantools\aes\aes_setkey.c" />
+    <ClCompile Include="..\..\publicInclude\cantools\aes\aes_tables.c" />
     <ClCompile Include="..\..\source\dllmain.cpp" />
     <ClCompile Include="..\..\source\manage.cpp" />
     <ClCompile Include="..\..\source\logiccell.cpp" />
