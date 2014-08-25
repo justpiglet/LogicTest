@@ -53,14 +53,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../include;../../publicInclude;../../tools;../../tools/jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include;../../publicInclude;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BUILD_DLL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>../../source/logicD.def</ModuleDefinitionFile>
       <ForceSymbolReferences>__tcmalloc</ForceSymbolReferences>
-      <AdditionalDependencies>../../libraries/libtcmalloc_minimal-debug.lib;../../libraries/SqliteDatabaseD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../libraries/libtcmalloc_minimal-debug.lib;../../libraries/SqliteDatabaseD.lib;../../libraries/cantoolsD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "../../libraries" 
@@ -74,7 +74,7 @@ copy /y "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\libraries\$(TargetFi
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../include;../../publicInclude;../../tools;../../tools/jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../include;../../publicInclude;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -83,7 +83,7 @@ copy /y "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\libraries\$(TargetFi
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>../../source/logic.def</ModuleDefinitionFile>
       <ForceSymbolReferences>__tcmalloc</ForceSymbolReferences>
-      <AdditionalDependencies>../../libraries/libtcmalloc_minimal.lib;../../libraries/SqliteDatabase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../libraries/libtcmalloc_minimal.lib;../../libraries/SqliteDatabase.lib;../../libraries/cantools.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "../../libraries" 
@@ -96,8 +96,9 @@ copy /y "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\libraries\$(TargetFi
     <ClInclude Include="..\..\include\logiccell.h" />
     <ClInclude Include="..\..\include\logicpool.h" />
     <ClInclude Include="..\..\include\objectManage.h" />
-    <ClInclude Include="..\..\publicInclude\common.h" />
+    <ClInclude Include="..\..\publicInclude\basedefine.h" />
     <ClInclude Include="..\..\publicInclude\logicfactroy.h" />
+    <ClInclude Include="..\..\publicInclude\macro.h" />
     <ClInclude Include="..\..\publicInclude\publicpro.h" />
     <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteBackupProgress.h" />
     <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteBlob.h" />
@@ -112,44 +113,12 @@ copy /y "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\libraries\$(TargetFi
     <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteTable.h" />
     <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteTrackReport.h" />
     <ClInclude Include="..\..\publicInclude\SqliteDatabase\StatementBuffer.h" />
-    <ClInclude Include="..\..\tools\aes\aes.h" />
-    <ClInclude Include="..\..\tools\aes\aestab.h" />
-    <ClInclude Include="..\..\tools\aes\aes_options.h" />
-    <ClInclude Include="..\..\tools\jsoncpp\json\autolink.h" />
-    <ClInclude Include="..\..\tools\jsoncpp\json\config.h" />
-    <ClInclude Include="..\..\tools\jsoncpp\json\features.h" />
-    <ClInclude Include="..\..\tools\jsoncpp\json\forwards.h" />
-    <ClInclude Include="..\..\tools\jsoncpp\json\json.h" />
-    <ClInclude Include="..\..\tools\jsoncpp\json\reader.h" />
-    <ClInclude Include="..\..\tools\jsoncpp\json\value.h" />
-    <ClInclude Include="..\..\tools\jsoncpp\json\writer.h" />
-    <ClInclude Include="..\..\tools\jsoncpp\libjson\json_batchallocator.h" />
-    <ClInclude Include="..\..\tools\md5\md5.h" />
-    <ClInclude Include="..\..\tools\rapidjson\allocators.h" />
-    <ClInclude Include="..\..\tools\rapidjson\document.h" />
-    <ClInclude Include="..\..\tools\rapidjson\encodedstream.h" />
-    <ClInclude Include="..\..\tools\rapidjson\encodings.h" />
-    <ClInclude Include="..\..\tools\rapidjson\filereadstream.h" />
-    <ClInclude Include="..\..\tools\rapidjson\filestream.h" />
-    <ClInclude Include="..\..\tools\rapidjson\filewritestream.h" />
-    <ClInclude Include="..\..\tools\rapidjson\internal\pow10.h" />
-    <ClInclude Include="..\..\tools\rapidjson\internal\stack.h" />
-    <ClInclude Include="..\..\tools\rapidjson\internal\strfunc.h" />
-    <ClInclude Include="..\..\tools\rapidjson\prettywriter.h" />
-    <ClInclude Include="..\..\tools\rapidjson\rapidjson.h" />
-    <ClInclude Include="..\..\tools\rapidjson\reader.h" />
-    <ClInclude Include="..\..\tools\rapidjson\stringbuffer.h" />
-    <ClInclude Include="..\..\tools\rapidjson\writer.h" />
-    <ClInclude Include="..\..\tools\shape\shapeObject.h" />
-    <ClInclude Include="..\..\tools\tools.h" />
+    <ClInclude Include="..\..\source\shape\shapeObject.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\source\logic.def" />
     <None Include="..\..\source\logicd.def" />
-    <None Include="..\..\tools\jsoncpp\libjson\json_internalarray.inl" />
-    <None Include="..\..\tools\jsoncpp\libjson\json_internalmap.inl" />
-    <None Include="..\..\tools\jsoncpp\libjson\json_valueiterator.inl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\dllmain.cpp" />
@@ -158,20 +127,7 @@ copy /y "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\libraries\$(TargetFi
     <ClCompile Include="..\..\source\logicfactroy.cpp" />
     <ClCompile Include="..\..\source\logicpool.cpp" />
     <ClCompile Include="..\..\source\objectManage.cpp" />
-    <ClCompile Include="..\..\tools\code.cpp" />
-    <ClCompile Include="..\..\tools\encrypt.cpp" />
-    <ClCompile Include="..\..\tools\aes\aes_crypt.c" />
-    <ClCompile Include="..\..\tools\aes\aes_setkey.c" />
-    <ClCompile Include="..\..\tools\aes\aes_tables.c" />
-    <ClCompile Include="..\..\tools\hardwareinfo.cpp" />
-    <ClCompile Include="..\..\tools\files.cpp" />
-    <ClCompile Include="..\..\tools\jsoncpp\libjson\json_reader.cpp" />
-    <ClCompile Include="..\..\tools\jsoncpp\libjson\json_value.cpp" />
-    <ClCompile Include="..\..\tools\jsoncpp\libjson\json_writer.cpp" />
-    <ClCompile Include="..\..\tools\lineIntersection.cpp" />
-    <ClCompile Include="..\..\tools\md5\md5.c" />
-    <ClCompile Include="..\..\tools\random.cpp" />
-    <ClCompile Include="..\..\tools\shape\shapeObject.cpp" />
+    <ClCompile Include="..\..\source\shape\shapeObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\source\readme.txt" />

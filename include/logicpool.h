@@ -9,7 +9,7 @@
 #include "logiccell.h"
 #include <mutex>
 #define SQLITE_OUTSIDE
-#include "SqliteDatabase/SqliteDatabase.h"
+#include "sqlitedb/SqliteDatabase.h"
 
 class  CaLogicPool :public ILogicPool
 {

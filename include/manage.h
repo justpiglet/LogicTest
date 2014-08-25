@@ -2,8 +2,8 @@
 #define _FHKJEF_FDS_CAN_CaAttributeManage
 
 #include "define.h"
-#include "rapidjson/document.h"
-#include"tools.h"
+#include "cantools/rapidjson/document.h"
+#include"cantools/tools.h"
 
 #define MAX_LV_COUNT 7
 
