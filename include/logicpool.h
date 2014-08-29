@@ -20,18 +20,20 @@ public:
 	bool Check();
 
 public:
-	virtual void update(DECIMALS);
+	virtual void update(const DECIMALS&);
 	virtual void Destroy();
-	virtual bool Init(char*, uint8);
-	virtual uint16 GetObjectTimes(uint8);
-	virtual void OperateScore(uint8,int32);
-	virtual SCORE GetCurScore(uint8);
-	virtual bool CalculateResult(uint8 , uint16 ,const vector<CaObject*>& , vector<CaObject*>& );
+	virtual bool Init(const char*, const uint8&);
+	virtual uint16 GetObjectTimes(const uint8&);
+	virtual void OperateScore(const uint8&, const int32&);
+	virtual SCORE GetCurScore(const uint8&);
+	virtual bool Onfire(const uint8&);
+	virtual bool CalculateResult(const uint8&, const uint16&, const vector<CaObject*>&, vector<CaObject*>&);
+	virtual bool CalculateResult(const uint8&, const uint16&, const CaObject*);
 	virtual void ResetGameValue();
-	virtual CaObject* CreateObject(uint8);
+	virtual CaObject* CreateObject(const uint8&);
 	//virtual void DestroyObject(CaObject*);
 protected:
-	void AddProfit(int32 score){ if (score > 0)m_Profit = m_Profit + score; }
+	void AddProfit(const int32& score){ if (score > 0)m_Profit = m_Profit + score; }
 private:
 	CaLogicPool();
 	static DWORD WINAPI SaveDataThread(LPVOID);

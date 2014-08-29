@@ -29,7 +29,7 @@ void ObjectManage::Destroy()
 		
 }
 
-CaObject* ObjectManage::CreateObject(uint8 id)
+CaObject* ObjectManage::CreateObject(const uint8& id)
 {
 	CaObject* newObject = nullptr;
 	if (!m_freeBuffer.empty())
@@ -46,7 +46,7 @@ CaObject* ObjectManage::CreateObject(uint8 id)
 	return newObject;
 }
 
-void ObjectManage::DestroyObject(CaObject* object)
+void ObjectManage::DestroyObject(const CaObject* object)
 {
 	if (!object&&!object->IsObjectActivity())
 		return;

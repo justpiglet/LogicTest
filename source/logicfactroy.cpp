@@ -11,7 +11,10 @@ ILogicPool* CaLogicFactroyShare()
 }
 
 
-CaObject::CaObject(uint8 id/*=-1*/) : m_pAttbute(NULL), m_realtime(0), m_buffertime(0), m_posx(0.0f), m_posy(0.0f), m_state(OBJECT_STATE_NULL)
+CaObject::CaObject(uint8 id/*=-1*/) 
+	: m_pAttbute(NULL), m_realtime(0), m_buffertime(0)
+	, m_posx(0.0f), m_posy(0.0f), m_state(OBJECT_STATE_NULL)
+	, m_lv(OLEVEL_ADJUST_LOW), m_awardRate(0)
 {
 	ResetDataById(id);
 }
@@ -32,6 +35,9 @@ bool CaObject::ResetDataById(uint8 id)
 	m_pAttbute == CaAttributeManage::share()->GetObjectAttribute(id);
 	m_buffertime = CaAttributeManage::share()->GetObjectTimes(id);
 	m_realtime = m_buffertime;
+	m_lv = ConfigManage::share()->CalculateObjectLv(m_realtime);
+	
+	AdjustAwardRate();
 	return m_realtime > 0;
 }
 
@@ -50,7 +56,7 @@ uint16 CaObject::ChangeObjectTimes(int16 times)
 		if (isOK)
 			m_buffertime = m_buffertime + times;
 
-		int16 ntemp(m_buffertime);
+		uint16 ntemp(m_buffertime);
 		if (m_buffertime < m_pAttbute->timesArr[0])
 		{
 			m_buffertime = m_pAttbute->timesArr[0];
@@ -80,7 +86,30 @@ uint16 CaObject::ChangeObjectTimes(int16 times)
 		}
 
 		m_realtime = ntemp;
+		ConfigManage::share()->CheckTimes(m_realtime);
+		
+		AdjustAwardRate();
 	}
 
+	return m_realtime;
+}
+
+void CaObject::AdjustAwardRate()
+{
+	m_awardRate = BASE_RATE / m_realtime;
+}
+
+const uint16& CaObject::GetAwardRate()const
+{
+	return m_awardRate;
+}
+
+bool CaObject::IsObjectActivity() const
+{
+	return m_state > OBJECT_STATE_NULL&&m_state < OBJECT_STATE_DEATH;
+}
+
+uint16 CaObject::GetObjectTimes() const
+{
 	return m_realtime;
 }

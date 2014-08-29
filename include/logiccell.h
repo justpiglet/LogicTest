@@ -13,13 +13,13 @@ struct SaveScore
 	SaveScore() :score(0), waterVal(0), profit(0)
 	{
 	}
-	void setValue(SCORE score, W_VAL value, PROFIT profit)
+	void setValue(const SCORE& score, const W_VAL& value, const PROFIT& profit)
 	{
 		this->score = score;
 		this->waterVal = value;
 		this->profit = profit;
 	}
-	void setScore(SCORE score)
+	void setScore(const SCORE& score)
 	{
 		this->score = this->score + score;
 	}
@@ -38,9 +38,10 @@ class CaLogicCell
 	CaLogicCell();
 protected:
 	inline SCORE GetCurScore(){ return m_Score.score; }
-	void SetInitialValue(SCORE, W_VAL,PROFIT);
-	void OperateScore(int32);
-	bool CalculateResult(uint16, const std::vector<CaObject*>&, std::vector<CaObject*>&);
+	void SetInitialValue(const SCORE&, const W_VAL& ,const PROFIT&);
+	void OperateScore(const int32&);
+	bool CalculateResult(const uint16&, const std::vector<CaObject*>&, std::vector<CaObject*>&);
+	bool CalculateResult(const uint16&, const CaObject*);
 	void ResetGameValue();
 	inline bool IsNeedSave(){ return m_state == P_STATE_DOING; }
 	const SaveScore* GetSaveScore(bool isSave=true);

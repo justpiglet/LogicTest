@@ -108,7 +108,7 @@ void CaAttributeManage::DestroyManage()
 		delete m_gpManage;
 }
 
-bool CaAttributeManage::LoadAttributeJason( char* filePath )
+bool CaAttributeManage::LoadAttributeJason(const char* filePath )
 {
 	if (!filePath)
 		return false;
@@ -146,7 +146,8 @@ bool CaAttributeManage::LoadAttributeJason( char* filePath )
 		case TIMES_TYPE_UNIQUE:
 			iTemp = 0;
 			m_pAttributeArr[i].count = 1;
-			m_pAttributeArr[i].timesArr[iTemp] = ConfigManage::share()->CheckTimes( timesArr[iTemp].GetInt());
+			m_pAttributeArr[i].timesArr[iTemp] = timesArr[iTemp].GetInt();
+			ConfigManage::share()->CheckTimes(m_pAttributeArr[i].timesArr[iTemp]);
 			break;
 		case TIMES_TYPE_MULTI:
 			{
@@ -155,8 +156,10 @@ bool CaAttributeManage::LoadAttributeJason( char* filePath )
 				for (k = 0; k < m_pAttributeArr[i].count; ++k)
 				{
 					iTemp = k << 1;
-					m_pAttributeArr[i].timesArr[iTemp] = ConfigManage::share()->CheckTimes(timesArr[iTemp].GetInt());
-					m_pAttributeArr[i].timesArr[iTemp + 1] = ConfigManage::share()->CheckTimes(timesArr[iTemp + 1].GetInt());
+					m_pAttributeArr[i].timesArr[iTemp] = timesArr[iTemp].GetInt();
+					ConfigManage::share()->CheckTimes(m_pAttributeArr[i].timesArr[iTemp]);
+					m_pAttributeArr[i].timesArr[iTemp + 1] = timesArr[iTemp + 1].GetInt();
+					ConfigManage::share()->CheckTimes(m_pAttributeArr[i].timesArr[iTemp + 1]);
 					m_pAttributeArr[i].rateArr[k] = rateArr[k].GetInt();
 				}
 				break;
@@ -170,7 +173,7 @@ bool CaAttributeManage::LoadAttributeJason( char* filePath )
 	return true;
 }
 
-uint16 CaAttributeManage::GetObjectTimes(uint8 id)
+uint16 CaAttributeManage::GetObjectTimes(const uint8& id)
 {
 	uint16 objectTimes(0);
 	if (m_attCount <= id)
@@ -187,11 +190,11 @@ uint16 CaAttributeManage::GetObjectTimes(uint8 id)
 			objectTimes = _CANNP_NAME::randoom::GetRandoom(attribute->timesArr[index], attribute->timesArr[index + 1]);
 		}
 	}
-	
+	ConfigManage::share()->CheckTimes(objectTimes);
 	return objectTimes;
 }
 
-const CaAttribute* CaAttributeManage::GetObjectAttribute(uint8 id)
+const CaAttribute* CaAttributeManage::GetObjectAttribute(const uint8& id)
 {
 	if (m_attCount > id)
 		return &m_pAttributeArr[id];
@@ -199,7 +202,7 @@ const CaAttribute* CaAttributeManage::GetObjectAttribute(uint8 id)
 		return nullptr;
 }
 
-void CaAttributeManage::update(DECIMALS ft)
+void CaAttributeManage::update(const DECIMALS& ft)
 {
 	
 }
@@ -209,7 +212,7 @@ void CaAttributeManage::update(DECIMALS ft)
 //////////////////////////////////////////////////////////////////////////begin
 ConfigManage* ConfigManage::m_pConfig=nullptr;
 
-ConfigManage:: ConfigManage():m_maxTimes(1)
+ConfigManage::ConfigManage() :m_maxTimes(1), m_hitCount(1), m_awardCount(1), m_curDifficult(DIFFCULTY_VERY_EASY)
 {
 }
 
@@ -234,15 +237,28 @@ bool ConfigManage::LoadData( const char* filepath )
 	const rapidjson::Value& objects = document["config"];
 	const rapidjson::Value& lvArr = objects["lv"];
 	uint8 count = _CANNP_NAME::_min((uint8)MAX_LV_COUNT,(uint8)lvArr.Size());
-	for (uint8 i=0;i<count;++i)
-		m_lvArr[i]=objects["lv"][i].GetInt();
+	uint8 i(0);
+	for (i=0;i<count;++i)
+		m_lvArr[i] = lvArr[i].GetInt();
+	for (i = count; i < MAX_LV_COUNT; ++i)
+		m_lvArr[i] = m_lvArr[count - 1];
 
 	m_maxTimes = objects["maxTimes"].GetInt();
+	m_hitCount = objects["hitCount"].GetInt();
+	m_awardCount = objects["hitCount"].GetInt();
+
+	const rapidjson::Value& profitRate = objects["profitRate"];
+	count = _CANNP_NAME::_min((uint8)MAX_DIFF_COUNT, (uint8)profitRate.Size());
+	for (i = 0; i < count; ++i)
+		m_profitRate[i] = profitRate[i].GetInt();
+	for (i = count; i < MAX_LV_COUNT; ++i)
+		m_profitRate[i] = m_profitRate[count - 1];
+	
 
 	return true;
 }
 
-OLEVEL ConfigManage::CalculateObjectLv( uint16 timesVal )
+OLEVEL ConfigManage::CalculateObjectLv(const uint16& timesVal)
 {
 	OLEVEL mlv=OLEVEL_FREE;
 	if (timesVal>m_maxTimes || timesVal>m_lvArr[MAX_LV_COUNT-1])

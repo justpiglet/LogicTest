@@ -74,7 +74,7 @@ public:
 	//##Get a randoom number. param@min and max must between 0 to 0x7fff  ##
 	static int32 GetRandoom(int32 min = 0, int32 max = 0x7fff);
 	//##Get a arrary index by arrary value prencent. param@1 arrary,@2count  ##
-	static uint8 GetIndex(uint16* pArr, uint8 count);
+	static uint8 GetIndex(const uint16* pArr, const uint8& count);
 };
 /////////////////////////////////////////////////////////////////////////////random end
 

@@ -98,7 +98,7 @@ void CaLogicPool::Destroy()
 	}
 }
 
-bool CaLogicPool::Init(char* folderPath, uint8 poolCount)
+bool CaLogicPool::Init(const char* folderPath, const uint8& poolCount)
 {
 	if (!Check() || poolCount > MAX_POOLCELL_COUNT)
 		return false;
@@ -112,18 +112,18 @@ bool CaLogicPool::Init(char* folderPath, uint8 poolCount)
 	m_pDataBase->Create("../../resource/data.db","");
 	return true;
 }
-uint16 CaLogicPool::GetObjectTimes(uint8 id)
+uint16 CaLogicPool::GetObjectTimes(const uint8& id)
 {
 	return CaAttributeManage::share()->GetObjectTimes(id);
 }
 
-void CaLogicPool::OperateScore(uint8 playerId,int32 score)
+void CaLogicPool::OperateScore(const uint8& playerId, const int32& score)
 {
 	if (playerId < m_CellCount)
 		m_pLogicCells[playerId].OperateScore(score);
 }
 
-SCORE CaLogicPool::GetCurScore(uint8 playerId)
+SCORE CaLogicPool::GetCurScore(const uint8& playerId)
 {
 	if (playerId < m_CellCount)
 		return m_pLogicCells[playerId].GetCurScore();
@@ -131,10 +131,24 @@ SCORE CaLogicPool::GetCurScore(uint8 playerId)
 		return 0;
 }
 
-bool CaLogicPool::CalculateResult(uint8 playerId, uint16 power, const vector<CaObject*>& objects, vector<CaObject*>& result)
+bool CaLogicPool::CalculateResult(const uint8& playerId, const uint16& power, const vector<CaObject*>& objects, vector<CaObject*>& result)
 {
+	if (power <= 0 || objects.size() <= 0)
+		return false;
+
 	if (playerId < m_CellCount)
 		return m_pLogicCells[playerId].CalculateResult(power,objects,result);
+	else
+		return false;
+}
+
+bool CaLogicPool::CalculateResult(const uint8& playerId, const uint16& power, const CaObject* pObject)
+{
+	if (power <= 0 || !pObject)
+		return false;
+
+	if (playerId < m_CellCount)
+		return m_pLogicCells[playerId].CalculateResult(power, pObject);
 	else
 		return false;
 }
@@ -145,7 +159,7 @@ void CaLogicPool::ResetGameValue()
 		m_pLogicCells[i].ResetGameValue();
 }
 
-void CaLogicPool::update(DECIMALS ft)
+void CaLogicPool::update(const DECIMALS& ft)
 {
 	if (m_saveTime > 3.0f)
 	{
@@ -180,9 +194,14 @@ void CaLogicPool::SavePoolData()
 	//m_Mutex.unlock();
 }
 
-CaObject* CaLogicPool::CreateObject(uint8 id)
+CaObject* CaLogicPool::CreateObject(const uint8& id)
 {
 	return ObjectManage::share()->CreateObject(id);
+}
+
+bool CaLogicPool::Onfire(const uint8&)
+{
+	return true;
 }
 
 // void CaLogicPool::DestroyObject(CaObject* object)

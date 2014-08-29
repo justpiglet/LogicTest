@@ -15,8 +15,8 @@ private:
 	ObjectManage();
 	~ObjectManage();
 public:
-	virtual CaObject* CreateObject(uint8);
-	virtual void DestroyObject(CaObject*);
+	virtual CaObject* CreateObject(const uint8&);
+	virtual void DestroyObject(const CaObject*);
 private:
 	static ObjectManage* m_gObjectManage;
 	

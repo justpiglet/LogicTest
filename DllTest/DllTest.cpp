@@ -6,7 +6,7 @@
 #include <time.h>
 #include"publicpro.h"
 #include "cantools/tools.h"
-
+#include <vector>
 
 typedef ILogicPool* (*GET_HFUNC)();
 typedef void(*DESTROY_HFUNC)(ILogicPool*);
@@ -53,9 +53,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	float aa = 0.00000001;
-	float bb = -0.00000001;
-	float cc = 1e-10;
+	//float aa = 0.00000001;
+	//float bb = -0.00000001;
+	//float cc = 1e-10;
 
 	//////////////////////////////////////////////////
 	/*std::string aa;
@@ -78,7 +78,14 @@ int _tmain(int argc, _TCHAR* argv[])
 		//fwrite("  ", 1, 2, fp);
 	}*/
 	/////////////////////////////////////////////////	
-	
+	std::vector<int> aa;
+	DWORD t12 = GetTickCount();
+	for (size_t i = 0; i < 100000; i++)
+	{
+		aa.push_back(i);
+	}
+	printf("vector time %d", GetTickCount() - t12);
+
 	TCHAR textName[128]=_T("");
 	int nn[128]={0};
 
