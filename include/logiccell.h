@@ -29,10 +29,10 @@ class CaLogicCell
 {
 	friend class CaLogicPool;
 
-	enum P_STATE
+	enum PLAY_STATE
 	{
-		P_STATE_IDLE=0,
-		P_STATE_DOING,
+		PLAY_STATE_IDLE=0,
+		PLAY_STATE_DOING,
 	};
 
 	CaLogicCell();
@@ -40,16 +40,17 @@ protected:
 	inline SCORE GetCurScore(){ return m_Score.score; }
 	void SetInitialValue(const SCORE&, const W_VAL& ,const PROFIT&);
 	void OperateScore(const int32&);
+	bool Onfire(uint16&);
 	bool CalculateResult(const uint16&, const std::vector<CaObject*>&, std::vector<CaObject*>&);
 	bool CalculateResult(const uint16&, const CaObject*);
 	void ResetGameValue();
-	inline bool IsNeedSave(){ return m_state == P_STATE_DOING; }
+	inline bool IsNeedSave(){ return m_state == PLAY_STATE_DOING; }
 	const SaveScore* GetSaveScore(bool isSave=true);
 public:
 	~CaLogicCell();
 
 private:
 	SaveScore m_Score;
-	P_STATE m_state;
+	uint8 m_state;
 };
 #endif

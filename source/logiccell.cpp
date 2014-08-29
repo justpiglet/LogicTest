@@ -2,7 +2,7 @@
 #include "manage.h"
 #include "cantools/tools.h"
 
-CaLogicCell::CaLogicCell() : m_state(P_STATE_IDLE)
+CaLogicCell::CaLogicCell() : m_state(PLAY_STATE_IDLE)
 {
 }
 
@@ -103,7 +103,7 @@ bool CaLogicCell::CalculateResult(const uint16& power, const CaObject* pObject)
 void CaLogicCell::OperateScore(const int32& score)
 {
 	m_Score.setScore(score);
-	m_state = P_STATE_DOING;
+	m_state = PLAY_STATE_DOING;
 }
 
 void CaLogicCell::ResetGameValue()
@@ -114,7 +114,19 @@ void CaLogicCell::ResetGameValue()
 const SaveScore* CaLogicCell::GetSaveScore(bool isSave/*=true*/)
 {
 	if (isSave)
-		m_state = P_STATE_IDLE;
+		m_state = PLAY_STATE_IDLE;
 
 	return &m_Score;
+}
+
+bool CaLogicCell::Onfire(uint16& power)
+{
+	if (m_Score.score <= 0)
+		return false;
+	else if (m_Score.score < power)
+		power = m_Score.score;
+
+	OperateScore(-power);
+	
+	return true;
 }

@@ -26,7 +26,7 @@ public:
 	virtual uint16 GetObjectTimes(const uint8&);
 	virtual void OperateScore(const uint8&, const int32&);
 	virtual SCORE GetCurScore(const uint8&);
-	virtual bool Onfire(const uint8&);
+	virtual bool Onfire(const uint8& , uint16&);
 	virtual bool CalculateResult(const uint8&, const uint16&, const vector<CaObject*>&, vector<CaObject*>&);
 	virtual bool CalculateResult(const uint8&, const uint16&, const CaObject*);
 	virtual void ResetGameValue();

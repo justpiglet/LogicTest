@@ -117,38 +117,38 @@ uint16 CaLogicPool::GetObjectTimes(const uint8& id)
 	return CaAttributeManage::share()->GetObjectTimes(id);
 }
 
-void CaLogicPool::OperateScore(const uint8& playerId, const int32& score)
+void CaLogicPool::OperateScore(const uint8& id, const int32& score)
 {
-	if (playerId < m_CellCount)
-		m_pLogicCells[playerId].OperateScore(score);
+	if (id < m_CellCount)
+		m_pLogicCells[id].OperateScore(score);
 }
 
-SCORE CaLogicPool::GetCurScore(const uint8& playerId)
+SCORE CaLogicPool::GetCurScore(const uint8& id)
 {
-	if (playerId < m_CellCount)
-		return m_pLogicCells[playerId].GetCurScore();
+	if (id < m_CellCount)
+		return m_pLogicCells[id].GetCurScore();
 	else
 		return 0;
 }
 
-bool CaLogicPool::CalculateResult(const uint8& playerId, const uint16& power, const vector<CaObject*>& objects, vector<CaObject*>& result)
+bool CaLogicPool::CalculateResult(const uint8& id, const uint16& power, const vector<CaObject*>& objects, vector<CaObject*>& result)
 {
 	if (power <= 0 || objects.size() <= 0)
 		return false;
 
-	if (playerId < m_CellCount)
-		return m_pLogicCells[playerId].CalculateResult(power,objects,result);
+	if (id < m_CellCount)
+		return m_pLogicCells[id].CalculateResult(power, objects, result);
 	else
 		return false;
 }
 
-bool CaLogicPool::CalculateResult(const uint8& playerId, const uint16& power, const CaObject* pObject)
+bool CaLogicPool::CalculateResult(const uint8& id, const uint16& power, const CaObject* pObject)
 {
 	if (power <= 0 || !pObject)
 		return false;
 
-	if (playerId < m_CellCount)
-		return m_pLogicCells[playerId].CalculateResult(power, pObject);
+	if (id < m_CellCount)
+		return m_pLogicCells[id].CalculateResult(power, pObject);
 	else
 		return false;
 }
@@ -199,9 +199,15 @@ CaObject* CaLogicPool::CreateObject(const uint8& id)
 	return ObjectManage::share()->CreateObject(id);
 }
 
-bool CaLogicPool::Onfire(const uint8&)
+bool CaLogicPool::Onfire(const uint8& id, uint16& power)
 {
-	return true;
+	if (power <= 0 )
+		return false;
+
+	if (id < m_CellCount)
+		return m_pLogicCells[id].Onfire(power);
+	else
+		return false;
 }
 
 // void CaLogicPool::DestroyObject(CaObject* object)

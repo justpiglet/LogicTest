@@ -57,7 +57,8 @@ public:
 	//##Reset game value##
 	virtual void ResetGameValue()=0;
 	
-	virtual bool Onfire(const uint8&) = 0;
+	//##fire @2 can modify##
+	virtual bool Onfire(const uint8& ,uint16&power) = 0;
 
 	//##calculate finnal result @1playerId,@2power@3objects@result object ##
 	virtual bool CalculateResult(const uint8&, const uint16&, const std::vector<CaObject*>&, std::vector<CaObject*>&) = 0;
