@@ -56,13 +56,13 @@ class code
 {
 public:
 	//##need delete ##
-	static wchar_t* AsciiToUnicode(char*, uint16);
+	static wchar_t* AsciiToUnicode(const char*, const uint16&);
 	//##need delete ##
-	static char* UnicodeToAscii(wchar_t*, uint16);
+	static char* UnicodeToAscii(const wchar_t*, const uint16&);
 	//##need delete ##
-	static wchar_t* Utf8ToUnicode(char*, uint16);
+	static wchar_t* Utf8ToUnicode(const char*, const uint16&);
 	//##need delete ##
-	static char* UnicodeToUtf8(wchar_t*, uint16);
+	static char* UnicodeToUtf8(const wchar_t*, const uint16&);
 };
 
 //////////////////////////////////////////code type end
