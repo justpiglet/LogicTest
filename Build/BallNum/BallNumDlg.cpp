@@ -52,12 +52,14 @@ END_MESSAGE_MAP()
 CBallNumDlg::CBallNumDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CBallNumDlg::IDD, pParent)
 {
+	AfxInitRichEdit2();
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 void CBallNumDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_RICHEDIT_MGS, m_reShowMessage);
 }
 
 BEGIN_MESSAGE_MAP(CBallNumDlg, CDialogEx)
@@ -66,6 +68,7 @@ BEGIN_MESSAGE_MAP(CBallNumDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &CBallNumDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_INSERT, &CBallNumDlg::OnBnClickedInsert)
+	ON_EN_CHANGE(IDC_RICHEDIT_MGS, &CBallNumDlg::OnEnChangeRicheditMgs)
 END_MESSAGE_MAP()
 
 
@@ -102,9 +105,33 @@ BOOL CBallNumDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 
+	PARAFORMAT2 pf2;
+	pf2.cbSize = sizeof(PARAFORMAT2);
+	pf2.dwMask = PFM_LINESPACING | PFM_SPACEAFTER;
+	pf2.dyLineSpacing = 230;
+	pf2.bLineSpacingRule = 4;
+	m_reShowMessage.SetParaFormat(pf2);
+
 	ManageDataBase::Share()->InitDataBase();
 	GroupBallNum aa = ManageDataBase::Share()->GetNearDataByIndex(1);
-	GetDlgItem(IDC_SHOW_MESSAGE)->SetWindowText(aa.toCString());
+	//GetDlgItem(IDC_SHOW_MESSAGE)->SetWindowText(aa.toCString());
+	//for (int i = 0; i < 20; i++)
+	{
+		m_reShowMessage.SetSel(-1, -1);
+		CString text("current\n");
+		text.Append(aa.toCString());
+		text.Append(_T("\n"));
+		m_reShowMessage.ReplaceSel(text);
+		
+	}
+// 	m_reShowMessage.LineScroll(2);
+// 	m_reShowMessage.SetSel(-1, -1);
+// 	CString text("current\n");
+// 	text.Append(aa.toCString());
+// 	text.Append(_T("\n"));
+// 	m_reShowMessage.ReplaceSel(text);
+	m_reShowMessage.PostMessage(WM_VSCROLL, SB_BOTTOM, 0);
+	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -184,5 +211,16 @@ void CBallNumDlg::OnBnClickedInsert()
 	CDialogEx  aa(IDD_INSERT_DIALOG);
 	aa.DoModal();
 	
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CBallNumDlg::OnEnChangeRicheditMgs()
+{
+	// TODO:  如果该控件是 RICHEDIT 控件，它将不
+	// 发送此通知，除非重写 CDialogEx::OnInitDialog()
+	// 函数并调用 CRichEditCtrl().SetEventMask()，
+	// 同时将 ENM_CHANGE 标志“或”运算到掩码中。
+
 	// TODO:  在此添加控件通知处理程序代码
 }

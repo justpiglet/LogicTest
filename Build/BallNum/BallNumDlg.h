@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "afxcmn.h"
 
 
 
@@ -41,4 +42,6 @@ private:
 
 public:
 	afx_msg void OnBnClickedInsert();
+	CRichEditCtrl m_reShowMessage;
+	afx_msg void OnEnChangeRicheditMgs();
 };
