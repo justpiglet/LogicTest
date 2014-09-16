@@ -4,9 +4,7 @@
 
 #pragma once
 
-#include "sqlitedb/SqliteDatabasePro.h"
-#include "sqlitedb/SqliteDatabase.h"
-#include "sqlitedb/SqliteRecordSet.h"
+
 
 // CBallNumDlg ¶Ô»°¿ò
 class CBallNumDlg : public CDialogEx
@@ -35,6 +33,12 @@ protected:
 public:
 	afx_msg void OnBnClickedOk();
 
+protected:
+	int CalculateIdByTime();
+	
 private:
-	CSqliteDatabase* m_pDataBase;
+	
+
+public:
+	afx_msg void OnBnClickedInsert();
 };

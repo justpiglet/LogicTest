@@ -55,6 +55,24 @@ struct GroupBallNum
 	{
 		memset(number, 0, sizeof(number));
 	}
+	GroupBallNum(const char* szText)
+	{
+		int result = scanf_s(szText, "%d:%d,%d,%d,%d,%d,%d,%d", &id,&number[0], &number[1], &number[2], &number[3], &number[4], &number[5], &number[6]);
+		if (result != BALL_COUNT)
+			GroupBallNum();
+	}
+	GroupBallNum(const wchar_t* szText)
+	{
+		int result = wscanf_s(szText, "%d:%d,%d,%d,%d,%d,%d,%d", &id, &number[0], &number[1], &number[2], &number[3], &number[4], &number[5], &number[6]);
+		if (result != BALL_COUNT)
+			GroupBallNum();
+	}
+	CString toCString()
+	{
+		CString res;
+		res.Format(_T("%d:%d,%d,%d,%d,%d,%d,%d"), id, number[0], number[1], number[2], number[3], number[4], number[5], number[6]);
+		return res;
+	}
 };
 
 

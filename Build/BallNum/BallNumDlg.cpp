@@ -6,6 +6,8 @@
 #include "BallNum.h"
 #include "BallNumDlg.h"
 #include "afxdialogex.h"
+#include <time.h>
+#include "ManageDataBase.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -48,7 +50,7 @@ END_MESSAGE_MAP()
 
 
 CBallNumDlg::CBallNumDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CBallNumDlg::IDD, pParent), m_pDataBase(NULL)
+	: CDialogEx(CBallNumDlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -63,6 +65,7 @@ BEGIN_MESSAGE_MAP(CBallNumDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &CBallNumDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_INSERT, &CBallNumDlg::OnBnClickedInsert)
 END_MESSAGE_MAP()
 
 
@@ -99,6 +102,9 @@ BOOL CBallNumDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 
+	ManageDataBase::Share()->InitDataBase();
+	GroupBallNum aa = ManageDataBase::Share()->GetNearDataByIndex(1);
+	GetDlgItem(IDC_SHOW_MESSAGE)->SetWindowText(aa.toCString());
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -151,32 +157,32 @@ HCURSOR CBallNumDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
+int CBallNumDlg::CalculateIdByTime()
+{
+	time_t nowtime = time(NULL);
+	tm timeData;
+	localtime_s(&timeData, &nowtime);
+	tm timeModify = timeData;
+	timeModify.tm_mon = 0;
+	timeModify.tm_mday = 1;
+	
+	time_t modifyTime = mktime(&timeModify);
+	tm TimeNew;
+	localtime_s(&TimeNew, &modifyTime);
+	return 0;
+}
 
 void CBallNumDlg::OnBnClickedOk()
 {
-	m_pDataBase = CSqliteDatabase::Create("res\\ballnumber.db", "");
-	if (!m_pDataBase)
-		return ;
-	CSqliteRecordSet* pdata = m_pDataBase->Execute("select * from balldata limit 1");
-
-	GroupBallNum mballNumber;
-
-	if (pdata && pdata->IsOk())
-	{
-		uint8 i(0);
-		char szNumName[16] = "";
-		while (pdata->NextRow())
-		{
-
-			mballNumber.id = pdata->GetInt("id", 0);
-			for (i = 0; i < BALL_COUNT; ++i)
-			{
-				sprintf_s(szNumName, 16, "num%d", i);
-				mballNumber.number[i] = pdata->GetInt(szNumName, 0);
-			}
-		}
-	}
-	pdata->Release();
+	
 	CDialogEx::OnOK();
+}
+
+
+void CBallNumDlg::OnBnClickedInsert()
+{
+	CDialogEx  aa(IDD_INSERT_DIALOG);
+	aa.DoModal();
+	
+	// TODO:  在此添加控件通知处理程序代码
 }
