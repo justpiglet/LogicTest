@@ -36,44 +36,51 @@
 #define SQLITE_OUTSIDE
 #include "basedefine.h"
 
-enum BallColor
-{
-	BallColor_Red = 0,
-	BallColor_Red_Max = 5,
-	BallColor_Blue
-};
 
-#define BALL_COUNT 7
-#define	MAX_BALL_NUM(color) color<=BallColor_Red_Max?32:16
 
-struct GroupBallNum
-{
-	uint32 id;
-	uint8 number[7];
-
-	GroupBallNum() :id(0)
-	{
-		memset(number, 0, sizeof(number));
-	}
-	GroupBallNum(const char* szText)
-	{
-		int result = scanf_s(szText, "%d:%d,%d,%d,%d,%d,%d,%d", &id,&number[0], &number[1], &number[2], &number[3], &number[4], &number[5], &number[6]);
-		if (result != BALL_COUNT)
-			GroupBallNum();
-	}
-	GroupBallNum(const wchar_t* szText)
-	{
-		int result = wscanf_s(szText, "%d:%d,%d,%d,%d,%d,%d,%d", &id, &number[0], &number[1], &number[2], &number[3], &number[4], &number[5], &number[6]);
-		if (result != BALL_COUNT)
-			GroupBallNum();
-	}
-	CString toCString()
-	{
-		CString res;
-		res.Format(_T("%d:%d,%d,%d,%d,%d,%d,%d"), id, number[0], number[1], number[2], number[3], number[4], number[5], number[6]);
-		return res;
-	}
-};
+// struct GroupBallNum
+// {
+// 	uint32 id;
+// 	uint8 number[7];
+// 
+// 	GroupBallNum() 
+// 	{
+// 		Reset();
+// 	}
+// 	void Reset()
+// 	{
+// 		id = 0;
+// 		memset(number, 0, sizeof(number));
+// 	}
+// 	bool Parsing(const char* szText)
+// 	{
+// 		int result = sscanf_s(szText, "%d:%d,%d,%d,%d,%d,%d,%d", &id,&number[0], &number[1], &number[2], &number[3], &number[4], &number[5], &number[6]);
+// 		if (result != BALL_COUNT)
+// 		{
+// 			Reset();
+// 			return false;
+// 		}
+// 		else
+// 			return  true;
+// 	}
+// 	bool Parsing(const wchar_t* szText)
+// 	{
+// 		int result = swscanf_s(szText, _T("%d:%d,%d,%d,%d,%d,%d,%d"), &id, &number[0], &number[1], &number[2], &number[3], &number[4], &number[5], &number[6]);
+// 		if (result != BALL_COUNT)
+// 		{
+// 			Reset();
+// 			return false;
+// 		}
+// 		else
+// 			return  result != BALL_COUNT;
+// 	}
+// 	CString toCString()
+// 	{
+// 		CString res;
+// 		res.Format(_T("%d:%d,%d,%d,%d,%d,%d,%d"), id, number[0], number[1], number[2], number[3], number[4], number[5], number[6]);
+// 		return res;
+// 	}
+// };
 
 
 

@@ -8,6 +8,9 @@
 #include "afxdialogex.h"
 #include <time.h>
 #include "ManageDataBase.h"
+#include<io.h>
+#include<stdio.h>
+#include "InsertDailog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -124,6 +127,7 @@ BOOL CBallNumDlg::OnInitDialog()
 		m_reShowMessage.ReplaceSel(text);
 		
 	}
+
 // 	m_reShowMessage.LineScroll(2);
 // 	m_reShowMessage.SetSel(-1, -1);
 // 	CString text("current\n");
@@ -201,14 +205,38 @@ int CBallNumDlg::CalculateIdByTime()
 
 void CBallNumDlg::OnBnClickedOk()
 {
+	/*_finddata_t FileInfo;
+
+	string folderPath("C:\\Users\\jouris\\Documents\\fileTest\\*");
+	long Handle = _findfirst(folderPath.c_str(), &FileInfo);
 	
+// 	do
+// 	{
+// 		if (FileInfo.attrib & _A_SUBDIR)
+// 		{
+// 			if ((strcmp(FileInfo.name, ".") != 0) && (strcmp(FileInfo.name, "..") != 0))
+// 			{
+// 				string newPath = folderPath + "\\" + FileInfo.name;
+// 				dfsFolder(newPath, vecFilePath, errFileCount);
+// 			}
+// 		}
+// 	}
+	
+	while (1)
+	{
+		long result = _findnext(Handle, &FileInfo);
+
+		if (result==-1)
+			break;
+	}
+	*/
 	CDialogEx::OnOK();
 }
 
 
 void CBallNumDlg::OnBnClickedInsert()
 {
-	CDialogEx  aa(IDD_INSERT_DIALOG);
+	InsertDailog  aa;
 	aa.DoModal();
 	
 	// TODO:  在此添加控件通知处理程序代码

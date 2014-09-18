@@ -3,7 +3,7 @@
 #include "sqlitedb/SqliteDatabasePro.h"
 #include "sqlitedb/SqliteDatabase.h"
 #include "sqlitedb/SqliteRecordSet.h"
-
+#include "GroupBallNum.h"
 #include<vector>
 using std::vector;
 
@@ -15,6 +15,7 @@ public:
 	void InitDataBase();
 	GroupBallNum GetNearDataByIndex(uint32 index);
 	bool InsertData(const GroupBallNum& data);
+	CString GetMissData();
 private:
 	ManageDataBase();
 	~ManageDataBase();

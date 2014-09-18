@@ -121,6 +121,7 @@ public:
                       const char * dbName,
                       bool writable = true);
     
+	std::string GetLastError(){ return m_lastError; }
 public:
     void Interrupt();
     void SetBusyTimeout(int milliSeconds);

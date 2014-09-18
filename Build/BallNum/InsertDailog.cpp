@@ -6,7 +6,7 @@
 #include "InsertDailog.h"
 #include "afxdialogex.h"
 #include "ManageDataBase.h"
-
+#include "GroupBallNum.h"
 // InsertDailog ¶Ô»°¿ò
 
 IMPLEMENT_DYNAMIC(InsertDailog, CDialogEx)
@@ -52,12 +52,14 @@ void InsertDailog::OnBnClickedOk()
 
 bool InsertDailog::InsertData(const char* szText)
 {
-	GroupBallNum data(szText);
+	GroupBallNum data;
+	data.Parsing(szText);
 	return ManageDataBase::Share()->InsertData(data);
 }
 
 bool InsertDailog::InsertData(const wchar_t* szText)
 {
-	GroupBallNum data(szText);
+	GroupBallNum data;
+	data.Parsing(szText);
 	return ManageDataBase::Share()->InsertData(data);
 }

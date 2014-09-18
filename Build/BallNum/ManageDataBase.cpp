@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ManageDataBase.h"
-#include <time.h>
+
 
 ManageDataBase* ManageDataBase::g_self=NULL;
 ManageDataBase::ManageDataBase() :m_pDataBase(NULL)
@@ -46,11 +46,11 @@ GroupBallNum ManageDataBase::GetNearDataByIndex(uint32 index)
 		if (pdata->NextRow())
 		{
 
-			mballNumber.id = pdata->GetInt("id", 0);
+			mballNumber.SetId(pdata->GetInt("id", 0));
 			for (i = 0; i < BALL_COUNT; ++i)
 			{
 				sprintf_s(szNumName, 16, "num%d", i);
-				mballNumber.number[i] = pdata->GetInt(szNumName, 0);
+				mballNumber.SetNum(i,pdata->GetInt(szNumName, 0));
 			}
 		}
 	}
@@ -64,6 +64,7 @@ void ManageDataBase::CheckDataBase()
 	if (!m_pDataBase)
 		return;
 
+	m_checckVec.clear();
 	m_pDataBase->Execute("delete from balldata where id<2000000 or id >2016000");
 	CSqliteRecordSet* pdata = m_pDataBase->Execute("select id from balldata order by id ASC ");
 	
@@ -89,18 +90,44 @@ void ManageDataBase::CheckDataBase()
 
 bool ManageDataBase::InsertData(const GroupBallNum& data)
 {
+	bool result(false);
 	if (!m_pDataBase)
-		return false;
+		return result;
 
-	time_t nowTime = time(NULL);
-	tm tmNowTime;
-	localtime_s(&tmNowTime,&nowTime);
-	if (data.id<2014001 || data.id>(tmNowTime.tm_year + 1900 + 1) * 1000)
-		return false;
+	if (data.ChehckNumVaild())
+	{
+		char szVal[256]="";
+		char szText[1024] = "";
+		GroupBallNum::SaveChar(szVal, sizeof(szVal), data);
+		sprintf_s(szText, sizeof(szText), "insert into balldata(id,num0,num1,num2,num3,num4,num5,num6,date),VALUES(%s)", szVal);
+		result = (m_pDataBase->Execute(szText) != NULL);
+		
+		if (result)
+			CheckDataBase();
+		else
+		{
+			std::string error = m_pDataBase->GetLastError();
+			printf(error.c_str());
+		}
+			
+	}
 
-	char szText[256] = "";
-	sprintf_s(szText, sizeof(szText), "insert into balldata(id,num0,num1,num2,num3,num4,num5,num6)", data.id, data.number[0], data.number[1], data.number[2], data.number[3], data.number[4], data.number[5], data.number[6]);
-	return m_pDataBase->Execute(szText)!=NULL;
+	return result;
+}
+
+CString ManageDataBase::GetMissData()
+{
+	CString strMissData;
+	if (m_checckVec.empty())
+		return strMissData;
+	strMissData.Append(_T("Miss Data:\n"));
+	vector<int>::iterator itor = m_checckVec.begin();
+
+	CString strTemp;
+	for (; itor != m_checckVec.end(); ++itor)
+		strTemp.Format(_T("%d-%d"), *(itor++),*itor);
+
+	return strTemp;
 }
 
 
