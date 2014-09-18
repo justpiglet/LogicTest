@@ -127,7 +127,13 @@ BOOL CBallNumDlg::OnInitDialog()
 		m_reShowMessage.ReplaceSel(text);
 		
 	}
-
+	{
+		std::string strMisData = ManageDataBase::Share()->GetMissData();
+		m_reShowMessage.SetSel(-1, -1);
+		CString text(strMisData.c_str());
+		m_reShowMessage.ReplaceSel(text);
+	}
+	
 // 	m_reShowMessage.LineScroll(2);
 // 	m_reShowMessage.SetSel(-1, -1);
 // 	CString text("current\n");

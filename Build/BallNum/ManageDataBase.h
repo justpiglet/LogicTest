@@ -15,7 +15,7 @@ public:
 	void InitDataBase();
 	GroupBallNum GetNearDataByIndex(uint32 index);
 	bool InsertData(const GroupBallNum& data);
-	CString GetMissData();
+	std::string GetMissData();
 private:
 	ManageDataBase();
 	~ManageDataBase();

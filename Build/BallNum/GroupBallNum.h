@@ -30,6 +30,6 @@ public:
 	static void SaveChar(char szOut[],int len, const GroupBallNum& src);
 private:
 	uint32 id;
-	uint8 number[7];
+	uint32 number[7];
 };
 

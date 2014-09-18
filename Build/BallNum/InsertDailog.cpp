@@ -62,4 +62,5 @@ bool InsertDailog::InsertData(const wchar_t* szText)
 	GroupBallNum data;
 	data.Parsing(szText);
 	return ManageDataBase::Share()->InsertData(data);
+	return true;
 }

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ManageDataBase.h"
-
+#include <string.h>
+using std::string;
 
 ManageDataBase* ManageDataBase::g_self=NULL;
 ManageDataBase::ManageDataBase() :m_pDataBase(NULL)
@@ -78,8 +79,11 @@ void ManageDataBase::CheckDataBase()
 			{
 				if (newVal != ((oldVal / 1000) + 1) * 1000 + 1)
 				{
-					m_checckVec.push_back(oldVal);
-					m_checckVec.push_back(newVal);
+					if (newVal != oldVal)
+					{
+						m_checckVec.push_back(oldVal);
+						m_checckVec.push_back(newVal);
+					}
 				}
 				
 			}
@@ -96,10 +100,10 @@ bool ManageDataBase::InsertData(const GroupBallNum& data)
 
 	if (data.ChehckNumVaild())
 	{
-		char szVal[256]="";
+		char szVal[512]="";
 		char szText[1024] = "";
 		GroupBallNum::SaveChar(szVal, sizeof(szVal), data);
-		sprintf_s(szText, sizeof(szText), "insert into balldata(id,num0,num1,num2,num3,num4,num5,num6,date),VALUES(%s)", szVal);
+		sprintf_s(szText, sizeof(szText), "insert into balldata(id,num0,num1,num2,num3,num4,num5,num6,date) VALUES(%s)", szVal);
 		result = (m_pDataBase->Execute(szText) != NULL);
 		
 		if (result)
@@ -115,19 +119,20 @@ bool ManageDataBase::InsertData(const GroupBallNum& data)
 	return result;
 }
 
-CString ManageDataBase::GetMissData()
+std::string ManageDataBase::GetMissData()
 {
-	CString strMissData;
+	std::string strMissData;
 	if (m_checckVec.empty())
 		return strMissData;
-	strMissData.Append(_T("Miss Data:\n"));
+	strMissData.append("Miss Data:\n");
 	vector<int>::iterator itor = m_checckVec.begin();
 
-	CString strTemp;
+	char szTemp[512] = "";
 	for (; itor != m_checckVec.end(); ++itor)
-		strTemp.Format(_T("%d-%d"), *(itor++),*itor);
+		sprintf(szTemp, "%d-%d", *(itor++), *itor);
 
-	return strTemp;
+	strMissData.append(szTemp);
+	return strMissData;
 }
 
 
