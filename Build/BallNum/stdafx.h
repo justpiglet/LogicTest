@@ -35,56 +35,13 @@
 
 #define SQLITE_OUTSIDE
 #include "basedefine.h"
+#include <string.h>
 
-
-
-// struct GroupBallNum
-// {
-// 	uint32 id;
-// 	uint8 number[7];
-// 
-// 	GroupBallNum() 
-// 	{
-// 		Reset();
-// 	}
-// 	void Reset()
-// 	{
-// 		id = 0;
-// 		memset(number, 0, sizeof(number));
-// 	}
-// 	bool Parsing(const char* szText)
-// 	{
-// 		int result = sscanf_s(szText, "%d:%d,%d,%d,%d,%d,%d,%d", &id,&number[0], &number[1], &number[2], &number[3], &number[4], &number[5], &number[6]);
-// 		if (result != BALL_COUNT)
-// 		{
-// 			Reset();
-// 			return false;
-// 		}
-// 		else
-// 			return  true;
-// 	}
-// 	bool Parsing(const wchar_t* szText)
-// 	{
-// 		int result = swscanf_s(szText, _T("%d:%d,%d,%d,%d,%d,%d,%d"), &id, &number[0], &number[1], &number[2], &number[3], &number[4], &number[5], &number[6]);
-// 		if (result != BALL_COUNT)
-// 		{
-// 			Reset();
-// 			return false;
-// 		}
-// 		else
-// 			return  result != BALL_COUNT;
-// 	}
-// 	CString toCString()
-// 	{
-// 		CString res;
-// 		res.Format(_T("%d:%d,%d,%d,%d,%d,%d,%d"), id, number[0], number[1], number[2], number[3], number[4], number[5], number[6]);
-// 		return res;
-// 	}
-// };
-
-
-
-
+struct BallNum
+{
+	uint32 id;
+	uint32 number[7];
+};
 
 #ifdef _UNICODE
 #if defined _M_IX86

@@ -4,11 +4,10 @@
 
 #pragma once
 #include "afxcmn.h"
-
-
+#include "MainDlgHandle.h"
 
 // CBallNumDlg 对话框
-class CBallNumDlg : public CDialogEx
+class CBallNumDlg : public CDialogEx,public IMainDlgHandle
 {
 // 构造
 public:
@@ -36,12 +35,22 @@ public:
 
 protected:
 	int CalculateIdByTime();
-	
-private:
-	
+	//bool InsertData(const char* szText);
+	//bool InsertData(const wchar_t* szText);
 
+	void QueryData(uint32);
+public:
+	void InsertMsg(const std::string&);
+	void CleanUpMsg();
+
+	void InsertNumMgs(const char* szTitle, uint32 src[], uint8 len);
 public:
 	afx_msg void OnBnClickedInsert();
 	CRichEditCtrl m_reShowMessage;
 	afx_msg void OnEnChangeRicheditMgs();
+	afx_msg void OnBnClickedCleanMsg();
+	CString m_cstrText;
+	afx_msg void OnBnClickedBtnQ();
+	afx_msg void OnBnClickedBtnD();
+	afx_msg void OnBnClickedBtnM();
 };

@@ -10,7 +10,7 @@
 #include "ManageDataBase.h"
 #include<io.h>
 #include<stdio.h>
-#include "InsertDailog.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -54,6 +54,7 @@ END_MESSAGE_MAP()
 
 CBallNumDlg::CBallNumDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CBallNumDlg::IDD, pParent)
+	, m_cstrText(_T(""))
 {
 	AfxInitRichEdit2();
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -63,6 +64,7 @@ void CBallNumDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_RICHEDIT_MGS, m_reShowMessage);
+	DDX_Text(pDX, IDC_EDIT1, m_cstrText);
 }
 
 BEGIN_MESSAGE_MAP(CBallNumDlg, CDialogEx)
@@ -70,8 +72,12 @@ BEGIN_MESSAGE_MAP(CBallNumDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &CBallNumDlg::OnBnClickedOk)
-	ON_BN_CLICKED(IDC_INSERT, &CBallNumDlg::OnBnClickedInsert)
+	ON_BN_CLICKED(IDC_BTN_I, &CBallNumDlg::OnBnClickedInsert)
 	ON_EN_CHANGE(IDC_RICHEDIT_MGS, &CBallNumDlg::OnEnChangeRicheditMgs)
+	ON_BN_CLICKED(IDC_CLEAN_MSG, &CBallNumDlg::OnBnClickedCleanMsg)
+	ON_BN_CLICKED(IDC_BTN_Q, &CBallNumDlg::OnBnClickedBtnQ)
+	ON_BN_CLICKED(IDC_BTN_D, &CBallNumDlg::OnBnClickedBtnD)
+	ON_BN_CLICKED(IDC_BTN_M, &CBallNumDlg::OnBnClickedBtnM)
 END_MESSAGE_MAP()
 
 
@@ -115,24 +121,12 @@ BOOL CBallNumDlg::OnInitDialog()
 	pf2.bLineSpacingRule = 4;
 	m_reShowMessage.SetParaFormat(pf2);
 
-	ManageDataBase::Share()->InitDataBase();
-	GroupBallNum aa = ManageDataBase::Share()->GetNearDataByIndex(1);
-	//GetDlgItem(IDC_SHOW_MESSAGE)->SetWindowText(aa.toCString());
-	//for (int i = 0; i < 20; i++)
-	{
-		m_reShowMessage.SetSel(-1, -1);
-		CString text("current\n");
-		text.Append(aa.toCString());
-		text.Append(_T("\n"));
-		m_reShowMessage.ReplaceSel(text);
-		
-	}
-	{
-		std::string strMisData = ManageDataBase::Share()->GetMissData();
-		m_reShowMessage.SetSel(-1, -1);
-		CString text(strMisData.c_str());
-		m_reShowMessage.ReplaceSel(text);
-	}
+	ManageDataBase::Share()->InitDataBase(this);
+	GroupBallNum mNumData = ManageDataBase::Share()->GetNearDataByIndex(1);
+	std::string text("current\n");
+	text.append(mNumData.toStdstring());
+	InsertMsg(text);
+	InsertMsg(ManageDataBase::Share()->GetMissData());
 	
 // 	m_reShowMessage.LineScroll(2);
 // 	m_reShowMessage.SetSel(-1, -1);
@@ -140,7 +134,7 @@ BOOL CBallNumDlg::OnInitDialog()
 // 	text.Append(aa.toCString());
 // 	text.Append(_T("\n"));
 // 	m_reShowMessage.ReplaceSel(text);
-	m_reShowMessage.PostMessage(WM_VSCROLL, SB_BOTTOM, 0);
+	//m_reShowMessage.PostMessage(WM_VSCROLL, SB_BOTTOM, 0);
 	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -211,41 +205,37 @@ int CBallNumDlg::CalculateIdByTime()
 
 void CBallNumDlg::OnBnClickedOk()
 {
-	/*_finddata_t FileInfo;
 
-	string folderPath("C:\\Users\\jouris\\Documents\\fileTest\\*");
-	long Handle = _findfirst(folderPath.c_str(), &FileInfo);
-	
-// 	do
-// 	{
-// 		if (FileInfo.attrib & _A_SUBDIR)
-// 		{
-// 			if ((strcmp(FileInfo.name, ".") != 0) && (strcmp(FileInfo.name, "..") != 0))
-// 			{
-// 				string newPath = folderPath + "\\" + FileInfo.name;
-// 				dfsFolder(newPath, vecFilePath, errFileCount);
-// 			}
-// 		}
-// 	}
-	
-	while (1)
-	{
-		long result = _findnext(Handle, &FileInfo);
-
-		if (result==-1)
-			break;
-	}
-	*/
 	CDialogEx::OnOK();
 }
 
 
 void CBallNumDlg::OnBnClickedInsert()
 {
-	InsertDailog  aa;
-	aa.DoModal();
+	UpdateData(true);
+	std::string strMsg("Insert Failed.");
+	if (m_cstrText.IsEmpty())
+		return;
+
+	GroupBallNum data;
+	data.Parsing(m_cstrText.GetBuffer());
+	if (ManageDataBase::Share()->InsertData(data))
+	{
+		strMsg = "Insert success.\n";
+		strMsg.append(data.toStdstring());
+		strMsg.append("\n");
+		strMsg.append(ManageDataBase::Share()->GetMissData());
+	}
+	else
+	{
+		strMsg.append("\n");
+		strMsg.append(ManageDataBase::Share()->GetLastError());
+	}
+
+	m_cstrText = "";
+	UpdateData(FALSE);
 	
-	// TODO:  在此添加控件通知处理程序代码
+	InsertMsg(strMsg);
 }
 
 
@@ -258,3 +248,135 @@ void CBallNumDlg::OnEnChangeRicheditMgs()
 
 	// TODO:  在此添加控件通知处理程序代码
 }
+
+
+void CBallNumDlg::OnBnClickedCleanMsg()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	CleanUpMsg();
+}
+
+void CBallNumDlg::InsertMsg(const std::string& text)
+{
+	CString cstrText(text.c_str());
+	cstrText.Append(_T("\n"));
+	m_reShowMessage.SetSel(-1, -1);
+	m_reShowMessage.ReplaceSel(cstrText);
+	m_reShowMessage.PostMessage(WM_VSCROLL, SB_BOTTOM, 0);
+}
+
+void CBallNumDlg::CleanUpMsg()
+{
+	m_reShowMessage.SetSel(0, -1);
+	m_reShowMessage.Clear();
+	m_reShowMessage.SetWindowTextW(_T(""));
+	//m_reShowMessage.UpdateData(true);
+}
+
+void CBallNumDlg::QueryData(uint32 id)
+{
+	GroupBallNum mData=ManageDataBase::Share()->QueryDatas(id);
+	std::string strMsg("Query:\n");
+	strMsg.append(mData.toStdstring());
+	InsertMsg(strMsg);
+}
+
+void CBallNumDlg::OnBnClickedBtnQ()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	UpdateData(true);
+	if (m_cstrText.IsEmpty())
+		return;
+	uint32 id(0);
+#ifdef UNICODE
+	id = _wtoi(m_cstrText.GetBuffer());
+#else
+	id = atoi(m_cstrText.GetBuffer());
+#endif // UNICODE
+
+	QueryData(id);
+	m_cstrText = "";
+	UpdateData(FALSE);
+}
+
+
+void CBallNumDlg::OnBnClickedBtnD()
+{
+	UpdateData(true);
+	if (m_cstrText.IsEmpty())
+		return;
+
+	uint32 id(0);
+#ifdef UNICODE
+	id = _wtoi(m_cstrText.GetBuffer());
+#else
+	id = atoi(m_cstrText.GetBuffer());
+#endif // UNICODE
+
+	CString mes;
+	mes.Format(_T("Are you sure delete data[%d])"), id);
+	if (MessageBox(mes) != IDOK)
+		return;
+
+	std::string strMsg;
+	if (!ManageDataBase::Share()->DeleteData(id))
+	{
+		strMsg.append("Delete Failed : \n");
+		strMsg.append(ManageDataBase::Share()->GetLastError());
+	}
+	else
+	{
+		char szText[128] = "";
+		sprintf_s(szText, sizeof(szText), "Delete success.[%d]", id);
+		strMsg.append(szText);
+	}
+
+	m_cstrText = "";
+	UpdateData(FALSE);
+
+	InsertMsg(strMsg);
+	InsertMsg(ManageDataBase::Share()->GetMissData());
+}
+
+
+void CBallNumDlg::OnBnClickedBtnM()
+{
+	ManageDataBase::Share()->CalculateNumCount();
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+void CBallNumDlg::InsertNumMgs(const char* szTitle, uint32 src[], uint8 len)
+{
+	std::string strMgs;
+	if (szTitle)
+	{
+		strMgs.append(szTitle);
+		strMgs.append("\n");
+	}
+	
+	char szTemp[32] = "";
+	for (uint8 i = 0; i < len; ++i)
+	{
+		//memset(szTemp, 0, sizeof(szTemp));
+		sprintf_s(szTemp, sizeof(szTemp), "%d:%d\n", i + 1, src[i]);
+		strMgs.append(szTemp);
+	}
+
+	InsertMsg(strMgs);
+}
+
+// bool CBallNumDlg::InsertData(const char* szText)
+// {
+// 	GroupBallNum data;
+// 	data.Parsing(szText);
+// 	return ManageDataBase::Share()->InsertData(data);
+// }
+// 
+// bool CBallNumDlg::InsertData(const wchar_t* szText)
+// {
+// 	GroupBallNum data;
+// 	data.Parsing(szText);
+// 	return ManageDataBase::Share()->InsertData(data);
+// }
+
+
