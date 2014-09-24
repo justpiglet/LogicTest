@@ -26,6 +26,9 @@ bool GroupBallNum::Parsing(const int iNums[], uint32 count)
 	}
 	
 	mId = iNums[0];
+	if (mId > 2000000)
+		mId = mId % 100000;
+
 	for (uint32 i = 1; i < count; ++i)
 		mNumber[i - 1] = iNums[i];
 

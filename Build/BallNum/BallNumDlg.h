@@ -40,10 +40,10 @@ protected:
 
 	void QueryData(uint32);
 public:
-	void InsertMsg(const std::string&);
+	virtual void InsertMsg(const std::string&);
 	void CleanUpMsg();
 
-	void InsertNumMgs(const char* szTitle, uint32 src[], uint8 len);
+	virtual void InsertNumMgs(const char* szTitle, uint32 src[], uint8 len);
 public:
 	afx_msg void OnBnClickedInsert();
 	CRichEditCtrl m_reShowMessage;

@@ -345,6 +345,7 @@ void CBallNumDlg::OnBnClickedBtnD()
 void CBallNumDlg::OnBnClickedBtnM()
 {
 	BaseAnalysis::share()->CalculateBallCount(3);
+	BaseAnalysis::share()->AnBlueBallTrend(14);
 	//ManageDataBase::Share()->CalculateNumCount();
 	// TODO:  在此添加控件通知处理程序代码
 }
@@ -359,11 +360,18 @@ void CBallNumDlg::InsertNumMgs(const char* szTitle, uint32 src[], uint8 len)
 	}
 	
 	char szTemp[32] = "";
-	for (uint8 i = 0; i < len; ++i)
+	for (uint8 i = 1; i <= len; ++i)
 	{
-		//memset(szTemp, 0, sizeof(szTemp));
-		sprintf_s(szTemp, sizeof(szTemp), "%d:%d\n", i + 1, src[i]);
+		sprintf_s(szTemp, sizeof(szTemp), "%003d ", src[i-1]);
 		strMgs.append(szTemp);
+		if (i % 4 == 0)
+		{
+			if (i % 16 == 0)
+				strMgs.append("\n");
+			else
+				strMgs.append("  ");
+		}
+			
 	}
 
 	InsertMsg(strMgs);

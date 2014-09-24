@@ -10,7 +10,9 @@ class BaseAnalysis
 	friend class ManageDataBase;
 public:
 	static BaseAnalysis* share();
+
 	void CalculateBallCount(uint8 shortId);
+	void AnBlueBallTrend(uint8 shortId);
 private:
 	BaseAnalysis();
 	~BaseAnalysis();

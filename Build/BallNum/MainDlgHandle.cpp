@@ -23,8 +23,14 @@ void ShowMainMessage::Init(IMainDlgHandle* pHandle)
 	m_handle = pHandle;
 }
 
-void ShowMainMessage::InsertNumMgs(const char* szTitle, uint32 src[], uint8 len)
+void ShowMainMessage::InsertNumMgs(const char* szTitle, uint32 src[], uint8 len )
 {
 	if (m_handle)
 		m_handle->InsertNumMgs(szTitle, src, len);
+}
+
+void ShowMainMessage::InsertMsg(const std::string& strMsg)
+{
+	if (m_handle)
+		m_handle->InsertMsg(strMsg);
 }
