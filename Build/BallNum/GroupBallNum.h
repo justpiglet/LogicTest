@@ -9,7 +9,8 @@ enum BallColor
 };
 
 #define BALL_COUNT 7
-#define	VAILD_BALL_NUM(Index,Val) (Val<=(Index<=BallColor_Red_Max?33:16))
+#define MAX_BALL_NUM(Index) (Index<=BallColor_Red_Max?33:16)
+#define	VAILD_BALL_NUM(Index,Val) (Val<=MAX_BALL_NUM(Index))
 
 
 class GroupBallNum :public BallNum
@@ -26,7 +27,8 @@ public:
 	CString toCString(bool showTime = false)const;
 	std::string toStdstring(bool showTime=false)const;
 
-	void SetId(uint16 _id){ mId = _id; }
+	inline void SetId(uint16 _id){ mId = _id; }
+	inline uint16 GetId(){ return mId; }
 	void SetNum(uint8 index, uint8 val){ if (index < BALL_COUNT)mNumber[index] = val;}
 
 	bool ChehckNumVaild()const;

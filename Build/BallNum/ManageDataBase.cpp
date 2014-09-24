@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "ManageDataBase.h"
+#include "Analysis/BaseAnalysis.h"
 #include <string.h>
 using std::string;
 
 ManageDataBase* ManageDataBase::g_self=NULL;
 ManageDataBase::ManageDataBase() :m_pDataBase(NULL)
 {
-	m_MainHandle = NULL;
+	
 }
 
 
@@ -22,9 +23,9 @@ ManageDataBase* ManageDataBase::Share()
 	return g_self;
 }
 
-void ManageDataBase::InitDataBase(IMainDlgHandle* pMainHandle)
+void ManageDataBase::InitDataBase()
 {
-	m_MainHandle = pMainHandle;
+	
 	if (!m_pDataBase)
 		m_pDataBase = CSqliteDatabase::Create("res\\ballnumber.db", "");
 
@@ -71,14 +72,17 @@ void ManageDataBase::CheckDataBase()
 
 	m_checckVec.clear();
 	//m_pDataBase->Execute("delete from balldata where id<3001 or id >2016000");
-	CSqliteRecordSet* pdata = m_pDataBase->Execute("select id from balldata order by id ASC ");
+	CSqliteRecordSet* pdata = m_pDataBase->Execute("select id,num0,num1,num2,num3,num4,num5,num6 from balldata order by id ASC ");
 	
 	if (pdata&&pdata->IsOk())
 	{
 		int newVal(0), oldVal(0);
+		GroupBallNum tempData;
 		while (pdata->NextRow())
 		{
-			newVal = pdata->GetInt("id", 0);
+			ParsingRecord(tempData, pdata,false);
+			BaseAnalysis::share()->AddOriginData(tempData);
+			newVal = tempData.GetId();
 			if (newVal != oldVal + 1 && oldVal > 0)
 			{
 				if (newVal != ((oldVal / 1000) + 1) * 1000 + 1)
@@ -94,6 +98,9 @@ void ManageDataBase::CheckDataBase()
 			oldVal = newVal;
 		}
 	}
+
+	if (pdata)
+		pdata->Release();
 }
 
 bool ManageDataBase::InsertData(const GroupBallNum& data)
@@ -180,26 +187,27 @@ CSqliteRecordSet* ManageDataBase::Execute(const char* format, ...)
 	return m_pDataBase->Execute(szSql);
 }
 
-bool ManageDataBase::ParsingRecord(GroupBallNum& mOut,  CSqliteRecordSet* pRecord)
+bool ManageDataBase::ParsingRecord(GroupBallNum& mOut, CSqliteRecordSet* pRecord, bool check/* = true*/)
 {
-	if (pRecord && pRecord->IsOk())
+	if (check)
 	{
-		uint8 i(0);
-		char szNumName[16] = "";
-		//if (pRecord->NextRow())
-		{
-
-			mOut.SetId(pRecord->GetInt("id", 0));
-			for (i = 0; i < BALL_COUNT; ++i)
-			{
-				sprintf_s(szNumName, 16, "num%d", i);
-				mOut.SetNum(i, pRecord->GetInt(szNumName, 0));
-			}
-			return true;
-		}
+		if (!pRecord || !pRecord->IsOk())
+			return false;
+		if (!pRecord->NextRow())
+			return false;
 	}
 
-	return false;
+	uint8 i(0);
+	char szNumName[16] = "";
+	mOut.SetId(pRecord->GetInt("id", 0));
+
+	for (i = 0; i < BALL_COUNT; ++i)
+	{
+		sprintf_s(szNumName, 16, "num%d", i);
+		mOut.SetNum(i, pRecord->GetInt(szNumName, 0));
+	}
+	return true;
+
 }
 
 bool ManageDataBase::DeleteData(uint32 id)
@@ -230,7 +238,7 @@ bool ManageDataBase::GetNumList(vector<BallNum>& outList, uint32 iyear/*=-1*/)
 		GroupBallNum mBallData;
 		while (pRecord->NextRow())
 		{
-			ParsingRecord(mBallData, pRecord);
+			ParsingRecord(mBallData, pRecord,false);
 			outList.push_back(mBallData);
 		}
 	}
@@ -239,36 +247,9 @@ bool ManageDataBase::GetNumList(vector<BallNum>& outList, uint32 iyear/*=-1*/)
 	return !outList.empty();
 }
 
-void ManageDataBase::CalculateNumCount()
-{
-	uint32 redCount[33] = { 0 };
-	uint32 blueCount[16] = { 0 };
-
-	vector<BallNum> outList;
-	if (GetNumList(outList, 2003))
-	{
-		vector<BallNum>::iterator itor = outList.begin(),itor_end=outList.end();
-		uint8 index(0);
-		BallNum mTemp;
-		for (; itor != itor_end; ++itor)
-		{
-			mTemp = *itor;
-			for (index = 0; index < BALL_COUNT; ++index)
-			{
-				if (index > BallColor_Red_Max)
-				{
-					blueCount[mTemp.mNumber[index] - 1] +=1;
-				}
-				else
-				{
-					redCount[mTemp.mNumber[index] - 1] += 1;
-				}
-			}
-		}
-	}
-
-	m_MainHandle->InsertNumMgs("Red ball Datas.", redCount,33);
-	m_MainHandle->InsertNumMgs("Bue ball Datas.", blueCount, 16);
-}
+// void ManageDataBase::CalculateNumCount()
+// {
+// 	
+// }
 
 

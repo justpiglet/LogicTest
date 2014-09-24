@@ -4,17 +4,20 @@
 #include <list>
 
 typedef std::list<BallNum> LIST_BallNums;
-typedef std::map<uint32, LIST_BallNums> MAP_BallNums;
+typedef std::map<uint8, LIST_BallNums> MAP_BallNums;
 class BaseAnalysis
 {
+	friend class ManageDataBase;
 public:
-	BaseAnalysis* share();
+	static BaseAnalysis* share();
+	void CalculateBallCount(uint8 shortId);
 private:
 	BaseAnalysis();
 	~BaseAnalysis();
-
+protected:
+	void AddOriginData(const BallNum& );
 private:
 	static BaseAnalysis* m_gSelf;
 
-	MAP_BallNums m_mapGroupNums;
+	MAP_BallNums m_mapData;
 };

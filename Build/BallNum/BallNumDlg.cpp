@@ -8,6 +8,7 @@
 #include "afxdialogex.h"
 #include <time.h>
 #include "ManageDataBase.h"
+#include "Analysis/BaseAnalysis.h"
 #include<io.h>
 #include<stdio.h>
 
@@ -121,7 +122,9 @@ BOOL CBallNumDlg::OnInitDialog()
 	pf2.bLineSpacingRule = 4;
 	m_reShowMessage.SetParaFormat(pf2);
 
-	ManageDataBase::Share()->InitDataBase(this);
+	ManageDataBase::Share()->InitDataBase();
+	ShowMainMessage::share()->Init(this);
+
 	GroupBallNum mNumData = ManageDataBase::Share()->GetNearDataByIndex(1);
 	std::string text("current\n");
 	text.append(mNumData.toStdstring());
@@ -341,7 +344,8 @@ void CBallNumDlg::OnBnClickedBtnD()
 
 void CBallNumDlg::OnBnClickedBtnM()
 {
-	ManageDataBase::Share()->CalculateNumCount();
+	BaseAnalysis::share()->CalculateBallCount(3);
+	//ManageDataBase::Share()->CalculateNumCount();
 	// TODO:  在此添加控件通知处理程序代码
 }
 
