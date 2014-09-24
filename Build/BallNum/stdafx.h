@@ -39,8 +39,8 @@
 
 struct BallNum
 {
-	uint32 id;
-	uint32 number[7];
+	uint16 mId;
+	uint8 mNumber[7];
 };
 
 #ifdef _UNICODE

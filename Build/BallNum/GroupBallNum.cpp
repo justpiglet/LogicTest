@@ -14,31 +14,34 @@ GroupBallNum::~GroupBallNum()
 
 void GroupBallNum::Reset()
 {
- 	id = 0;
- 	memset(number, 0, sizeof(number));
+	mId = 0;
+	memset(mNumber, 0, sizeof(mNumber));
 }
-
-bool GroupBallNum::Parsing(const char* szText)
+bool GroupBallNum::Parsing(const int iNums[], uint32 count)
 {
-	int result = sscanf_s(szText, "%d,%d,%d,%d,%d,%d,%d,%d", &id, &number[0], &number[1], &number[2], &number[3], &number[4], &number[5], &number[6]);
-	if (result != BALL_COUNT+1)
+	if (BALL_COUNT + 1 != count)
 	{
 		Reset();
 		return false;
 	}
-	else
-		return  true;
+	
+	mId = iNums[0];
+	for (uint32 i = 1; i < count; ++i)
+		mNumber[i - 1] = iNums[i];
+
+	return true;
+}
+bool GroupBallNum::Parsing(const char* szText)
+{
+	int tempArr[8] = {0};
+	int result = sscanf_s(szText, "%d,%d,%d,%d,%d,%d,%d,%d", &tempArr[0], &tempArr[1], &tempArr[2], &tempArr[3], &tempArr[4], &tempArr[5], &tempArr[6], &tempArr[7]);
+	return Parsing(tempArr, result);	
 }
 bool GroupBallNum::Parsing(const wchar_t* szText)
 {
-	int result = swscanf_s(szText, _T("%d,%d,%d,%d,%d,%d,%d,%d"), &id, &number[0], &number[1], &number[2], &number[3], &number[4], &number[5], &number[6]);
-	if (result != BALL_COUNT+1)
-	{
-		Reset();
-		return false;
-	}
-	else
-		return  true;
+	int tempArr[8] = { 0 };
+	int result = swscanf_s(szText, _T("%d,%d,%d,%d,%d,%d,%d,%d"), &tempArr[0], &tempArr[1], &tempArr[2], &tempArr[3], &tempArr[4], &tempArr[5], &tempArr[6], &tempArr[7]);
+	return Parsing(tempArr, result);
 }
 CString GroupBallNum::toCString(bool showTime/* = false*/)const
 {
@@ -47,9 +50,9 @@ CString GroupBallNum::toCString(bool showTime/* = false*/)const
 		return res;
 
 	if (showTime)
-		res.Format(_T("%d,%d,%d,%d,%d,%d,%d,%d"), id, number[0], number[1], number[2], number[3], number[4], number[5], number[6]);
+		res.Format(_T("%d,%d,%d,%d,%d,%d,%d,%d"), mId, mNumber[0], mNumber[1], mNumber[2], mNumber[3], mNumber[4], mNumber[5], mNumber[6]);
 	else
-		res.Format(_T("%d,%d,%d,%d,%d,%d,%d"), id, number[0], number[1], number[2], number[3], number[4], number[5]);
+		res.Format(_T("%d,%d,%d,%d,%d,%d,%d"), mId, mNumber[0], mNumber[1], mNumber[2], mNumber[3], mNumber[4], mNumber[5], mNumber[6]);
 	return res;
 }
 
@@ -58,15 +61,15 @@ bool GroupBallNum::ChehckNumVaild()const
 	time_t nowTime = time(NULL);
 	tm tmNowTime;
 	localtime_s(&tmNowTime, &nowTime);
-	if (id<2014001 || id>(tmNowTime.tm_year + 1900 + 1) * 1000)
+	if (mId<14001 || mId>(tmNowTime.tm_year -100 + 1) * 1000)
 		return false;
 	
 	for (uint8 i = 0; i < BALL_COUNT; ++i)
 	{
-		if (!VAILD_BALL_NUM(i,number[i]))
+		if (!VAILD_BALL_NUM(i, mNumber[i]))
 			return false;
 		
-		if (i > 0 && i<BALL_COUNT-1 && number[i] <= number[i - 1])
+		if (i > 0 && i<BALL_COUNT - 1 && mNumber[i] <= mNumber[i - 1])
 			return false;
 
 	}
@@ -80,9 +83,9 @@ std::string GroupBallNum::toStdstring(bool showTime/* = false*/)const
 		return std::string();
 	char szOut[256] = "";
 	if (showTime)
-		sprintf_s(szOut, sizeof(szOut), "%d,%d,%d,%d,%d,%d,%d,%d,%d", id, number[0], number[1], number[2], number[3], number[4], number[5], number[6], time(NULL));
+		sprintf_s(szOut, sizeof(szOut), "%d,%d,%d,%d,%d,%d,%d,%d,%d", mId, mNumber[0], mNumber[1], mNumber[2], mNumber[3], mNumber[4], mNumber[5], mNumber[6], time(NULL));
 	else
-		sprintf_s(szOut, sizeof(szOut), "%d,%d,%d,%d,%d,%d,%d,%d", id, number[0], number[1], number[2], number[3], number[4], number[5], number[6]);
+		sprintf_s(szOut, sizeof(szOut), "%d,%d,%d,%d,%d,%d,%d,%d", mId, mNumber[0], mNumber[1], mNumber[2], mNumber[3], mNumber[4], mNumber[5], mNumber[6]);
 	return std::string(szOut);
 }
 

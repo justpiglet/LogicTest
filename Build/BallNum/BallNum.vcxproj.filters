@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Analysis">
+      <UniqueIdentifier>{0575ec06-6bf1-4a74-950a-7d08c417e5a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -42,6 +45,9 @@
     <ClInclude Include="MainDlgHandle.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Analysis\BaseAnalysis.h">
+      <Filter>Analysis</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BallNum.cpp">
@@ -58,6 +64,9 @@
     </ClCompile>
     <ClCompile Include="GroupBallNum.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Analysis\BaseAnalysis.cpp">
+      <Filter>Analysis</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

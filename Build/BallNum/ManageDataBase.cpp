@@ -67,8 +67,10 @@ void ManageDataBase::CheckDataBase()
 	if (!m_pDataBase)
 		return;
 
+	//m_pDataBase->Execute("update balldata set id=id%100000");
+
 	m_checckVec.clear();
-	m_pDataBase->Execute("delete from balldata where id<2000000 or id >2016000");
+	//m_pDataBase->Execute("delete from balldata where id<3001 or id >2016000");
 	CSqliteRecordSet* pdata = m_pDataBase->Execute("select id from balldata order by id ASC ");
 	
 	if (pdata&&pdata->IsOk())
@@ -255,11 +257,11 @@ void ManageDataBase::CalculateNumCount()
 			{
 				if (index > BallColor_Red_Max)
 				{
-					blueCount[mTemp.number[index] - 1] +=1;
+					blueCount[mTemp.mNumber[index] - 1] +=1;
 				}
 				else
 				{
-					redCount[mTemp.number[index] - 1] += 1;
+					redCount[mTemp.mNumber[index] - 1] += 1;
 				}
 			}
 		}

@@ -112,6 +112,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Analysis\BaseAnalysis.h" />
     <ClInclude Include="BallNum.h" />
     <ClInclude Include="BallNumDlg.h" />
     <ClInclude Include="GroupBallNum.h" />
@@ -122,6 +123,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Analysis\BaseAnalysis.cpp" />
     <ClCompile Include="BallNum.cpp" />
     <ClCompile Include="BallNumDlg.cpp" />
     <ClCompile Include="GroupBallNum.cpp" />
