@@ -169,7 +169,7 @@ bool CaAttributeManage::LoadAttributeJason(const char* filePath )
 		}
 	}
 
-	//_CANNP_NAME::files::WriteFileRapidJson("../resource/xxx.json", document);
+	_CANNP_NAME::files::WriteFileRapidJson("../resource/xxx.json", document);
 	return true;
 }
 

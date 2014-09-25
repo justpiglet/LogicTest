@@ -73,7 +73,9 @@ void BaseAnalysis::AnBlueBallTrend(uint8 shortId)
 		return;
 
 	char strText[64] = "";
+	char strText2[64] = "";
 	std::string strMsg;
+	std::string strMsg2;
 	LIST_BallNums::iterator itor_begin = groupData.begin(), itor_end = groupData.end();
 	
 	uint8 index(0),iBallIndex(6), iFirstNum(itor_begin->mNumber[iBallIndex]), iLastVal(iFirstNum);
@@ -86,21 +88,26 @@ void BaseAnalysis::AnBlueBallTrend(uint8 shortId)
 		if (minusVal == 0)
 		{
 			strMsg.append(" 000");
+			strMsg2.append(strText2);
 		}
 		else
 		{
+			iPlus += minusVal;
 			if (minusVal > 0)
 				sprintf_s(strText, sizeof(strText), " +%02d\0", minusVal);
 			else
 				sprintf_s(strText, sizeof(strText), "  -%02d\0", -minusVal);
 
 			strMsg.append(strText);
+
+			sprintf_s(strText2, sizeof(strText2), " %02d\0", iPlus);
+			strMsg2.append(strText2);
 		}
 		
-		iPlus += minusVal;
 		if (++index >= 16)
 		{
 			strMsg.append("\n");
+			strMsg2.append("\n");
 			index = 0;
 		}
 	}
@@ -108,6 +115,9 @@ void BaseAnalysis::AnBlueBallTrend(uint8 shortId)
 	sprintf_s(strText, sizeof(strText), "Plus val id(%02d)first(%02d)offset(%d) :\n\0", shortId,iFirstNum, iPlus);
 	strMsg.insert(0,strText);
 	ShowMainMessage::share()->InsertMsg(strMsg);
+
+	strMsg2.insert(0, "Help Data.\n");
+	ShowMainMessage::share()->InsertMsg(strMsg2);
 }
 
 

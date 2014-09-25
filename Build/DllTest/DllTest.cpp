@@ -82,7 +82,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	TCHAR textName[128]=_T("");
 	int nn[128]={0};
 
-	wsprintf(textName, _T("../libraries/%s"), DLLName);
+	wsprintf(textName, _T("../../libraries/%s"), DLLName);
 	HINSTANCE hDLL = LoadLibrary(textName);
 	if (hDLL)
 	{
