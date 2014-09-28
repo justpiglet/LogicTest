@@ -3,7 +3,7 @@
 #include "../MainDlgHandle.h"
 #include "../GroupBallNum.h"
 BaseAnalysis* BaseAnalysis::m_gSelf=NULL;
-BaseAnalysis::BaseAnalysis() 
+BaseAnalysis::BaseAnalysis() :m_minID(0), m_maxID(0)
 {
 }
 
@@ -21,30 +21,46 @@ BaseAnalysis* BaseAnalysis::share()
 
 void BaseAnalysis::AddOriginData(const BallNum& srcData)
 {
+	m_listData.push_back(srcData);
+	LIST_BallNums::iterator itor_last = m_listData.end();
+	
 	uint8 shortId = srcData.mId / 1000;
-	MAP_BallNums::iterator itor = m_mapData.find(shortId);
-	if (itor == m_mapData.end())
+	if (m_minID == 0)
+		m_minID = shortId;
+
+	if (m_minID > shortId)
+		m_minID = shortId;
+	else if (m_maxID < shortId)
+		m_maxID = shortId;
+		 
+	MAP_LINSTINDEX::iterator itor = m_mapSectionIndex.find(shortId);
+	if (itor == m_mapSectionIndex.end())
 	{
-		LIST_BallNums newGroup;
-		newGroup.push_back(srcData);
-		m_mapData.insert(std::make_pair(shortId, newGroup));
+		LISTINDEX newIndex;
+		newIndex.mItor_end = itor_last--;
+		newIndex.mItor_begin = itor_last;
+		m_mapSectionIndex.insert(std::make_pair(shortId, newIndex));
+
+		MAP_LINSTINDEX::iterator itor_before = m_mapSectionIndex.find(shortId - 1);
+		if (itor_before != m_mapSectionIndex.end())
+			itor_before->second.mItor_end = newIndex.mItor_begin;
 	}
 	else
 	{
-		itor->second.push_back(srcData);
+		//itor->second.mItor_end = itor_last;
 	}
 }
 
-void BaseAnalysis::CalculateBallCount(uint8 shortId)
+void BaseAnalysis::CalculateBallCount(uint8 shortId, uint8 count/* = 1*/)
 {
 	uint32 redCount[33] = { 0 };
 	uint32 blueCount[16] = { 0 };
-	MAP_BallNums::iterator itor = m_mapData.find(shortId);
-	if (itor == m_mapData.end())
+	LISTINDEX mIndexInfo = CalculateListIndex(shortId, count);
+	if (!mIndexInfo.isOk)
 		return;
-	LIST_BallNums& groupData = itor->second;
-	LIST_BallNums::iterator itor_begin = groupData.begin(), itor_end = groupData.end();
+	LIST_BallNums::iterator itor_begin = mIndexInfo.mItor_begin, itor_end = mIndexInfo.mItor_end;
 	uint8 index(0);
+	//uint32 nCount(0);
 	for (; itor_begin != itor_end; ++itor_begin)
 	{
 		for (index = 0; index < BALL_COUNT; ++index)
@@ -54,6 +70,12 @@ void BaseAnalysis::CalculateBallCount(uint8 shortId)
 			else
 				redCount[itor_begin->mNumber[index] - 1] += 1;
 		}
+		//nCount += 1;
+		//TRACE("%d--CalculateBallCount mid=%d \n", nCount, itor_begin->mId);
+		//uint8 nTemp = itor_begin->mId / 1000;
+		
+		//if (shortId != nTemp)
+			//ASSERT(false);
 	}
 
 
@@ -61,23 +83,20 @@ void BaseAnalysis::CalculateBallCount(uint8 shortId)
 	ShowMainMessage::share()->InsertNumMgs("Bue ball Datas.", blueCount, MAX_BALL_NUM(BallColor_Blue));
 }
 
-void BaseAnalysis::AnBlueBallTrend(uint8 shortId)
+void BaseAnalysis::AnBlueBallTrend(uint8 shortId, uint8 count/* = 1*/)
 {
 	//std::list<int8> outs;
 	int32 iPlus(0);
-	MAP_BallNums::iterator itor = m_mapData.find(shortId);
-	if (itor == m_mapData.end())
-		return;
-	LIST_BallNums& groupData = itor->second;
-	if (groupData.empty())
-		return;
-
 	char strText[64] = "";
 	char strText2[64] = "";
 	std::string strMsg;
 	std::string strMsg2;
-	LIST_BallNums::iterator itor_begin = groupData.begin(), itor_end = groupData.end();
-	
+
+	LISTINDEX mIndexInfo = CalculateListIndex(shortId, count);
+	if (!mIndexInfo.isOk)
+		return;
+	LIST_BallNums::iterator itor_begin = mIndexInfo.mItor_begin, itor_end = mIndexInfo.mItor_end;
+
 	uint8 index(0),iBallIndex(6), iFirstNum(itor_begin->mNumber[iBallIndex]), iLastVal(iFirstNum);
 	int8  minusVal(0);
 	
@@ -118,6 +137,37 @@ void BaseAnalysis::AnBlueBallTrend(uint8 shortId)
 
 	strMsg2.insert(0, "Help Data.\n");
 	ShowMainMessage::share()->InsertMsg(strMsg2);
+}
+
+LISTINDEX BaseAnalysis::CalculateListIndex(uint8 _beginId, uint8 count)
+{
+	LISTINDEX mlistLindex;
+	if (_beginId == 255)
+	{
+		mlistLindex.isOk = true;
+		mlistLindex.mItor_begin = m_listData.begin();
+		mlistLindex.mItor_end = m_listData.end();
+	}
+	else
+	{
+		uint8 beginID = max(m_minID,min(_beginId,m_maxID));
+		uint8 endID = beginID;
+		if (count>1)
+			endID=max(m_minID, min(_beginId + count - 1, m_maxID));
+
+		if (beginID == 0 || endID == 0)
+			return mlistLindex;
+
+		MAP_LINSTINDEX::iterator itor_1 = m_mapSectionIndex.find(beginID);
+		MAP_LINSTINDEX::iterator itor_2 = m_mapSectionIndex.find(endID);
+		assert(itor_1 != m_mapSectionIndex.end());
+		assert(itor_2 != m_mapSectionIndex.end());
+		mlistLindex.isOk = true;
+		mlistLindex.mItor_begin = itor_1->second.mItor_begin;
+		mlistLindex.mItor_end = itor_2->second.mItor_end;
+		return mlistLindex;
+	}
+	return mlistLindex;
 }
 
 
