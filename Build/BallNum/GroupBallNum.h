@@ -33,5 +33,8 @@ public:
 
 	bool ChehckNumVaild()const;
 	bool IsEmpty()const{ return mId <= 0; }
+
+	void operator= (const GroupBallNum& other);
+	
 };
 

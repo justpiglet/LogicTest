@@ -48,6 +48,15 @@
     <ClInclude Include="Analysis\BaseAnalysis.h">
       <Filter>Analysis</Filter>
     </ClInclude>
+    <ClInclude Include="YearSetDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MainDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="functionDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BallNumDlg.cpp">
@@ -68,8 +77,17 @@
     <ClCompile Include="MainDlgHandle.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="YearSetDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MainDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="BallNum.cpp">
-      <Filter>头文件</Filter>
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="functionDlg.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

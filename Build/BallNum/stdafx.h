@@ -43,6 +43,29 @@ struct BallNum
 	uint8 mNumber[7];
 };
 
+struct  YearInfo
+{
+	uint8 mSYear;
+	uint8 mCount;
+	YearInfo() :mSYear(3), mCount(1)
+	{
+	}
+	YearInfo(uint8 id,uint8 count=1) :mSYear(id), mCount(count)
+	{
+
+	}
+	uint8 EndYear()const
+	{
+		return mSYear + mCount - 1;
+	}
+	std::string GetStringInterval()const
+	{
+		char szYear[32]="";
+		sprintf_s(szYear, sizeof(szYear), "20%02d-20%02d", mSYear, EndYear());
+		return std::string(szYear);
+	}
+};
+
 #ifdef _UNICODE
 #if defined _M_IX86
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")

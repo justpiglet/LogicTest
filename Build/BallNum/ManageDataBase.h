@@ -14,10 +14,10 @@ public:
 	static ManageDataBase* Share();
 
 	void InitDataBase();
-	GroupBallNum GetNearDataByIndex(uint32 index);
+	bool GetNearDataByIndex(uint32 index, GroupBallNum& out);
 	bool InsertData(const GroupBallNum& data);
 	std::string GetMissData();
-	GroupBallNum QueryDatas(uint32);
+	bool QueryDatas(uint32, GroupBallNum&);
 	bool ModifyData(const GroupBallNum& data);
 	bool DeleteData(uint32);
 

@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "BallNum.h"
+#include "MainDlg.h"
 #include "BallNumDlg.h"
 
 #ifdef _DEBUG
@@ -71,13 +72,16 @@ BOOL CBallNumApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 
+	MainDlg mDlg;
+	if (mDlg.DoModal() != IDOK)
+		return FALSE;
+
 	CBallNumDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)
 	{
-		// TODO:  在此放置处理何时用
-		//  “确定”来关闭对话框的代码
+
 	}
 	else if (nResponse == IDCANCEL)
 	{

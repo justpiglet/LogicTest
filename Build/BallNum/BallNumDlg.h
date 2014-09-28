@@ -5,14 +5,15 @@
 #pragma once
 #include "afxcmn.h"
 #include "MainDlgHandle.h"
-
+#include "MainDlg.h"
+#include "functionDlg.h"
 // CBallNumDlg 对话框
 class CBallNumDlg : public CDialogEx,public IMainDlgHandle
 {
 // 构造
 public:
 	CBallNumDlg(CWnd* pParent = NULL);	// 标准构造函数
-
+	~CBallNumDlg();
 // 对话框数据
 	enum { IDD = IDD_BALLNUM_DIALOG };
 
@@ -35,6 +36,7 @@ public:
 
 protected:
 	int CalculateIdByTime();
+	void OpenAnalysisDlg(bool isRed=true);
 	//bool InsertData(const char* szText);
 	//bool InsertData(const wchar_t* szText);
 
@@ -44,13 +46,19 @@ public:
 	void CleanUpMsg();
 
 	virtual void InsertNumMgs(const char* szTitle, uint32 src[], uint8 len);
-public:
+protected:
 	afx_msg void OnBnClickedInsert();
-	CRichEditCtrl m_reShowMessage;
+	
 	afx_msg void OnEnChangeRicheditMgs();
 	afx_msg void OnBnClickedCleanMsg();
-	CString m_cstrText;
+	
 	afx_msg void OnBnClickedBtnQ();
 	afx_msg void OnBnClickedBtnD();
 	afx_msg void OnBnClickedBtnM();
+	afx_msg void OnBnClickedRedDlg();
+	afx_msg void OnBnClickedBuleDlg();
+private:
+	CRichEditCtrl m_reShowMessage;
+	CString m_cstrText;
+	functionDlg* m_pFunctionDlg;
 };

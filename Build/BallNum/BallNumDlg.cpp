@@ -11,7 +11,8 @@
 #include "Analysis/BaseAnalysis.h"
 #include<io.h>
 #include<stdio.h>
-
+#include "YearSetDlg.h"
+#include "functionDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -57,8 +58,15 @@ CBallNumDlg::CBallNumDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CBallNumDlg::IDD, pParent)
 	, m_cstrText(_T(""))
 {
+	m_pFunctionDlg = NULL;
 	AfxInitRichEdit2();
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+}
+
+CBallNumDlg::~CBallNumDlg()
+{
+	if (m_pFunctionDlg)
+		delete m_pFunctionDlg;
 }
 
 void CBallNumDlg::DoDataExchange(CDataExchange* pDX)
@@ -79,6 +87,8 @@ BEGIN_MESSAGE_MAP(CBallNumDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_Q, &CBallNumDlg::OnBnClickedBtnQ)
 	ON_BN_CLICKED(IDC_BTN_D, &CBallNumDlg::OnBnClickedBtnD)
 	ON_BN_CLICKED(IDC_BTN_M, &CBallNumDlg::OnBnClickedBtnM)
+	ON_BN_CLICKED(IDC_RED_DLG, &CBallNumDlg::OnBnClickedRedDlg)
+	ON_BN_CLICKED(IDC_BULE_DLG, &CBallNumDlg::OnBnClickedBuleDlg)
 END_MESSAGE_MAP()
 
 
@@ -115,17 +125,18 @@ BOOL CBallNumDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 
-	PARAFORMAT2 pf2;
-	pf2.cbSize = sizeof(PARAFORMAT2);
-	pf2.dwMask = PFM_LINESPACING | PFM_SPACEAFTER;
-	pf2.dyLineSpacing = 230;
-	pf2.bLineSpacingRule = 4;
-	m_reShowMessage.SetParaFormat(pf2);
+// 	PARAFORMAT2 pf2;
+// 	pf2.cbSize = sizeof(PARAFORMAT2);
+// 	pf2.dwMask = PFM_LINESPACING | PFM_SPACEAFTER;
+// 	pf2.dyLineSpacing = 23;
+// 	pf2.bLineSpacingRule = 4;
+// 	m_reShowMessage.SetParaFormat(pf2);
 
 	ManageDataBase::Share()->InitDataBase();
 	ShowMainMessage::share()->Init(this);
 
-	GroupBallNum mNumData = ManageDataBase::Share()->GetNearDataByIndex(1);
+	GroupBallNum mNumData;
+	ManageDataBase::Share()->GetNearDataByIndex(1, mNumData);
 	std::string text("current\n");
 	text.append(mNumData.toStdstring());
 	InsertMsg(text);
@@ -138,6 +149,12 @@ BOOL CBallNumDlg::OnInitDialog()
 // 	text.Append(_T("\n"));
 // 	m_reShowMessage.ReplaceSel(text);
 	//m_reShowMessage.PostMessage(WM_VSCROLL, SB_BOTTOM, 0);
+	
+// 	m_pMainDlg = new MainDlg;
+// 	m_pMainDlg->SetRelationWnd(this);
+// 	m_pMainDlg->Create(IDD_MAIN_DLG, NULL);
+// 	m_pMainDlg->ShowWindow(SW_SHOW);
+
 	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -278,7 +295,8 @@ void CBallNumDlg::CleanUpMsg()
 
 void CBallNumDlg::QueryData(uint32 id)
 {
-	GroupBallNum mData=ManageDataBase::Share()->QueryDatas(id);
+	GroupBallNum mData;
+	ManageDataBase::Share()->QueryDatas(id, mData);
 	std::string strMsg("Query:\n");
 	strMsg.append(mData.toStdstring());
 	InsertMsg(strMsg);
@@ -344,8 +362,7 @@ void CBallNumDlg::OnBnClickedBtnD()
 
 void CBallNumDlg::OnBnClickedBtnM()
 {
-	BaseAnalysis::share()->CalculateBallCount(3);
-	BaseAnalysis::share()->AnBlueBallTrend(14);
+	
 	//ManageDataBase::Share()->CalculateNumCount();
 	// TODO:  在此添加控件通知处理程序代码
 }
@@ -392,3 +409,41 @@ void CBallNumDlg::InsertNumMgs(const char* szTitle, uint32 src[], uint8 len)
 // }
 
 
+
+
+void CBallNumDlg::OnBnClickedRedDlg()
+{
+	//OpenAnalysisDlg(true);
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+
+void CBallNumDlg::OnBnClickedBuleDlg()
+{
+	OpenAnalysisDlg(false);
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+void CBallNumDlg::OpenAnalysisDlg(bool isRed/*=true*/)
+{
+	if (!m_pFunctionDlg)
+	{
+		YearSetDlg yearSet;
+		if (yearSet.DoModal() != IDOK)
+			return;
+
+		m_pFunctionDlg = new functionDlg;
+		YearInfo mInfo = yearSet.GetYearIfo();
+		m_pFunctionDlg->SetYearInfo(mInfo);
+		m_pFunctionDlg->Create(IDD_FUNCTION_DLG, NULL);
+		m_pFunctionDlg->UpdateTitle();
+	}
+	CRect rc;
+	GetWindowRect(&rc);
+	//ClientToScreen(rc);
+
+	CRect dlgRc;
+	m_pFunctionDlg->GetWindowRect(&dlgRc);
+	m_pFunctionDlg->SetWindowPos(this, rc.right + 10, rc.top, dlgRc.Width(), dlgRc.Height(), SWP_SHOWWINDOW);
+	m_pFunctionDlg->ShowWindow(SW_SHOW);
+}

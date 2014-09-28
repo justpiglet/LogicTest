@@ -27,40 +27,23 @@ void ManageDataBase::InitDataBase()
 {
 	
 	if (!m_pDataBase)
-		m_pDataBase = CSqliteDatabase::Create("res\\ballnumber.db", "");
+		m_pDataBase = CSqliteDatabase::Create("../BallNum/res/ballnumber.db", "");
 
 	CheckDataBase();
 }
 
-GroupBallNum ManageDataBase::GetNearDataByIndex(uint32 index)
+bool ManageDataBase::GetNearDataByIndex(uint32 index, GroupBallNum& out)
 {
 	if (!m_pDataBase)
-		return GroupBallNum();
+		return false;
 
 	char sztext[256] = "";
 	sprintf_s(sztext, sizeof(sztext), "select * from (select * from balldata order by id DESC limit %d) order by id ASC limit 1", index);
 	CSqliteRecordSet* pdata = m_pDataBase->Execute(sztext);
 
-	GroupBallNum mballNumber;
-	ParsingRecord(mballNumber, pdata);
-// 	if (pdata && pdata->IsOk())
-// 	{
-// 		uint8 i(0);
-// 		char szNumName[16] = "";
-// 		if (pdata->NextRow())
-// 		{
-// 
-// 			mballNumber.SetId(pdata->GetInt("id", 0));
-// 			for (i = 0; i < BALL_COUNT; ++i)
-// 			{
-// 				sprintf_s(szNumName, 16, "num%d", i);
-// 				mballNumber.SetNum(i,pdata->GetInt(szNumName, 0));
-// 			}
-// 		}
-// 	}
+	ParsingRecord(out, pdata);
 	pdata->Release();
-
-	return mballNumber;
+	return true;
 }
 
 void ManageDataBase::CheckDataBase()
@@ -146,17 +129,17 @@ std::string ManageDataBase::GetMissData()
 	return std::string(szTemp).append(strMissData);
 }
 
-GroupBallNum ManageDataBase::QueryDatas(uint32 id)
+bool ManageDataBase::QueryDatas(uint32 id, GroupBallNum& out)
 {
-	GroupBallNum mData;
+	
 	CSqliteRecordSet* pRecord = Execute("select * from balldata where id=%d", id);
 	if (pRecord)
 	{
-		ParsingRecord(mData, pRecord);
+		ParsingRecord(out, pRecord);
 		pRecord->Release();
 	}
 	
-	return mData;
+	return pRecord!=NULL;
 }
 
 std::string ManageDataBase::GetLastError()

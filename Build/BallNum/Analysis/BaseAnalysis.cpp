@@ -51,11 +51,14 @@ void BaseAnalysis::AddOriginData(const BallNum& srcData)
 	}
 }
 
-void BaseAnalysis::CalculateBallCount(uint8 shortId, uint8 count/* = 1*/)
+void BaseAnalysis::CalculateBallCount(const YearInfo& mYearInfo, bool isRed /*= true*/)
 {
-	uint32 redCount[33] = { 0 };
-	uint32 blueCount[16] = { 0 };
-	LISTINDEX mIndexInfo = CalculateListIndex(shortId, count);
+	uint32 numCount[33] = { 0 };
+	uint8 begin(BallColor_Red), ends(BallColor_Red_Max);
+	if (!isRed)
+		begin = ends = BallColor_Blue;
+
+	LISTINDEX mIndexInfo = CalculateListIndex(mYearInfo);
 	if (!mIndexInfo.isOk)
 		return;
 	LIST_BallNums::iterator itor_begin = mIndexInfo.mItor_begin, itor_end = mIndexInfo.mItor_end;
@@ -65,25 +68,17 @@ void BaseAnalysis::CalculateBallCount(uint8 shortId, uint8 count/* = 1*/)
 	{
 		for (index = 0; index < BALL_COUNT; ++index)
 		{
-			if (index > BallColor_Red_Max)
-				blueCount[itor_begin->mNumber[index] - 1] += 1;
-			else
-				redCount[itor_begin->mNumber[index] - 1] += 1;
+			if (index>=begin&&index<=ends)
+				numCount[itor_begin->mNumber[index] - 1] += 1;
 		}
-		//nCount += 1;
-		//TRACE("%d--CalculateBallCount mid=%d \n", nCount, itor_begin->mId);
-		//uint8 nTemp = itor_begin->mId / 1000;
-		
-		//if (shortId != nTemp)
-			//ASSERT(false);
 	}
 
-
-	ShowMainMessage::share()->InsertNumMgs("Red ball Datas.", redCount, MAX_BALL_NUM(BallColor_Red));
-	ShowMainMessage::share()->InsertNumMgs("Bue ball Datas.", blueCount, MAX_BALL_NUM(BallColor_Blue));
+	char szTitle[32] = "";
+	sprintf_s(szTitle, sizeof(szTitle), "%s ball Datas[%s].", isRed ? "Red" : "Blue", mYearInfo.GetStringInterval().c_str());
+	ShowMainMessage::share()->InsertNumMgs(szTitle, numCount, MAX_BALL_NUM(ends));
 }
 
-void BaseAnalysis::AnBlueBallTrend(uint8 shortId, uint8 count/* = 1*/)
+void BaseAnalysis::AnBlueBallTrend(const YearInfo& mYearInfo)
 {
 	//std::list<int8> outs;
 	int32 iPlus(0);
@@ -92,7 +87,7 @@ void BaseAnalysis::AnBlueBallTrend(uint8 shortId, uint8 count/* = 1*/)
 	std::string strMsg;
 	std::string strMsg2;
 
-	LISTINDEX mIndexInfo = CalculateListIndex(shortId, count);
+	LISTINDEX mIndexInfo = CalculateListIndex(mYearInfo);
 	if (!mIndexInfo.isOk)
 		return;
 	LIST_BallNums::iterator itor_begin = mIndexInfo.mItor_begin, itor_end = mIndexInfo.mItor_end;
@@ -131,7 +126,7 @@ void BaseAnalysis::AnBlueBallTrend(uint8 shortId, uint8 count/* = 1*/)
 		}
 	}
 	
-	sprintf_s(strText, sizeof(strText), "Plus val id(%02d)first(%02d)offset(%d) :\n\0", shortId,iFirstNum, iPlus);
+	sprintf_s(strText, sizeof(strText), "Plus val id(%s)first(%02d)offset(%d) :\n\0", mYearInfo.GetStringInterval().c_str(), iFirstNum, iPlus);
 	strMsg.insert(0,strText);
 	ShowMainMessage::share()->InsertMsg(strMsg);
 
@@ -139,10 +134,10 @@ void BaseAnalysis::AnBlueBallTrend(uint8 shortId, uint8 count/* = 1*/)
 	ShowMainMessage::share()->InsertMsg(strMsg2);
 }
 
-LISTINDEX BaseAnalysis::CalculateListIndex(uint8 _beginId, uint8 count)
+LISTINDEX BaseAnalysis::CalculateListIndex(const YearInfo& mYearInfo)
 {
 	LISTINDEX mlistLindex;
-	if (_beginId == 255)
+	if (mYearInfo.mSYear == 255)
 	{
 		mlistLindex.isOk = true;
 		mlistLindex.mItor_begin = m_listData.begin();
@@ -150,18 +145,18 @@ LISTINDEX BaseAnalysis::CalculateListIndex(uint8 _beginId, uint8 count)
 	}
 	else
 	{
-		uint8 beginID = max(m_minID,min(_beginId,m_maxID));
+		uint8 beginID = max(m_minID, min(mYearInfo.mSYear, m_maxID));
 		uint8 endID = beginID;
-		if (count>1)
-			endID=max(m_minID, min(_beginId + count - 1, m_maxID));
+		if (mYearInfo.mCount>1)
+			endID = max(m_minID, min(mYearInfo.EndYear(), m_maxID));
 
 		if (beginID == 0 || endID == 0)
 			return mlistLindex;
 
 		MAP_LINSTINDEX::iterator itor_1 = m_mapSectionIndex.find(beginID);
 		MAP_LINSTINDEX::iterator itor_2 = m_mapSectionIndex.find(endID);
-		assert(itor_1 != m_mapSectionIndex.end());
-		assert(itor_2 != m_mapSectionIndex.end());
+		//assert(itor_1 != m_mapSectionIndex.end());
+		//assert(itor_2 != m_mapSectionIndex.end());
 		mlistLindex.isOk = true;
 		mlistLindex.mItor_begin = itor_1->second.mItor_begin;
 		mlistLindex.mItor_end = itor_2->second.mItor_end;

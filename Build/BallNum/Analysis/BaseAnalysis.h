@@ -20,9 +20,11 @@ class BaseAnalysis
 public:
 	static BaseAnalysis* share();
 
-	void CalculateBallCount(uint8 shortId, uint8 count=1);
-	void AnBlueBallTrend(uint8 shortId, uint8 count=1);
-	LISTINDEX CalculateListIndex(uint8 beginId,uint8 count);
+	void CalculateBallCount(const YearInfo&,bool isRed=true);
+	void AnBlueBallTrend(const YearInfo&);
+	LISTINDEX CalculateListIndex(const YearInfo&);
+	inline uint8 GetMinID(){ return m_minID; }
+	inline uint8 GetMaxID(){ return m_maxID; }
 private:
 	BaseAnalysis();
 	~BaseAnalysis();

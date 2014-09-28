@@ -92,3 +92,9 @@ std::string GroupBallNum::toStdstring(bool showTime/* = false*/)const
 	return std::string(szOut);
 }
 
+void GroupBallNum::operator=(const GroupBallNum& other)
+{
+	this->mId = other.mId;
+	memcpy(this->mNumber, other.mNumber, sizeof(this->mNumber));
+}
+
