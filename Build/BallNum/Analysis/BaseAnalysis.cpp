@@ -39,6 +39,7 @@ void BaseAnalysis::AddOriginData(const BallNum& srcData)
 		LISTINDEX newIndex;
 		newIndex.mItor_end = itor_last--;
 		newIndex.mItor_begin = itor_last;
+		newIndex.mCount = 1;
 		m_mapSectionIndex.insert(std::make_pair(shortId, newIndex));
 
 		MAP_LINSTINDEX::iterator itor_before = m_mapSectionIndex.find(shortId - 1);
@@ -47,13 +48,16 @@ void BaseAnalysis::AddOriginData(const BallNum& srcData)
 	}
 	else
 	{
-		//itor->second.mItor_end = itor_last;
+		itor->second.mCount=itor->second.mCount+1;
 	}
 }
 
 void BaseAnalysis::CalculateBallCount(const YearInfo& mYearInfo, bool isRed /*= true*/)
 {
 	uint32 numCount[33] = { 0 };
+	uint32 numMaxFrequency[33] = { 0 };
+	uint32 numCurFrequency[33] = { 0 }; 
+
 	uint8 begin(BallColor_Red), ends(BallColor_Red_Max);
 	if (!isRed)
 		begin = ends = BallColor_Blue;
@@ -62,20 +66,62 @@ void BaseAnalysis::CalculateBallCount(const YearInfo& mYearInfo, bool isRed /*= 
 	if (!mIndexInfo.isOk)
 		return;
 	LIST_BallNums::iterator itor_begin = mIndexInfo.mItor_begin, itor_end = mIndexInfo.mItor_end;
-	uint8 index(0);
-	//uint32 nCount(0);
-	for (; itor_begin != itor_end; ++itor_begin)
+	uint8 index(0),i(0),indexVal(0);
+	if (isRed)
 	{
-		for (index = 0; index < BALL_COUNT; ++index)
+		for (; itor_begin != itor_end; ++itor_begin)
 		{
-			if (index>=begin&&index<=ends)
-				numCount[itor_begin->mNumber[index] - 1] += 1;
+			for (index = BallColor_Red; index <= BallColor_Red_Max; ++index)
+			{
+				indexVal = itor_begin->mNumber[index] - 1;
+				numCount[indexVal] += 1;
+				numCurFrequency[indexVal] = -1;
+			}
+
+			for (i = 0; i < 33; ++i)
+			{
+				++numCurFrequency[i];
+				if (numMaxFrequency[i] < numCurFrequency[i])
+					numMaxFrequency[i] = numCurFrequency[i];
+			}
 		}
 	}
+	else
+	{
+		for (; itor_begin != itor_end; ++itor_begin)
+		{
+			
+			indexVal = itor_begin->mNumber[BallColor_Blue] - 1;
+			numCurFrequency[indexVal] = 0;
+			numCount[indexVal] += 1;
 
-	char szTitle[32] = "";
-	sprintf_s(szTitle, sizeof(szTitle), "%s ball Datas[%s].", isRed ? "Red" : "Blue", mYearInfo.GetStringInterval().c_str());
-	ShowMainMessage::share()->InsertNumMgs(szTitle, numCount, MAX_BALL_NUM(ends));
+			for (i = 0; i < 33; ++i)
+			{
+				if (indexVal == i)
+				{
+					numCurFrequency[i] = 0;
+					continue;
+				}
+
+				++numCurFrequency[i];
+				if (numMaxFrequency[i] < numCurFrequency[i])
+					numMaxFrequency[i] = numCurFrequency[i];
+			}
+		}
+			
+	}
+	uint32 count = mIndexInfo.mCount;
+	char szTitle[256] = "";
+	sprintf_s(szTitle, sizeof(szTitle), "%s ball Datas[%s.%d].[SUM][AVG][MAX][CUR] \n", isRed ? "Red" : "Blue", mYearInfo.GetStringInterval().c_str(), count);
+	std::string str(szTitle);
+	uint32 iForCount = isRed ? 33 : 16;
+	for (i = 0; i < iForCount; ++i)
+	{
+		sprintf_s(szTitle, sizeof(szTitle), "%02d:%0004d  %0004d  %0004d  %0004d \n", i + 1, numCount[i], count / numCount[i], numMaxFrequency[i], numCurFrequency[i]);
+		str.append(szTitle);
+	}
+
+	ShowMainMessage::share()->InsertMsg(str);
 }
 
 void BaseAnalysis::AnBlueBallTrend(const YearInfo& mYearInfo)
@@ -142,6 +188,7 @@ LISTINDEX BaseAnalysis::CalculateListIndex(const YearInfo& mYearInfo)
 		mlistLindex.isOk = true;
 		mlistLindex.mItor_begin = m_listData.begin();
 		mlistLindex.mItor_end = m_listData.end();
+		mlistLindex.mCount = m_listData.size();
 	}
 	else
 	{
@@ -160,9 +207,15 @@ LISTINDEX BaseAnalysis::CalculateListIndex(const YearInfo& mYearInfo)
 		mlistLindex.isOk = true;
 		mlistLindex.mItor_begin = itor_1->second.mItor_begin;
 		mlistLindex.mItor_end = itor_2->second.mItor_end;
+
+		for (MAP_LINSTINDEX::iterator itor11 = itor_1; itor11 != itor_2; ++itor11)
+			mlistLindex.mCount += itor11->second.mCount;
+		mlistLindex.mCount += itor_2->second.mCount;
 		return mlistLindex;
 	}
 	return mlistLindex;
 }
+
+
 
 

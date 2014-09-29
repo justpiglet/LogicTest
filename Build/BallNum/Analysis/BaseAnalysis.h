@@ -9,7 +9,8 @@ struct LISTINDEX
 	bool isOk;
 	LIST_BallNums::iterator mItor_begin;
 	LIST_BallNums::iterator mItor_end;
-	LISTINDEX() :isOk(false)
+	uint32 mCount;
+	LISTINDEX() :isOk(false), mCount(0)
 	{
 	}
 };
@@ -23,6 +24,7 @@ public:
 	void CalculateBallCount(const YearInfo&,bool isRed=true);
 	void AnBlueBallTrend(const YearInfo&);
 	LISTINDEX CalculateListIndex(const YearInfo&);
+	
 	inline uint8 GetMinID(){ return m_minID; }
 	inline uint8 GetMaxID(){ return m_maxID; }
 private:
