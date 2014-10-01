@@ -57,7 +57,8 @@ void BaseAnalysis::CalculateBallCount(const YearInfo& mYearInfo, bool isRed /*= 
 	uint32 numCount[33] = { 0 };
 	uint32 numMaxFrequency[33] = { 0 };
 	uint32 numCurFrequency[33] = { 0 }; 
-
+	uint32 numAvg[33] = { 0 };
+	uint8   rate[33] = { 0 }; //0-50% 0-AVG 51-100%avg-max 100+% >max
 	uint8 begin(BallColor_Red), ends(BallColor_Red_Max);
 	if (!isRed)
 		begin = ends = BallColor_Blue;
@@ -95,7 +96,7 @@ void BaseAnalysis::CalculateBallCount(const YearInfo& mYearInfo, bool isRed /*= 
 			numCurFrequency[indexVal] = 0;
 			numCount[indexVal] += 1;
 
-			for (i = 0; i < 33; ++i)
+			for (i = 0; i < 16; ++i)
 			{
 				if (indexVal == i)
 				{
@@ -111,13 +112,33 @@ void BaseAnalysis::CalculateBallCount(const YearInfo& mYearInfo, bool isRed /*= 
 			
 	}
 	uint32 count = mIndexInfo.mCount;
-	char szTitle[256] = "";
-	sprintf_s(szTitle, sizeof(szTitle), "%s ball Datas[%s.%d].[SUM][AVG][MAX][CUR] \n", isRed ? "Red" : "Blue", mYearInfo.GetStringInterval().c_str(), count);
-	std::string str(szTitle);
 	uint32 iForCount = isRed ? 33 : 16;
 	for (i = 0; i < iForCount; ++i)
 	{
-		sprintf_s(szTitle, sizeof(szTitle), "%02d:%0004d  %0004d  %0004d  %0004d \n", i + 1, numCount[i], count / numCount[i], numMaxFrequency[i], numCurFrequency[i]);
+		if (numCount[i] == 0 || numMaxFrequency[i] == 0)
+		{
+			rate[i] = 0;
+			numAvg[i] = 0;
+		}
+		else
+		{
+			numAvg[i] = count / numCount[i];
+			if (numCurFrequency[i] < numAvg[i])
+				rate[i] = (numCurFrequency[i]*100) / numAvg[i];
+			else
+				rate[i] = 100+(numCurFrequency[i]*100) / numMaxFrequency[i];
+		}
+	}
+
+	
+	char szTitle[512] = "";
+	sprintf_s(szTitle, sizeof(szTitle), "ID[%s] (%s) count(%d).\n[ID][SUM][AVG][MAX][CUR][RATE] \n", mYearInfo.GetStringInterval().c_str(), isRed ? "Red" : "Blue", count);
+	std::string str(szTitle);
+	
+	
+	for (i = 0; i < iForCount; ++i)
+	{
+		sprintf_s(szTitle, sizeof(szTitle), "%02d:%04d  %04d  %04d  %04d %03d \n", i + 1, numCount[i], numAvg[i], numMaxFrequency[i], numCurFrequency[i],rate[i]);
 		str.append(szTitle);
 	}
 
@@ -172,7 +193,7 @@ void BaseAnalysis::AnBlueBallTrend(const YearInfo& mYearInfo)
 		}
 	}
 	
-	sprintf_s(strText, sizeof(strText), "Plus val id(%s)first(%02d)offset(%d) :\n\0", mYearInfo.GetStringInterval().c_str(), iFirstNum, iPlus);
+	sprintf_s(strText, sizeof(strText), "ID[%s] Plus val first(%02d)offset(%d) :\n\0", mYearInfo.GetStringInterval().c_str(), iFirstNum, iPlus);
 	strMsg.insert(0,strText);
 	ShowMainMessage::share()->InsertMsg(strMsg);
 
@@ -214,6 +235,48 @@ LISTINDEX BaseAnalysis::CalculateListIndex(const YearInfo& mYearInfo)
 		return mlistLindex;
 	}
 	return mlistLindex;
+}
+
+void BaseAnalysis::NumAppearance(const YearInfo& mYearInfo,uint8 num, bool isRed /*= true*/)
+{
+	LISTINDEX mIndexInfo = CalculateListIndex(mYearInfo);
+	if (!mIndexInfo.isOk)
+		return;
+	LIST_BallNums::iterator itor_Index = mIndexInfo.mItor_begin, itor_end = mIndexInfo.mItor_end;
+	std::list<uint16> listOut;
+	uint16 uCount(0);
+	uint32 amount(0);
+	for (; itor_Index != itor_end; ++itor_Index)
+	{
+		uCount += 1;
+		amount += 1;
+		if (GroupBallNum::IsNumAppear(*itor_Index, num, isRed))
+		{
+			listOut.push_back(uCount);
+			uCount = 0;
+		}	
+	}
+	char strText[256] = "";
+	sprintf_s(strText, sizeof(strText), "ID[%s],Num(%s:%02d),Amount(%d,%d) :\n\0", mYearInfo.GetStringInterval().c_str(), isRed ? "Red" : "Blue", num, amount, listOut.size());
+	std::string strMsg(strText);
+
+	if (!listOut.empty())
+	{
+		std::list<uint16>::iterator itor_u16 = listOut.begin(), itor_endu16 = listOut.end();
+		uint16 index(0);
+		for (; itor_u16 != itor_endu16; ++itor_u16, ++index)
+		{
+			if (index==0)
+				sprintf_s(strText, sizeof(strText), "%03d\0", *itor_u16);
+			else if(index%15 == 0)
+				sprintf_s(strText, sizeof(strText), "\n%03d\0", *itor_u16);
+			else
+				sprintf_s(strText, sizeof(strText), "  %03d\0", *itor_u16);
+				
+			strMsg.append(strText);
+		}
+	}
+	ShowMainMessage::share()->InsertMsg(strMsg);
 }
 
 

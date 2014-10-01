@@ -5,12 +5,16 @@ enum BallColor
 {
 	BallColor_Red = 0,
 	BallColor_Red_Max = 5,
-	BallColor_Blue
+	BallColor_Blue,
+	BallColor_Max
 };
 
-#define BALL_COUNT 7
-#define MAX_BALL_NUM(Index) (Index<=BallColor_Red_Max?33:16)
-#define	VAILD_BALL_NUM(Index,Val) (Val<=MAX_BALL_NUM(Index))
+#define BALL_COUNT BallColor_Max
+#define COUNT_RED 33
+#define COUNT_BULE 16
+#define F_COUNT_NUM(isRed) (isRed?COUNT_RED:COUNT_BULE)
+#define F_MAX_BALL_NUM(Index) F_COUNT_NUM(Index<=BallColor_Red_Max)
+#define	F_VAILD_BALL_NUM(Index,Val) (Val<=F_COUNT_NUM(Index))
 
 
 class GroupBallNum :public BallNum
@@ -36,5 +40,6 @@ public:
 
 	void operator= (const GroupBallNum& other);
 	
+	static bool IsNumAppear(const BallNum&, const uint8&,bool isRed=true );
 };
 

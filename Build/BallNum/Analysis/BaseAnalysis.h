@@ -22,6 +22,7 @@ public:
 	static BaseAnalysis* share();
 
 	void CalculateBallCount(const YearInfo&,bool isRed=true);
+	void NumAppearance(const YearInfo&,uint8 , bool isRed = true);
 	void AnBlueBallTrend(const YearInfo&);
 	LISTINDEX CalculateListIndex(const YearInfo&);
 	

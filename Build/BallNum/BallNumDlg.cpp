@@ -56,7 +56,7 @@ END_MESSAGE_MAP()
 
 CBallNumDlg::CBallNumDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CBallNumDlg::IDD, pParent)
-	, m_cstrText(_T(""))
+	, m_cstrText(_T("")), m_operateTyped(Operate_NULL)
 {
 	m_pFunctionDlg = NULL;
 	AfxInitRichEdit2();
@@ -80,15 +80,13 @@ BEGIN_MESSAGE_MAP(CBallNumDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDOK, &CBallNumDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BTN_I, &CBallNumDlg::OnBnClickedInsert)
-	ON_EN_CHANGE(IDC_RICHEDIT_MGS, &CBallNumDlg::OnEnChangeRicheditMgs)
 	ON_BN_CLICKED(IDC_CLEAN_MSG, &CBallNumDlg::OnBnClickedCleanMsg)
 	ON_BN_CLICKED(IDC_BTN_Q, &CBallNumDlg::OnBnClickedBtnQ)
 	ON_BN_CLICKED(IDC_BTN_D, &CBallNumDlg::OnBnClickedBtnD)
 	ON_BN_CLICKED(IDC_BTN_M, &CBallNumDlg::OnBnClickedBtnM)
-	ON_BN_CLICKED(IDC_RED_DLG, &CBallNumDlg::OnBnClickedRedDlg)
-	ON_BN_CLICKED(IDC_BULE_DLG, &CBallNumDlg::OnBnClickedBuleDlg)
+	ON_BN_CLICKED(IDC_COMFIRM, &CBallNumDlg::OnBnClickedComfirm)
+	ON_BN_CLICKED(IDC_BALL_OPREATE, &CBallNumDlg::OnBnClickedBallOpreate)
 END_MESSAGE_MAP()
 
 
@@ -155,7 +153,7 @@ BOOL CBallNumDlg::OnInitDialog()
 // 	m_pMainDlg->Create(IDD_MAIN_DLG, NULL);
 // 	m_pMainDlg->ShowWindow(SW_SHOW);
 
-	
+	ChangeDlg(false);
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -223,52 +221,30 @@ int CBallNumDlg::CalculateIdByTime()
 	return 0;
 }
 
-void CBallNumDlg::OnBnClickedOk()
+void CBallNumDlg::OnBnClickedBtnQ()
 {
-
-	CDialogEx::OnOK();
+	m_operateTyped == Operate_Q;
+	ChangeDlg(true);
 }
-
 
 void CBallNumDlg::OnBnClickedInsert()
 {
-	UpdateData(true);
-	std::string strMsg("Insert Failed.");
-	if (m_cstrText.IsEmpty())
-		return;
-
-	GroupBallNum data;
-	data.Parsing(m_cstrText.GetBuffer());
-	if (ManageDataBase::Share()->InsertData(data))
-	{
-		strMsg = "Insert success.\n";
-		strMsg.append(data.toStdstring());
-		strMsg.append("\n");
-		strMsg.append(ManageDataBase::Share()->GetMissData());
-	}
-	else
-	{
-		strMsg.append("\n");
-		strMsg.append(ManageDataBase::Share()->GetLastError());
-	}
-
-	m_cstrText = "";
-	UpdateData(FALSE);
-	
-	InsertMsg(strMsg);
+	m_operateTyped = Operate_I;
+	ChangeDlg(true);
 }
 
 
-void CBallNumDlg::OnEnChangeRicheditMgs()
+void CBallNumDlg::OnBnClickedBtnD()
 {
-	// TODO:  如果该控件是 RICHEDIT 控件，它将不
-	// 发送此通知，除非重写 CDialogEx::OnInitDialog()
-	// 函数并调用 CRichEditCtrl().SetEventMask()，
-	// 同时将 ENM_CHANGE 标志“或”运算到掩码中。
-
-	// TODO:  在此添加控件通知处理程序代码
+	m_operateTyped = Operate_D;
+	ChangeDlg(true);
 }
 
+void CBallNumDlg::OnBnClickedBtnM()
+{
+	m_operateTyped = Operate_M;
+	ChangeDlg(true);
+}
 
 void CBallNumDlg::OnBnClickedCleanMsg()
 {
@@ -302,70 +278,100 @@ void CBallNumDlg::QueryData(uint32 id)
 	InsertMsg(strMsg);
 }
 
-void CBallNumDlg::OnBnClickedBtnQ()
+void CBallNumDlg::OnBnClickedComfirm()
 {
-	// TODO:  在此添加控件通知处理程序代码
+	ChangeDlg(false);
+
 	UpdateData(true);
+	std::string strMsg("Insert Failed.");
 	if (m_cstrText.IsEmpty())
 		return;
+	GroupBallNum data;
 	uint32 id(0);
-#ifdef UNICODE
-	id = _wtoi(m_cstrText.GetBuffer());
-#else
-	id = atoi(m_cstrText.GetBuffer());
-#endif // UNICODE
-
-	QueryData(id);
-	m_cstrText = "";
-	UpdateData(FALSE);
-}
-
-
-void CBallNumDlg::OnBnClickedBtnD()
-{
-	UpdateData(true);
-	if (m_cstrText.IsEmpty())
-		return;
-
-	uint32 id(0);
-#ifdef UNICODE
-	id = _wtoi(m_cstrText.GetBuffer());
-#else
-	id = atoi(m_cstrText.GetBuffer());
-#endif // UNICODE
-
-	CString mes;
-	mes.Format(_T("Are you sure delete data[%d])"), id);
-	if (MessageBox(mes) != IDOK)
-		return;
-
-	std::string strMsg;
-	if (!ManageDataBase::Share()->DeleteData(id))
+	switch (m_operateTyped)
 	{
-		strMsg.append("Delete Failed : \n");
-		strMsg.append(ManageDataBase::Share()->GetLastError());
-	}
-	else
+	case Operate_D:
 	{
-		char szText[128] = "";
-		sprintf_s(szText, sizeof(szText), "Delete success.[%d]", id);
-		strMsg.append(szText);
+		CString mes;
+		mes.Format(_T("Are you sure delete data[%d])"), id);
+		if (MessageBox(mes) != IDOK)
+			return;
 	}
-
-	m_cstrText = "";
-	UpdateData(FALSE);
-
-	InsertMsg(strMsg);
-	InsertMsg(ManageDataBase::Share()->GetMissData());
-}
-
-
-void CBallNumDlg::OnBnClickedBtnM()
-{
+	case Operate_Q:
+	{
+#ifdef UNICODE
+		id = _wtoi(m_cstrText.GetBuffer());
+#else
+		id = atoi(m_cstrText.GetBuffer());
+#endif // UNICODE
+		break;
+	}
+	case Operate_I:
+	case Operate_M:
+	{
+		data.Parsing(m_cstrText.GetBuffer());
+		break;
+	}
+	}
 	
-	//ManageDataBase::Share()->CalculateNumCount();
+
+	switch (m_operateTyped)
+	{
+	case Operate_Q:
+	{
+		QueryData(id);
+		break;
+	}
+	case Operate_I:
+	{
+		if (ManageDataBase::Share()->InsertData(data))
+		{
+			strMsg = "Insert success.\n";
+			strMsg.append(data.toStdstring());
+			strMsg.append("\n");
+			strMsg.append(ManageDataBase::Share()->GetMissData());
+		}
+		else
+		{
+			strMsg.append("\n");
+			strMsg.append(ManageDataBase::Share()->GetLastError());
+		}
+		break;
+	}
+	case Operate_D:
+	{
+		if (!ManageDataBase::Share()->DeleteData(id))
+		{
+			strMsg.append("Delete Failed : \n");
+			strMsg.append(ManageDataBase::Share()->GetLastError());
+		}
+		else
+		{
+			char szText[128] = "";
+			sprintf_s(szText, sizeof(szText), "Delete success.[%d]", id);
+			strMsg.append(szText);
+		}
+		break;
+	}
+	case Operate_M:
+		break;
+	default:
+		break;
+	}
+	
+
+	m_cstrText = "";
+	UpdateData(FALSE);
+	InsertMsg(strMsg);
+}
+
+
+void CBallNumDlg::OnBnClickedBallOpreate()
+{
+	OpenAnalysisDlg();
 	// TODO:  在此添加控件通知处理程序代码
 }
+
 
 void CBallNumDlg::InsertNumMgs(const char* szTitle, uint32 src[], uint8 len)
 {
@@ -394,37 +400,7 @@ void CBallNumDlg::InsertNumMgs(const char* szTitle, uint32 src[], uint8 len)
 	InsertMsg(strMgs);
 }
 
-// bool CBallNumDlg::InsertData(const char* szText)
-// {
-// 	GroupBallNum data;
-// 	data.Parsing(szText);
-// 	return ManageDataBase::Share()->InsertData(data);
-// }
-// 
-// bool CBallNumDlg::InsertData(const wchar_t* szText)
-// {
-// 	GroupBallNum data;
-// 	data.Parsing(szText);
-// 	return ManageDataBase::Share()->InsertData(data);
-// }
-
-
-
-
-void CBallNumDlg::OnBnClickedRedDlg()
-{
-	//OpenAnalysisDlg(true);
-	// TODO:  在此添加控件通知处理程序代码
-}
-
-
-void CBallNumDlg::OnBnClickedBuleDlg()
-{
-	OpenAnalysisDlg(false);
-	// TODO:  在此添加控件通知处理程序代码
-}
-
-void CBallNumDlg::OpenAnalysisDlg(bool isRed/*=true*/)
+void CBallNumDlg::OpenAnalysisDlg()
 {
 	if (!m_pFunctionDlg)
 	{
@@ -446,4 +422,58 @@ void CBallNumDlg::OpenAnalysisDlg(bool isRed/*=true*/)
 	m_pFunctionDlg->GetWindowRect(&dlgRc);
 	m_pFunctionDlg->SetWindowPos(this, rc.right + 10, rc.top, dlgRc.Width(), dlgRc.Height(), SWP_SHOWWINDOW);
 	m_pFunctionDlg->ShowWindow(SW_SHOW);
+}
+
+BOOL CBallNumDlg::PreTranslateMessage(MSG* pMsg)
+{
+	if (VK_LBUTTON == pMsg->wParam)
+	{
+		int a = 3;
+		a = a;
+	}
+	if (pMsg->message == WM_KEYDOWN || pMsg->message == WM_KEYUP)
+	{
+		int aa = pMsg->wParam;
+		TRACE("key value 0x%02x\n",aa);
+		int laa = pMsg->lParam;
+		laa = laa;
+	}
+	return CDialog::PreTranslateMessage(pMsg);
+}
+
+void CBallNumDlg::ChangeDlg(bool isOpreate)
+{
+	CSize msgRc(480, 270);
+	CSize exSize(8,34);
+	uint32 uFlg = SW_HIDE;
+	if (isOpreate)
+	{
+		exSize.cy += 60;
+		uFlg = SW_SHOW;
+	}
+		
+	CRect srcRc;
+	GetWindowRect(srcRc);
+
+	uint32 dlgFlg = SWP_NOZORDER;
+	if (srcRc.left == 0 && srcRc.top == 0)
+	{
+		int nWidth = GetSystemMetrics(SM_CXSCREEN);  //屏幕宽度    
+		int nHeight = GetSystemMetrics(SM_CYSCREEN); //屏幕高度
+		srcRc.left = (nWidth - msgRc.cx - exSize.cx) / 2;
+		srcRc.top = (nHeight - msgRc.cy - exSize.cy) / 2;
+	}
+	else
+		dlgFlg = dlgFlg | SWP_NOMOVE;
+	srcRc.right = srcRc.left + msgRc.cx + exSize.cx;
+	srcRc.bottom = srcRc.top + msgRc.cy + exSize.cy;
+	SetWindowPos(NULL, srcRc.left, srcRc.top, srcRc.Width(), srcRc.Height(), dlgFlg);
+
+	m_reShowMessage.SetWindowPos(NULL, 0, 0, msgRc.cx, msgRc.cy, SWP_NOZORDER | SWP_NOMOVE);
+	
+	GetDlgItem(IDC_STATIC_OPRETAE)->ShowWindow(uFlg);
+	GetDlgItem(IDC_EDIT_OPREATE)->ShowWindow(uFlg);
+	GetDlgItem(IDC_COMFIRM)->ShowWindow(uFlg);
+
+	//this->SetFocus();
 }

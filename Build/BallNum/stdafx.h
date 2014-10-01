@@ -37,6 +37,8 @@
 #include "basedefine.h"
 #include <string.h>
 
+#define USER_VALUE (WM_USER+100)
+
 struct BallNum
 {
 	uint16 mId;
