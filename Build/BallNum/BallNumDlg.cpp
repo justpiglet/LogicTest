@@ -280,6 +280,9 @@ void CBallNumDlg::QueryData(uint32 id)
 
 void CBallNumDlg::OnBnClickedComfirm()
 {
+	if (m_operateTyped == Operate_NULL)
+		return;
+
 	ChangeDlg(false);
 
 	UpdateData(true);
@@ -359,7 +362,7 @@ void CBallNumDlg::OnBnClickedComfirm()
 		break;
 	}
 	
-
+	m_operateTyped = Operate_NULL;
 	m_cstrText = "";
 	UpdateData(FALSE);
 	InsertMsg(strMsg);
