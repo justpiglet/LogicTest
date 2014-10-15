@@ -446,7 +446,7 @@ BOOL CBallNumDlg::PreTranslateMessage(MSG* pMsg)
 
 void CBallNumDlg::ChangeDlg(bool isOpreate)
 {
-	CSize msgRc(480, 270);
+	CSize msgRc(480, 600);
 	CSize exSize(8,34);
 	uint32 uFlg = SW_HIDE;
 	if (isOpreate)
@@ -464,7 +464,7 @@ void CBallNumDlg::ChangeDlg(bool isOpreate)
 		int nWidth = GetSystemMetrics(SM_CXSCREEN);  //ÆÁÄ»¿í¶È    
 		int nHeight = GetSystemMetrics(SM_CYSCREEN); //ÆÁÄ»¸ß¶È
 		srcRc.left = (nWidth - msgRc.cx - exSize.cx) / 2;
-		srcRc.top = (nHeight - msgRc.cy - exSize.cy) / 2;
+		srcRc.top = (nHeight - msgRc.cy - exSize.cy) / 2 - 30;
 	}
 	else
 		dlgFlg = dlgFlg | SWP_NOMOVE;
@@ -477,6 +477,10 @@ void CBallNumDlg::ChangeDlg(bool isOpreate)
 	GetDlgItem(IDC_STATIC_OPRETAE)->ShowWindow(uFlg);
 	GetDlgItem(IDC_EDIT_OPREATE)->ShowWindow(uFlg);
 	GetDlgItem(IDC_COMFIRM)->ShowWindow(uFlg);
+
+	GetDlgItem(IDC_STATIC_OPRETAE)->SetWindowPos(NULL, 0, msgRc.cy, msgRc.cx-5, 50, SWP_NOZORDER);
+	GetDlgItem(IDC_EDIT_OPREATE)->SetWindowPos(NULL, 5, msgRc.cy + 20, msgRc.cx-90, 20, SWP_NOZORDER);
+	GetDlgItem(IDC_COMFIRM)->SetWindowPos(NULL, msgRc.cx-75, msgRc.cy + 15, 60, 30, SWP_NOZORDER);
 
 	//this->SetFocus();
 }

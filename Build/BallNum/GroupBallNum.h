@@ -9,6 +9,7 @@ enum BallColor
 	BallColor_Max
 };
 
+#define START_ID 3
 #define BALL_COUNT BallColor_Max
 #define COUNT_RED 33
 #define COUNT_BULE 16
