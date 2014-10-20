@@ -1,3 +1,0 @@
-LIBRARY NewLogicD
-EXPORTS
-	CaLogicFactroyShare @ 1

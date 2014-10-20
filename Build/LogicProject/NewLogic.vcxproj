@@ -40,13 +40,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)</IntDir>
+    <IntDir>$(SolutionDir)Bin\Obj\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)D</TargetName>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)</IntDir>
-    <OutDir>$(SolutionDir)bin\$(Configuration)\$(ProjectName)</OutDir>
+    <IntDir>$(SolutionDir)Bin\Obj\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\$(ProjectName)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -58,7 +58,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../source/logicD.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../source/newlogic/src/logicD.def</ModuleDefinitionFile>
       <ForceSymbolReferences>__tcmalloc</ForceSymbolReferences>
       <AdditionalDependencies>../../libraries/libtcmalloc_minimal-debug.lib;../../libraries/SqliteDatabaseD.lib;../../libraries/cantoolsD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -74,14 +74,14 @@ copy /y "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\libraries\$(TargetFi
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../include;../../publicInclude;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../source/newlogic/include;../../publicInclude/depend;../../publicInclude/game;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../source/logic.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../source/newlogic/src/logic.def</ModuleDefinitionFile>
       <ForceSymbolReferences>__tcmalloc</ForceSymbolReferences>
       <AdditionalDependencies>../../libraries/libtcmalloc_minimal.lib;../../libraries/SqliteDatabase.lib;../../libraries/cantools.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -91,81 +91,34 @@ copy /y "$(TargetDir)$(TargetFileName)" "$(ProjectDir)..\..\libraries\$(TargetFi
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\define.h" />
-    <ClInclude Include="..\..\include\manage.h" />
-    <ClInclude Include="..\..\include\logiccell.h" />
-    <ClInclude Include="..\..\include\logicpool.h" />
-    <ClInclude Include="..\..\include\objectManage.h" />
-    <ClInclude Include="..\..\publicInclude\basedefine.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\aes\aes.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\aes\aestab.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\aes\aes_options.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\autolink.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\config.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\features.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\forwards.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\json.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\reader.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\value.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\writer.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\macro.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\md5\md5.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\allocators.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\document.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\encodedstream.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\encodings.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\filereadstream.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\filestream.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\filewritestream.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\internal\pow10.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\internal\stack.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\internal\strfunc.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\prettywriter.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\rapidjson.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\reader.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\stringbuffer.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\writer.h" />
-    <ClInclude Include="..\..\publicInclude\cantools\tools.h" />
-    <ClInclude Include="..\..\publicInclude\logicfactroy.h" />
-    <ClInclude Include="..\..\publicInclude\macro.h" />
-    <ClInclude Include="..\..\publicInclude\publicpro.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteBackupProgress.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteBlob.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteDatabase.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteDatabasePro.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteError.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteFunction.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteRecord.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteRecordSet.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteReference.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteStatement.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteTable.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteTrackReport.h" />
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\StatementBuffer.h" />
-    <ClInclude Include="..\..\source\shape\shapeObject.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\..\publicInclude\Game\basedefine.h" />
+    <ClInclude Include="..\..\publicInclude\Game\logicfactroy.h" />
+    <ClInclude Include="..\..\publicInclude\Game\publicpro.h" />
+    <ClInclude Include="..\..\source\NewLogic\include\define.h" />
+    <ClInclude Include="..\..\source\NewLogic\include\logiccell.h" />
+    <ClInclude Include="..\..\source\NewLogic\include\logicpool.h" />
+    <ClInclude Include="..\..\source\NewLogic\include\manage.h" />
+    <ClInclude Include="..\..\source\NewLogic\include\objectManage.h" />
+    <ClInclude Include="..\..\source\NewLogic\shape\shapeObject.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\source\logic.def" />
     <None Include="..\..\source\logicd.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\publicInclude\cantools\aes\aes_crypt.c" />
-    <ClCompile Include="..\..\publicInclude\cantools\aes\aes_setkey.c" />
-    <ClCompile Include="..\..\publicInclude\cantools\aes\aes_tables.c" />
-    <ClCompile Include="..\..\source\dllmain.cpp" />
-    <ClCompile Include="..\..\source\manage.cpp" />
-    <ClCompile Include="..\..\source\logiccell.cpp" />
-    <ClCompile Include="..\..\source\logicfactroy.cpp" />
-    <ClCompile Include="..\..\source\logicpool.cpp" />
-    <ClCompile Include="..\..\source\objectManage.cpp" />
-    <ClCompile Include="..\..\source\shape\shapeObject.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="..\..\source\readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="NewLogic.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\NewLogic\shape\shapeObject.cpp" />
+    <ClCompile Include="..\..\source\NewLogic\SRC\dllmain.cpp" />
+    <ClCompile Include="..\..\source\NewLogic\SRC\logiccell.cpp" />
+    <ClCompile Include="..\..\source\NewLogic\SRC\logicfactroy.cpp" />
+    <ClCompile Include="..\..\source\NewLogic\SRC\logicpool.cpp" />
+    <ClCompile Include="..\..\source\NewLogic\SRC\manage.cpp" />
+    <ClCompile Include="..\..\source\NewLogic\SRC\objectManage.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="include">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="source">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -16,193 +12,46 @@
     <Filter Include="publicinclude">
       <UniqueIdentifier>{ac7883d8-0d23-4db6-aeab-de6ec693d242}</UniqueIdentifier>
     </Filter>
-    <Filter Include="publicinclude\sqlitedb">
-      <UniqueIdentifier>{db5dc662-7222-45bf-a149-84ee8d734fbf}</UniqueIdentifier>
+    <Filter Include="source\NewLogic">
+      <UniqueIdentifier>{38014cdd-e3ac-4a7d-93fa-fcc352ea10f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\shape">
-      <UniqueIdentifier>{8286c7a3-baea-4f56-b27e-39c7569d1d3d}</UniqueIdentifier>
+    <Filter Include="source\NewLogic\include">
+      <UniqueIdentifier>{863cd092-1379-4405-bd7b-cbe60abc0dc9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="publicinclude\cantools">
-      <UniqueIdentifier>{198f1f0b-da93-40ed-84d0-5c326d172faf}</UniqueIdentifier>
+    <Filter Include="source\NewLogic\src">
+      <UniqueIdentifier>{366b3499-78d8-4b8e-adc6-a094ac89a80a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="publicinclude\cantools\aes">
-      <UniqueIdentifier>{d5d41db4-10fc-496c-93ae-6f9cc6c13d51}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="publicinclude\cantools\jsoncpp">
-      <UniqueIdentifier>{dfc9c972-10f6-474a-8327-8bba78ea247e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="publicinclude\cantools\md5">
-      <UniqueIdentifier>{2aa3badc-2bd8-4c99-8f24-399bce6cec3d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="publicinclude\cantools\rapidjson">
-      <UniqueIdentifier>{188653ba-19df-49e3-b8c3-0a082abd0a85}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="publicinclude\cantools\rapidjson\internal">
-      <UniqueIdentifier>{4882624f-7c19-45fa-90a1-9df11ae4da8f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="publicinclude\cantools\jsoncpp\json">
-      <UniqueIdentifier>{9dbdec7b-7abd-444a-9a09-e0782b50fbe3}</UniqueIdentifier>
+    <Filter Include="source\NewLogic\shape">
+      <UniqueIdentifier>{19b41e98-61bd-49ea-bd8c-6340e4794f0c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\logiccell.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\logicpool.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\manage.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\define.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\publicpro.h">
+    <ClInclude Include="..\..\publicInclude\Game\basedefine.h">
       <Filter>publicinclude</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\publicInclude\logicfactroy.h">
+    <ClInclude Include="..\..\publicInclude\Game\logicfactroy.h">
       <Filter>publicinclude</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\objectManage.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteBackupProgress.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteBlob.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteDatabase.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteDatabasePro.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteError.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteFunction.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteRecord.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteRecordSet.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteReference.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteStatement.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteTable.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\SqliteTrackReport.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\SqliteDatabase\StatementBuffer.h">
-      <Filter>publicinclude\sqlitedb</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\macro.h">
+    <ClInclude Include="..\..\publicInclude\Game\publicpro.h">
       <Filter>publicinclude</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\publicInclude\basedefine.h">
-      <Filter>publicinclude</Filter>
+    <ClInclude Include="..\..\source\NewLogic\include\define.h">
+      <Filter>source\NewLogic\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\source\shape\shapeObject.h">
-      <Filter>source\shape</Filter>
+    <ClInclude Include="..\..\source\NewLogic\include\logiccell.h">
+      <Filter>source\NewLogic\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\macro.h">
-      <Filter>publicinclude\cantools</Filter>
+    <ClInclude Include="..\..\source\NewLogic\include\logicpool.h">
+      <Filter>source\NewLogic\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\tools.h">
-      <Filter>publicinclude\cantools</Filter>
+    <ClInclude Include="..\..\source\NewLogic\include\manage.h">
+      <Filter>source\NewLogic\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\aes\aes.h">
-      <Filter>publicinclude\cantools\aes</Filter>
+    <ClInclude Include="..\..\source\NewLogic\include\objectManage.h">
+      <Filter>source\NewLogic\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\aes\aes_options.h">
-      <Filter>publicinclude\cantools\aes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\aes\aestab.h">
-      <Filter>publicinclude\cantools\aes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\md5\md5.h">
-      <Filter>publicinclude\cantools\md5</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\allocators.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\document.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\encodedstream.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\encodings.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\filereadstream.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\filestream.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\filewritestream.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\prettywriter.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\rapidjson.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\reader.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\stringbuffer.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\writer.h">
-      <Filter>publicinclude\cantools\rapidjson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\internal\pow10.h">
-      <Filter>publicinclude\cantools\rapidjson\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\internal\stack.h">
-      <Filter>publicinclude\cantools\rapidjson\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\rapidjson\internal\strfunc.h">
-      <Filter>publicinclude\cantools\rapidjson\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\autolink.h">
-      <Filter>publicinclude\cantools\jsoncpp\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\config.h">
-      <Filter>publicinclude\cantools\jsoncpp\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\features.h">
-      <Filter>publicinclude\cantools\jsoncpp\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\forwards.h">
-      <Filter>publicinclude\cantools\jsoncpp\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\json.h">
-      <Filter>publicinclude\cantools\jsoncpp\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\reader.h">
-      <Filter>publicinclude\cantools\jsoncpp\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\value.h">
-      <Filter>publicinclude\cantools\jsoncpp\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\publicInclude\cantools\jsoncpp\json\writer.h">
-      <Filter>publicinclude\cantools\jsoncpp\json</Filter>
+    <ClInclude Include="..\..\source\NewLogic\shape\shapeObject.h">
+      <Filter>source\NewLogic\shape</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -214,38 +63,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\source\logiccell.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\logicfactroy.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\logicpool.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\dllmain.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\manage.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\objectManage.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\source\shape\shapeObject.cpp">
-      <Filter>source\shape</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\publicInclude\cantools\aes\aes_crypt.c">
-      <Filter>publicinclude\cantools\aes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\publicInclude\cantools\aes\aes_setkey.c">
-      <Filter>publicinclude\cantools\aes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\publicInclude\cantools\aes\aes_tables.c">
-      <Filter>publicinclude\cantools\aes</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="..\..\source\readme.txt">
       <Filter>resource</Filter>
     </Text>
@@ -254,5 +71,28 @@
     <ResourceCompile Include="NewLogic.rc">
       <Filter>resource</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\NewLogic\shape\shapeObject.cpp">
+      <Filter>source\NewLogic\shape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\NewLogic\SRC\dllmain.cpp">
+      <Filter>source\NewLogic\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\NewLogic\SRC\logiccell.cpp">
+      <Filter>source\NewLogic\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\NewLogic\SRC\logicfactroy.cpp">
+      <Filter>source\NewLogic\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\NewLogic\SRC\logicpool.cpp">
+      <Filter>source\NewLogic\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\NewLogic\SRC\manage.cpp">
+      <Filter>source\NewLogic\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\source\NewLogic\SRC\objectManage.cpp">
+      <Filter>source\NewLogic\src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

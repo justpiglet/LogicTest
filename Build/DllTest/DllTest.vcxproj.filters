@@ -18,24 +18,27 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="mathTest.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\DllTest\mathTest.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\DllTest\stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\source\DllTest\targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="..\..\source\DllTest\DllTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="DllTest.cpp">
+    <ClCompile Include="..\..\source\DllTest\mathTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="mathTest.cpp">
+    <ClCompile Include="..\..\source\DllTest\stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

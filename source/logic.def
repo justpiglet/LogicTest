@@ -1,3 +1,0 @@
-LIBRARY NewLogic
-EXPORTS
-	CaLogicFactroyShare @ 1
