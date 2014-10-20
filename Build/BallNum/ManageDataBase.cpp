@@ -61,6 +61,7 @@ void ManageDataBase::CheckDataBase()
 	{
 		int newVal(0), oldVal(0);
 		GroupBallNum tempData;
+		BaseAnalysis::share()->AddDataBegin();
 		while (pdata->NextRow())
 		{
 			ParsingRecord(tempData, pdata,false);
@@ -80,6 +81,7 @@ void ManageDataBase::CheckDataBase()
 			}
 			oldVal = newVal;
 		}
+		BaseAnalysis::share()->AddDataEnd();
 	}
 
 	if (pdata)

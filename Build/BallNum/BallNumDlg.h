@@ -7,6 +7,17 @@
 #include "MainDlgHandle.h"
 #include "MainDlg.h"
 #include "functionDlg.h"
+
+enum Operate
+{
+	Operate_NULL=0,
+	Operate_Q,
+	Operate_I,
+	Operate_D,
+	Operate_M
+};
+
+
 // CBallNumDlg 对话框
 class CBallNumDlg : public CDialogEx,public IMainDlgHandle
 {
@@ -28,15 +39,17 @@ protected:
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+	BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnBnClickedOk();
+	
 
 protected:
 	int CalculateIdByTime();
-	void OpenAnalysisDlg(bool isRed=true);
+	void OpenAnalysisDlg();
+	void ChangeDlg(bool isOpreate);
 	//bool InsertData(const char* szText);
 	//bool InsertData(const wchar_t* szText);
 
@@ -48,17 +61,17 @@ public:
 	virtual void InsertNumMgs(const char* szTitle, uint32 src[], uint8 len);
 protected:
 	afx_msg void OnBnClickedInsert();
-	
-	afx_msg void OnEnChangeRicheditMgs();
 	afx_msg void OnBnClickedCleanMsg();
-	
 	afx_msg void OnBnClickedBtnQ();
 	afx_msg void OnBnClickedBtnD();
 	afx_msg void OnBnClickedBtnM();
-	afx_msg void OnBnClickedRedDlg();
-	afx_msg void OnBnClickedBuleDlg();
+	afx_msg void OnBnClickedBallOpreate();
+	afx_msg void OnBnClickedComfirm();
 private:
 	CRichEditCtrl m_reShowMessage;
 	CString m_cstrText;
 	functionDlg* m_pFunctionDlg;
+	Operate m_operateTyped;
+public:
+	
 };

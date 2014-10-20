@@ -1,0 +1,25 @@
+{
+	"Account":[
+		{
+			"Name":"",
+			"Pwd":"",
+			"LastLogoinTime":127336363,
+			"VaildLogoinTime":300,
+			"ShowItemTime":30,
+			"ShowItemLV":1,
+			"Item":[
+				{
+					"NickName":"",
+					"Account":"",
+					"LoginPwd":"",
+					"PayPwd":"",
+					"OtherPwd":"",
+					"Relation":"",
+					"Describe":"",
+					"LV":1,
+					"ID":0
+				}
+			]
+		}
+	]
+}

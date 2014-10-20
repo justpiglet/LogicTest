@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DllTest", "DllTest\DllTest.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BallNum", "BallNum\BallNum.vcxproj", "{F8E04CCF-3830-4297-8A31-79AD04B71E85}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FeildEditor", "FeildEditor\FeildEditor.vcxproj", "{150278C7-8778-4391-B429-946C89F9314F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -27,6 +29,10 @@ Global
 		{F8E04CCF-3830-4297-8A31-79AD04B71E85}.Debug|Win32.Build.0 = Debug|Win32
 		{F8E04CCF-3830-4297-8A31-79AD04B71E85}.Release|Win32.ActiveCfg = Release|Win32
 		{F8E04CCF-3830-4297-8A31-79AD04B71E85}.Release|Win32.Build.0 = Release|Win32
+		{150278C7-8778-4391-B429-946C89F9314F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{150278C7-8778-4391-B429-946C89F9314F}.Debug|Win32.Build.0 = Debug|Win32
+		{150278C7-8778-4391-B429-946C89F9314F}.Release|Win32.ActiveCfg = Release|Win32
+		{150278C7-8778-4391-B429-946C89F9314F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

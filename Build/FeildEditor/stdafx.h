@@ -33,40 +33,13 @@
 
 #include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
 
-#define SQLITE_OUTSIDE
-#include "basedefine.h"
-#include <string.h>
 
-#define USER_VALUE (WM_USER+100)
 
-struct BallNum
-{
-	uint16 mId;
-	uint8 mNumber[7];
-};
 
-struct  YearInfo
-{
-	uint8 mSYear;
-	uint8 mCount;
-	YearInfo() :mSYear(3), mCount(1)
-	{
-	}
-	YearInfo(uint8 id,uint8 count=1) :mSYear(id), mCount(count)
-	{
 
-	}
-	uint8 EndYear()const
-	{
-		return mSYear + mCount - 1;
-	}
-	std::string GetStringInterval()const
-	{
-		char szYear[32]="";
-		sprintf_s(szYear, sizeof(szYear), "20%02d-20%02d", mSYear, EndYear());
-		return std::string(szYear);
-	}
-};
+
+
+
 
 #ifdef _UNICODE
 #if defined _M_IX86

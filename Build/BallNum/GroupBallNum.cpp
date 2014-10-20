@@ -69,7 +69,7 @@ bool GroupBallNum::ChehckNumVaild()const
 	
 	for (uint8 i = 0; i < BALL_COUNT; ++i)
 	{
-		if (!VAILD_BALL_NUM(i, mNumber[i]))
+		if (!F_VAILD_BALL_NUM(i, mNumber[i]))
 			return false;
 		
 		if (i > 0 && i<BALL_COUNT - 1 && mNumber[i] <= mNumber[i - 1])
@@ -96,5 +96,25 @@ void GroupBallNum::operator=(const GroupBallNum& other)
 {
 	this->mId = other.mId;
 	memcpy(this->mNumber, other.mNumber, sizeof(this->mNumber));
+}
+
+bool GroupBallNum::IsNumAppear(const BallNum& mBallNum, const uint8& num,bool isRed/*=true*/)
+{
+	bool isAppear(false);
+	uint8 uBegin = BallColor_Red, uEnd = BallColor_Red_Max;
+	if (!isRed)
+	{
+		uBegin = BallColor_Blue;
+		uEnd = BallColor_Max;
+	}
+	for (uint8 i = uBegin; i < uEnd; ++i)
+	{
+		if (num == mBallNum.mNumber[i])
+		{
+			isAppear = true;
+			break;
+		}
+	}
+	return isAppear;
 }
 
