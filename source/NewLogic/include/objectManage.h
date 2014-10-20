@@ -1,7 +1,7 @@
 #ifndef _FHKJEF_FDS_CAN_OBJECTMANAGE
 #define _FHKJEF_FDS_CAN_OBJECTMANAGE
 
-#include"publicpro.h"
+#include"game/publicpro.h"
 #include <queue>
 #include <list>
 #define objectQueue  std::queue<CaObject*>

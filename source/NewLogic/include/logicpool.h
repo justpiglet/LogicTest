@@ -2,14 +2,14 @@
 #ifndef _FHKJEF_FDS_CAN_CALOGICPOOL
 #define _FHKJEF_FDS_CAN_CALOGICPOOL
 #include "define.h"
-#include"publicpro.h"
+#include "game/publicpro.h"
 
 
 #include "manage.h"
 #include "logiccell.h"
 #include <mutex>
 #define SQLITE_OUTSIDE
-#include "sqlitedb/SqliteDatabase.h"
+#include "depend/sqlitedb/SqliteDatabase.h"
 
 class  CaLogicPool :public ILogicPool
 {

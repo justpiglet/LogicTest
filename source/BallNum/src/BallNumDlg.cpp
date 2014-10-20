@@ -8,7 +8,7 @@
 #include "afxdialogex.h"
 #include <time.h>
 #include "ManageDataBase.h"
-#include "Analysis/BaseAnalysis.h"
+#include "../Analysis/BaseAnalysis.h"
 #include<io.h>
 #include<stdio.h>
 #include "YearSetDlg.h"

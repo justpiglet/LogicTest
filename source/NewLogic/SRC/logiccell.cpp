@@ -1,6 +1,6 @@
 #include "logiccell.h"
 #include "manage.h"
-#include "cantools/tools.h"
+#include "depend/cantools/tools.h"
 
 CaLogicCell::CaLogicCell() : m_state(PLAY_STATE_IDLE)
 {

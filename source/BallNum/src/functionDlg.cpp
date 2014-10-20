@@ -5,7 +5,7 @@
 #include "BallNum.h"
 #include "functionDlg.h"
 #include "afxdialogex.h"
-#include "Analysis/BaseAnalysis.h"
+#include "../Analysis/BaseAnalysis.h"
 #include "SelectNumDlg.h"
 
 // functionDlg ¶Ô»°¿ò
@@ -74,7 +74,7 @@ void functionDlg::OnBnClickedBlueOffset()
 
 void functionDlg::UpdateTitle()
 {
-	std:string strTitle= m_yearInfo.GetStringInterval();
+	std::string strTitle= m_yearInfo.GetStringInterval();
 	SetWindowText(CString(strTitle.c_str()));
 }
 

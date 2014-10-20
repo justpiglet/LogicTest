@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "BaseAnalysis.h"
-#include "../MainDlgHandle.h"
-#include "../GroupBallNum.h"
+#include "MainDlgHandle.h"
+#include "GroupBallNum.h"
 
-#include "cantools/rapidjson/document.h"
+#include "depend/cantools/rapidjson/document.h"
 
 BaseAnalysis* BaseAnalysis::m_gSelf=NULL;
 BaseAnalysis::BaseAnalysis() :m_minID(0), m_maxID(0), m_bAddData(false)

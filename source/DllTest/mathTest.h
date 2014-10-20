@@ -3,7 +3,7 @@
 #include <iostream>
 #include <math.h>
 #include <algorithm>
-#include "publicpro.h"
+#include "game/publicpro.h"
 using namespace std;
 const double E = 1e-10;//¾«¶È
 

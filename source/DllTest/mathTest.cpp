@@ -1,6 +1,6 @@
 #include "mathTest.h"
-#include"publicpro.h"
-#include "cantools/tools.h"
+#include "game/publicpro.h"
+#include "depend/cantools/tools.h"
 _USE_CANNP
 
 /*

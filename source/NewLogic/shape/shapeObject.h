@@ -1,7 +1,7 @@
 #ifndef _FHKJEF_FDS_CAN_SHAPE
 #define _FHKJEF_FDS_CAN_SHAPE
-#include "basedefine.h"
-#include "cantools/tools.h"
+#include "base/basedefine.h"
+#include "depend/cantools/tools.h"
 
 enum ShapeType
 {

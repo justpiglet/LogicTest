@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ManageDataBase.h"
-#include "Analysis/BaseAnalysis.h"
+#include "../Analysis/BaseAnalysis.h"
 #include <string.h>
 using std::string;
 

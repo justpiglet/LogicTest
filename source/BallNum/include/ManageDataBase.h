@@ -1,8 +1,8 @@
 #pragma once
 
-#include "sqlitedb/SqliteDatabasePro.h"
-#include "sqlitedb/SqliteDatabase.h"
-#include "sqlitedb/SqliteRecordSet.h"
+#include "depend/sqlitedb/SqliteDatabasePro.h"
+#include "depend/sqlitedb/SqliteDatabase.h"
+#include "depend/sqlitedb/SqliteRecordSet.h"
 #include "GroupBallNum.h"
 #include<vector>
 using std::vector;

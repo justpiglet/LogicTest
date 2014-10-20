@@ -1,7 +1,7 @@
 
 #ifndef _FHKJEF_FDS_CAN_DEFINE
 #define _FHKJEF_FDS_CAN_DEFINE
-#include"publicpro.h"
+#include"game/publicpro.h"
 
 #pragma pack(1) 
 

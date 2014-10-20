@@ -1,7 +1,7 @@
 #ifndef _FHKJEF_FDS_CAN_CALOGICCELL
 #define _FHKJEF_FDS_CAN_CALOGICCELL
 
-#include"publicpro.h"
+#include"game/publicpro.h"
 
 typedef std::vector<CaObject*> VEC_CAOBJECT;
 

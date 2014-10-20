@@ -1,4 +1,4 @@
-#include "logicfactroy.h"
+#include "game/logicfactroy.h"
 #include "logicpool.h"
 
 ILogicPool* CaLogicFactroyShare()

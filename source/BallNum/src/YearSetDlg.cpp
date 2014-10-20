@@ -5,7 +5,7 @@
 #include "BallNum.h"
 #include "YearSetDlg.h"
 #include "afxdialogex.h"
-#include "Analysis/BaseAnalysis.h"
+#include "../Analysis/BaseAnalysis.h"
 
 // YearSetDlg ¶Ô»°¿ò
 

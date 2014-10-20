@@ -1,5 +1,5 @@
 #include "UserFeildManage.h"
-#include "cantools/tools.h"
+#include "depend/cantools/tools.h"
 
 UserFeildManage* UserFeildManage::m_gShare=NULL;
 UserFeildManage::UserFeildManage() :m_curUser(NULL)
@@ -39,7 +39,7 @@ bool UserFeildManage::LoadData()
 		pSz = accounts[i]["Pwd"].GetString();
 		if (pSz)
 		{
-			std::string aesa = _CANNP_NAME::encrypt::EncryptAES(pSz, pwd);
+			//std::string aesa = _CANNP_NAME::encrypt::EncryptAES(pSz, pwd);
 		}
 		
 	}
@@ -163,5 +163,3 @@ std::string UserFeildManage::GetResourceFileName(const char* szFileName)
 	strPath.append(szFileName);
 	return strPath;
 }
-
-

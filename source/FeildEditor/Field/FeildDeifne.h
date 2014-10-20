@@ -1,6 +1,6 @@
 #ifndef FERTRHTH_FeildDeifne_h
 #define FERTRHTH_FeildDeifne_h
-#include "publicpro.h"
+#include "base/basedefine.h"
 #include <string.h>
 #include <list>
 #include <vector>

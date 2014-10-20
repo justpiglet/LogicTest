@@ -4,8 +4,8 @@
 #include<stdlib.h> 
 #include<string>
 #include <time.h>
-#include"publicpro.h"
-#include "cantools/tools.h"
+#include "game/publicpro.h"
+#include "depend/cantools/tools.h"
 
 
 typedef ILogicPool* (*GET_HFUNC)();

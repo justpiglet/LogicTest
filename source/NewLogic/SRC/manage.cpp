@@ -1,5 +1,5 @@
 #include "manage.h"
-#include"cantools/jsoncpp/json/reader.h"
+#include "depend/cantools/jsoncpp/json/reader.h"
 CaAttributeManage* CaAttributeManage::m_gpManage=NULL;
 
 CaAttributeManage::CaAttributeManage() :m_pAttributeArr(nullptr), m_attCount(0)

@@ -6,8 +6,8 @@
 #include "FeildEditor.h"
 #include "FeildEditorDlg.h"
 #include "afxdialogex.h"
-#include"cantools/jsoncpp/json/reader.h"
-#include "Feild/UserFeildManage.h"
+#include "depend/cantools/jsoncpp/json/reader.h"
+#include "../Field/UserFeildManage.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
