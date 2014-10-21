@@ -1,6 +1,25 @@
 #include "UserFeildManage.h"
 #include "depend/cantools/tools.h"
 
+CField::CField()
+{
+}
+
+CField::~CField()
+{
+}
+
+bool CField::LoadBuffer(std::ifstream& rFile)
+{
+	return true;
+}
+
+bool CField::WriteBuffer(std::ofstream& wFile)
+{
+	return true;
+}
+
+//////////////////////////////////////////////////////////////////////////
 UserFeildManage* UserFeildManage::m_gShare=NULL;
 UserFeildManage::UserFeildManage() :m_curUser(NULL)
 {
@@ -8,6 +27,13 @@ UserFeildManage::UserFeildManage() :m_curUser(NULL)
 
 UserFeildManage::~UserFeildManage()
 {
+	VEC_FEILDS::iterator itor;
+	while (m_vecUserInfo.size())
+	{
+		itor = m_vecUserInfo.begin();
+		delete (*itor);
+		m_vecUserInfo.erase(itor);
+	}
 }
 
 UserFeildManage* UserFeildManage::Share()
@@ -86,11 +112,11 @@ std::string UserFeildManage::UserLogoin(const std::string& straNme, const std::s
 	VEC_FEILDS::iterator itor = m_vecUserInfo.begin(),itor_end = m_vecUserInfo.end();
 	for (; itor != itor_end; ++itor)
 	{
-		if (itor->strName == straNme)
+		if ((*itor)->strName == straNme)
 		{
-			if (itor->strPwd == strPwd)
+			if ((*itor)->strPwd == strPwd)
 			{
-				m_curUser = &(*itor);
+				m_curUser = (*itor);
 				return strError;
 			}
 				

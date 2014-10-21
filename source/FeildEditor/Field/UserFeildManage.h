@@ -2,9 +2,23 @@
 #define fdgjfdljgld_UserFeildManage_h
 #include "stdafx.h"
 #include "FeildDeifne.h"
+#include <fstream>
 
-typedef std::vector<User_Feild> VEC_FEILDS;
+class CField : public User_Feild
+{
+	friend class UserFeildManage;
+public:
+	CField();
+	~CField();
+protected:
+	bool WriteBuffer(std::ofstream& wFile);
+	bool LoadBuffer(std::ifstream& rFile);
+private:
 
+};
+
+//////////////////////////////////////////////////////////////////////////
+typedef std::vector<CField*> VEC_FEILDS;
 class UserFeildManage
 {
 public:
