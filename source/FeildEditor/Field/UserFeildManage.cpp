@@ -9,42 +9,125 @@ CField::~CField()
 {
 }
 
+void CField::ParsingStringCopy(const char* pIndex, void* pDest, uint32 iLen)
+{
+	memcpy(pDest, pIndex, iLen);
+	pIndex += iLen;
+}
+
+void CField::ParsingString(const char* pSrc)
+{
+	if (!pSrc)
+		return;
+	const char* pIndex = pSrc;
+	ParsingStringCopy(pIndex, &iLastLogoinTime, sizeof(iLastLogoinTime));
+	ParsingStringCopy(pIndex, &iVaildLoginTime, sizeof(iVaildLoginTime));
+	ParsingStringCopy(pIndex, &iShowItemTime, sizeof(iShowItemTime));
+	ParsingStringCopy(pIndex, &iShowLevel, sizeof(iShowLevel));
+	ParsingStringCopy(pIndex, &iHideParts, sizeof(iHideParts));
+
+	ParsingStringCopy(pIndex, strName, sizeof(strName));
+	ParsingStringCopy(pIndex, strPwd, sizeof(strPwd));
+
+	uint32 iItemCount(0);
+	ParsingStringCopy(pIndex, &iItemCount, sizeof(iItemCount));
+	
+	FIELD_ITEM mItem;
+	for (uint32 i = 0; i < iItemCount; ++i)
+	{
+		memset(&mItem, 0, sizeof(mItem));
+
+		ParsingStringCopy(pIndex, &mItem.id, sizeof(mItem.id));
+		ParsingStringCopy(pIndex, &mItem.iLv, sizeof(mItem.iLv));
+
+		ParsingStringCopy(pIndex, mItem.strNameNick, sizeof(mItem.strNameNick));
+		ParsingStringCopy(pIndex, mItem.strAccount, sizeof(mItem.strAccount));
+		ParsingStringCopy(pIndex, mItem.strLoginPwd, sizeof(mItem.strLoginPwd));
+		ParsingStringCopy(pIndex, mItem.strPayPwd, sizeof(mItem.strPayPwd));
+		ParsingStringCopy(pIndex, mItem.strOtherPwd, sizeof(mItem.strOtherPwd));
+		ParsingStringCopy(pIndex, mItem.strRelation, sizeof(mItem.strRelation));
+		ParsingStringCopy(pIndex, mItem.strDescribe, sizeof(mItem.strDescribe));
+
+		listItem.push_back(mItem);
+	}
+}
+
 bool CField::LoadBuffer(std::ifstream& rFile)
 {
 	if (!rFile.is_open())
 		return false;
+	uint32 iLen(0);
+	rFile.read((char*)&iLen, sizeof(uint32));
+	char* pNewData = new char[iLen+1];
+	pNewData[iLen + 1] = '\0';
+	rFile.read(pNewData, sizeof(iLen));
+	ParsingString(pNewData);
 
-	rFile.read((char*)&iLastLogoinTime, sizeof(iLastLogoinTime));
-	rFile.read((char*)&iVaildLoginTime, sizeof(iVaildLoginTime));
-	rFile.read((char*)&iShowItemTime, sizeof(iShowItemTime));
-	rFile.read((char*)&iShowLevel, sizeof(iShowLevel));
-	rFile.read((char*)&iHideParts, sizeof(iHideParts));
-	
-	rFile.read(strName, sizeof(strName));
-	rFile.read(strPwd, sizeof(strName));
-
-	uint32 iItemCount(0);
-	rFile.read((char*)&iItemCount, sizeof(uint32));
-
-	FIELD_ITEM mItem;
-	for (uint32 i = 0; i < iItemCount; ++i)
-	{
-		memset(&mItem,0, sizeof(mItem));
-
-		rFile.read((char*)&mItem.id, sizeof(mItem.id));
-		rFile.read((char*)&mItem.iLv, sizeof(mItem.iLv));
-
-		rFile.read(mItem.strNameNick, sizeof(mItem.strNameNick));
-		rFile.read(mItem.strAccount, sizeof(mItem.strAccount));
-		rFile.read(mItem.strLoginPwd, sizeof(mItem.strLoginPwd));
-		rFile.read(mItem.strPayPwd, sizeof(mItem.strPayPwd));
-		rFile.read(mItem.strOtherPwd, sizeof(mItem.strOtherPwd));
-		rFile.read(mItem.strRelation, sizeof(mItem.strRelation));
-		rFile.read(mItem.strDescribe, sizeof(mItem.strDescribe));
-
-		listItem.push_back(mItem);
-	}
+	delete pNewData;
+// 	rFile.read((char*)&iLastLogoinTime, sizeof(iLastLogoinTime));
+// 	rFile.read((char*)&iVaildLoginTime, sizeof(iVaildLoginTime));
+// 	rFile.read((char*)&iShowItemTime, sizeof(iShowItemTime));
+// 	rFile.read((char*)&iShowLevel, sizeof(iShowLevel));
+// 	rFile.read((char*)&iHideParts, sizeof(iHideParts));
+// 	
+// 	rFile.read(strName, sizeof(strName));
+// 	rFile.read(strPwd, sizeof(strName));
+// 
+// 	uint32 iItemCount(0);
+// 	rFile.read((char*)&iItemCount, sizeof(uint32));
+// 
+// 	FIELD_ITEM mItem;
+// 	for (uint32 i = 0; i < iItemCount; ++i)
+// 	{
+// 		memset(&mItem,0, sizeof(mItem));
+// 
+// 		rFile.read((char*)&mItem.id, sizeof(mItem.id));
+// 		rFile.read((char*)&mItem.iLv, sizeof(mItem.iLv));
+// 
+// 		rFile.read(mItem.strNameNick, sizeof(mItem.strNameNick));
+// 		rFile.read(mItem.strAccount, sizeof(mItem.strAccount));
+// 		rFile.read(mItem.strLoginPwd, sizeof(mItem.strLoginPwd));
+// 		rFile.read(mItem.strPayPwd, sizeof(mItem.strPayPwd));
+// 		rFile.read(mItem.strOtherPwd, sizeof(mItem.strOtherPwd));
+// 		rFile.read(mItem.strRelation, sizeof(mItem.strRelation));
+// 		rFile.read(mItem.strDescribe, sizeof(mItem.strDescribe));
+// 
+// 		listItem.push_back(mItem);
+// 	}
 	return true;
+}
+
+void CField::GetDataToChar(std::string& strOut)
+{
+	strOut.append((char*)&iLastLogoinTime, sizeof(iLastLogoinTime));
+	strOut.append((char*)&iVaildLoginTime, sizeof(iVaildLoginTime));
+	strOut.append((char*)&iShowItemTime, sizeof(iShowItemTime));
+	strOut.append((char*)&iShowLevel, sizeof(iShowLevel));
+	strOut.append((char*)&iHideParts, sizeof(iHideParts));
+
+	strOut.append((char*)&strName, sizeof(strName));
+	strOut.append((char*)&strPwd, sizeof(strPwd));
+
+	uint32 iItemCount = listItem.size();
+	strOut.append((char*)&iItemCount, sizeof(uint32));
+
+	if (iItemCount == 0)
+		return;
+
+	VEC_ITEMS::iterator itor = listItem.begin(), itor_end = listItem.end();
+	for (; itor != itor_end; ++itor)
+	{
+		strOut.append((char*)&(itor->id), sizeof(itor->id));
+		strOut.append((char*)&(itor->iLv), sizeof(itor->iLv));
+
+		strOut.append(itor->strNameNick, sizeof(itor->strNameNick));
+		strOut.append(itor->strAccount, sizeof(itor->strAccount));
+		strOut.append(itor->strLoginPwd, sizeof(itor->strLoginPwd));
+		strOut.append(itor->strPayPwd, sizeof(itor->strPayPwd));
+		strOut.append(itor->strOtherPwd, sizeof(itor->strOtherPwd));
+		strOut.append(itor->strRelation, sizeof(itor->strRelation));
+		strOut.append(itor->strDescribe, sizeof(itor->strDescribe));
+	}
 }
 
 bool CField::WriteBuffer(std::ofstream& wFile)
@@ -52,57 +135,13 @@ bool CField::WriteBuffer(std::ofstream& wFile)
 	if (!wFile.is_open())
 		return false;
 
-	wFile.write((char*)&iLastLogoinTime, sizeof(iLastLogoinTime));
-	wFile.write((char*)&iVaildLoginTime, sizeof(iVaildLoginTime));
-	wFile.write((char*)&iShowItemTime, sizeof(iShowItemTime));
-	wFile.write((char*)&iShowLevel, sizeof(iShowLevel));
-	wFile.write((char*)&iHideParts, sizeof(iHideParts));
-
-	wFile.write((char*)&strName, sizeof(strName));
-	wFile.write((char*)&strPwd, sizeof(strPwd));
-
-	uint32 iItemCount = listItem.size();
-	wFile.write((char*)&iItemCount, sizeof(uint32));
-
-	if (iItemCount == 0)
-		return true;
-
-	VEC_ITEMS::iterator itor = listItem.begin(), itor_end = listItem.end();
-	for (; itor != itor_end; ++itor)
-	{
-		wFile.write((char*)&(itor->id), sizeof(itor->id));
-		wFile.write((char*)&(itor->iLv), sizeof(itor->iLv));
-
-		wFile.write(itor->strNameNick, sizeof(itor->strNameNick));
-		wFile.write(itor->strAccount, sizeof(itor->strAccount));
-		wFile.write(itor->strLoginPwd, sizeof(itor->strLoginPwd));
-		wFile.write(itor->strPayPwd, sizeof(itor->strPayPwd));
-		wFile.write(itor->strOtherPwd, sizeof(itor->strOtherPwd));
-		wFile.write(itor->strRelation, sizeof(itor->strRelation));
-		wFile.write(itor->strDescribe, sizeof(itor->strDescribe));
-	}
+	std::string strData;
+	GetDataToChar(strData);
+	uint32 iLen = strData.length();
+	wFile.write((char*)&iLen, sizeof(iLen));
+	wFile.write(strData.c_str(), strData.length());
 
 	return true;
-}
-
-void CField::WriteString(std::ofstream& wFile, const std::string& strSrc)
-{
-	uint32 iLen = strSrc.length();
-	wFile.write((char*)&iLen, sizeof(uint32));
-	if (iLen>0)
-		wFile.write(strSrc.c_str(), iLen);
-}
-
-void CField::ReadString(std::ifstream& rFile, std::string& strOut)
-{
-	uint32 iLen(0);
-	rFile.read((char*)&iLen, sizeof(uint32));
-	if (iLen >= MAX_LEN_TEXT)
-		iLen = MAX_LEN_TEXT - 1;
-
-	char szText[MAX_LEN_TEXT] = "";
-	rFile.read(szText, iLen);
-	strOut.append(szText,iLen);
 }
 
 const char* CField::GetFieldString(uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)
@@ -111,27 +150,24 @@ const char* CField::GetFieldString(uint8 iRow, uint8 iColumn, const FIELD_ITEM* 
 		if (!(pField = GetItem(iRow)))
 			return NULL;
 
-	if (iColumn < FeildColumn_Max)
+	switch (iColumn)
 	{
-		switch (iColumn)
-		{
-		case FeildColumn_Nick:
-			return pField->strNameNick;
-		case FeildColumn_Account:
-			return pField->strAccount;
-		case FeildColumn_PwdLogin:
-			return pField->strLoginPwd;
-		case FeildColumn_PwdPay:
-			return pField->strPayPwd;
-		case FeildColumn_PwdOther:
-			return pField->strOtherPwd;
-		case FeildColumn_Relation:
-			return pField->strRelation;
-		case FeildColumn_Describe:
-			return pField->strDescribe;
-		default:
-			return NULL;
-		}
+	case FeildColumn_Nick:
+		return pField->strNameNick;
+	case FeildColumn_Account:
+		return pField->strAccount;
+	case FeildColumn_PwdLogin:
+		return pField->strLoginPwd;
+	case FeildColumn_PwdPay:
+		return pField->strPayPwd;
+	case FeildColumn_PwdOther:
+		return pField->strOtherPwd;
+	case FeildColumn_Relation:
+		return pField->strRelation;
+	case FeildColumn_Describe:
+		return pField->strDescribe;
+	default:
+		return NULL;
 	}
 }
 
@@ -153,7 +189,7 @@ const FIELD_ITEM* CField::GetItem(uint8 iRow)
 bool CField::IsShowRow(uint8 iRow)
 {
 	const FIELD_ITEM* pField = GetItem(iRow);
-	if (pField && (pField->iLv == SHOW_ITEM_LV_NOR || iShowLevel&pField->iLv == pField->iLv))
+	if (pField && (pField->iLv == SHOW_ITEM_LV_NOR || (iShowLevel&pField->iLv) == pField->iLv))
 		return true;
 	else
 		return false;
@@ -194,12 +230,14 @@ bool CField::IsNeedHideParts(bool isHideParts, uint8 iRow, uint8 iColumn, const 
 		if (!(pField = GetItem(iRow)))
 			return false;
 
-	if (iHideParts&pField->iLv == pField->iLv && (iColumn == FeildColumn_Account ||
+	if ((iHideParts&pField->iLv) == pField->iLv && (iColumn == FeildColumn_Account ||
 		iColumn == FeildColumn_Relation || iColumn == FeildColumn_Describe))
 		return true;
 	else
 		return false;
 }
+
+
 
 //////////////////////////////////////////////////////////////////////////
 UserFeildManage* UserFeildManage::m_gShare=NULL;

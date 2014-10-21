@@ -53,6 +53,12 @@ int _tmain(int argc, _TCHAR* argv[])
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+// 	int aaa[2] = { 5, 987 };
+// 	std::string strAa;
+// 	strAa.append((char*)&aaa[0], sizeof(int));
+// 	strAa.append((char*)&aaa[1], sizeof(int));
+// 	char szTempssd[120] = "fdskfhskdhfk";
+// 	strAa.append(szTempssd, sizeof(szTempssd));
 	float aa = 0.00000001;
 	float bb = -0.00000001;
 	float cc = 1e-10;

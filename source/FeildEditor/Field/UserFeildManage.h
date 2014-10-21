@@ -20,13 +20,16 @@ public:
 
 	const FIELD_ITEM* GetItem(uint8 iRow);
 protected:
+	
+
 	bool WriteBuffer(std::ofstream& wFile);
 	bool LoadBuffer(std::ifstream& rFile);
 
 	bool IsNeedHideParts(bool isHideParts,uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField = NULL);
 private:
-	void WriteString(std::ofstream& wFile, const std::string&);
-	void ReadString(std::ifstream& iFile, std::string&);
+	void GetDataToChar(std::string&);
+	void ParsingString(const char*);
+	void ParsingStringCopy(const char*,void*,uint32 iLen);
 };
 
 //////////////////////////////////////////////////////////////////////////
