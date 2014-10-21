@@ -73,9 +73,10 @@ bool CaLogicPool::Check(/**/)
 	std::string aa = _CANNP_NAME::encrypt::EncryptMD5(cpuid.c_str(), cpuid.length());
 	std::string aesa = _CANNP_NAME::encrypt::EncryptAES(aa.c_str(), pwd);
 	std::string aesb = _CANNP_NAME::encrypt::EncryptAES(aa.c_str() + 16, pwd);
-
-	//std::string aesa1 = _CANNP_NAME::DecryptAES(aesa.c_str(), pwd);
-	//std::string aesb1 = _CANNP_NAME::DecryptAES(aesb.c_str(), pwd);
+	std::string strAll = aesa;
+	strAll.append(aesb);
+	std::string aesa1 = _CANNP_NAME::encrypt::DecryptAES(strAll.c_str(), pwd);
+	std::string aesb1 = _CANNP_NAME::encrypt::DecryptAES(strAll.c_str() + 16, pwd);
 	//aesa1.append(aesb1);
 
 	Point start(4*1.414213562373095f, 0.0f);

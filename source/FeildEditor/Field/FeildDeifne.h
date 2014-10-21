@@ -5,6 +5,10 @@
 #include <list>
 #include <vector>
 
+#define MAX_LEN_NAME 33
+#define MAX_LEN_PWD  33
+#define MAX_LEN_TEXT 129
+
 enum FeildColumn
 {
 	FeildColumn_Nick=0,
@@ -24,15 +28,15 @@ static TCHAR g_FeildName[FeildColumn_Max][16] = { _T("NickName"), _T("Account"),
 static uint8 g_FeildLen[FeildColumn_Max] = {100,160,130,130,130,200,200};
 struct FIELD_ITEM
 {
-	uint32 id;
-	uint32 iLv;
-	std::string strNameNick;
-	std::string strAccount;
-	std::string strLoginPwd;
-	std::string strPayPwd;
-	std::string strOtherPwd;
-	std::string strRelation;
-	std::string strDescribe;
+	uint32	id;
+	uint32	iLv;
+	char	strNameNick[MAX_LEN_NAME];
+	char	strAccount[MAX_LEN_NAME];
+	char	strLoginPwd[MAX_LEN_PWD];
+	char	strPayPwd[MAX_LEN_PWD];
+	char	strOtherPwd[MAX_LEN_PWD];
+	char	strRelation[MAX_LEN_NAME];
+	char	strDescribe[MAX_LEN_TEXT];
 };
 
 enum SHOW_ITEM_LV
@@ -45,13 +49,14 @@ enum SHOW_ITEM_LV
 typedef std::vector<FIELD_ITEM>	VEC_ITEMS;
 struct User_Feild
 {
-	uint32 iLastLogoinTime;		
-	uint32 iVaildLoginTime;
-	uint32 iShowItemTime;
-	uint32 iShowLevel; //SHOW_ITEM_LV SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_HIGHT
-	std::string strName;
-	std::string strPwd;
-	VEC_ITEMS listItem;
+	uint32		iLastLogoinTime;		
+	uint32		iVaildLoginTime;
+	uint32		iShowItemTime;
+	uint32		iShowLevel; //SHOW_ITEM_LV SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_HIGHT
+	uint32		iHideParts; //SHOW_ITEM_LV SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_HIGHT
+	char		strName[MAX_LEN_NAME];
+	char		strPwd[MAX_LEN_PWD];
+	VEC_ITEMS	listItem;
 };
 
 
