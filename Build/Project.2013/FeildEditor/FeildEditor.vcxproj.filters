@@ -36,10 +36,13 @@
     <ClInclude Include="..\..\..\source\FeildEditor\Field\UserFeildManage.h">
       <Filter>Feild</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\FeildEditor\include\FeildEditor.h">
+    <ClInclude Include="..\..\..\source\FeildEditor\src\GobalConfig.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\FeildEditor\include\FeildEditorDlg.h">
+    <ClInclude Include="..\..\..\source\FeildEditor\src\FeildEditor.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\FeildEditor\src\FeildEditorDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -54,6 +57,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\FeildEditor\src\FeildEditorDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\FeildEditor\src\GobalConfig.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

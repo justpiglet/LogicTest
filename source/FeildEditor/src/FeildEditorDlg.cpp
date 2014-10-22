@@ -8,6 +8,7 @@
 #include "afxdialogex.h"
 #include "depend/cantools/jsoncpp/json/reader.h"
 #include "../Field/UserFeildManage.h"
+#include "GobalConfig.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

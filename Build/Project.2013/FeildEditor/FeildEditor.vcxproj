@@ -122,8 +122,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\source\FeildEditor\Field\FeildDeifne.h" />
     <ClInclude Include="..\..\..\source\FeildEditor\Field\UserFeildManage.h" />
-    <ClInclude Include="..\..\..\source\FeildEditor\include\FeildEditor.h" />
-    <ClInclude Include="..\..\..\source\FeildEditor\include\FeildEditorDlg.h" />
+    <ClInclude Include="..\..\..\source\FeildEditor\src\FeildEditor.h" />
+    <ClInclude Include="..\..\..\source\FeildEditor\src\FeildEditorDlg.h" />
+    <ClInclude Include="..\..\..\source\FeildEditor\src\GobalConfig.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -132,6 +133,7 @@
     <ClCompile Include="..\..\..\source\FeildEditor\Field\UserFeildManage.cpp" />
     <ClCompile Include="..\..\..\source\FeildEditor\src\FeildEditor.cpp" />
     <ClCompile Include="..\..\..\source\FeildEditor\src\FeildEditorDlg.cpp" />
+    <ClCompile Include="..\..\..\source\FeildEditor\src\GobalConfig.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
