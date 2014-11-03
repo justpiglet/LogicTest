@@ -43,6 +43,8 @@ public:
 
 	const CField* GetCurUserFields(){ return m_curUser; }
 
+	void SaveConfigField();
+
 private:
 	UserFieldManage();
 	~UserFieldManage();

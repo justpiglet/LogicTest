@@ -75,7 +75,10 @@ public:
 	static int32 GetRandoom(int32 min = 0, int32 max = 0x7fff);
 	//##Get a arrary index by arrary value prencent. param@1 arrary,@2count  ##
 	static uint8 GetIndex(const uint16* pArr, const uint8& count);
+private:
+	static bool m_isInit;
 };
+
 /////////////////////////////////////////////////////////////////////////////random end
 
 
@@ -83,14 +86,18 @@ public:
 class encrypt
 {
 public:
-	static std::string EncryptMD5(const char* src, uint8 len);
+	static void EncryptMD5(const char* src, uint8 len, std::string&);
 
 	//encrypt only for pwd 0-128bit
-	static std::string EncryptAES(const char* src, const char* pwd);
-	static std::string DecryptAES(const char* ciphertext, const char* pwd);
+	static bool EncryptAES(const char* src, const char* pwd, std::string&);
+	static bool DecryptAES(const char* ciphertext, const char* pwd, std::string&);
 
-	static std::string CPUID2();
-	static std::string MAC_ETHERNET();
+	static void CPUID2(std::string&);
+	static bool MAC_ETHERNET(std::string&);
+
+	//encrypt files
+	static void EncryptBuffer(const char* src,const uint32&, const char* pwd, std::string&);
+	static void DecryptBuffer(const char* src, const uint32&, const char* pwd, std::string&);
 	
 };
 /////////////////////////////////////////////////////////////////////////////encrypt end

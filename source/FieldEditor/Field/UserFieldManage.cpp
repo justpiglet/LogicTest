@@ -3,7 +3,7 @@
 #include "depend/cantools/tools.h"
 
 #define FLORD_NAME "Dont_Delete"
-#define CONFIG_FILE "FieldConfig"
+#define CONFIG_FILE "f68dc1044703e358580461aec4504fdf"
 
 CField::CField()
 {
@@ -267,13 +267,15 @@ bool UserFieldManage::InitData()
 {
 	CreateDirectoryA(GetResourcePath().c_str(), NULL);
 
-	std::string strFilePath = GetResourceFileName(CONFIG_FILE);
-
-	//load config
-	std::ifstream rFile(strFilePath.c_str());
+	std::ifstream rFile(GetResourceFileName(CONFIG_FILE).c_str(), std::ios::binary | std::ios::in);
 	if (!rFile)
 	{
 		CGobalConfig::Share()->CreateRandStr(32, m_ConfigInfo.strFieldPwd);
+		m_ConfigInfo.strFieldPwd[32] = '\0';
+		CGobalConfig::Share()->CreateRandStr(32, m_ConfigInfo.strPwdPwd);
+		m_ConfigInfo.strPwdPwd[32] = '\0';
+
+		SaveConfigField();
 	}
 	else
 	{
@@ -281,6 +283,20 @@ bool UserFieldManage::InitData()
 	}
 
 	return true;
+}
+
+std::string UserFieldManage::GetResourcePath()
+{
+	return FLORD_NAME;
+}
+
+std::string UserFieldManage::GetResourceFileName(const char* szFileName)
+{
+	std::string strPath = GetResourcePath();
+	strPath.append("/");
+	strPath.append(szFileName);
+	strPath.append(".db");
+	return strPath;
 }
 
 std::string UserFieldManage::UserLogoin(const std::string& straNme, const std::string& strPwd)
@@ -309,24 +325,8 @@ std::string UserFieldManage::UserLogoin(const std::string& straNme, const std::s
 	return std::string("Account error,input again!");
 }
 
-// CString UserFieldManage::GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isHideParts/* = true*/)
-// {
-// 	if (!m_curUser)
-// 		return CString();
-// 	else
-// 		return m_curUser->GetFieldItemCS(iRow, iColumn, isHideParts);
-// }
-
-
-std::string UserFieldManage::GetResourcePath()
+void UserFieldManage::SaveConfigField()
 {
-	return FLORD_NAME;
-}
+	std::ofstream wFile(GetResourceFileName(CONFIG_FILE).c_str(), std::ios::binary | std::ios::out);
 
-std::string UserFieldManage::GetResourceFileName(const char* szFileName)
-{
-	std::string strPath = GetResourcePath();
-	strPath.append("/");
-	strPath.append(szFileName);
-	return strPath;
 }
