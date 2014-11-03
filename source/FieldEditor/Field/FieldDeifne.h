@@ -1,5 +1,5 @@
-#ifndef FERTRHTH_FeildDeifne_h
-#define FERTRHTH_FeildDeifne_h
+#ifndef FERTRHTH_FieldDeifne_h
+#define FERTRHTH_FieldDeifne_h
 #include "base/basedefine.h"
 #include <string.h>
 #include <list>
@@ -9,23 +9,23 @@
 #define MAX_LEN_PWD  33
 #define MAX_LEN_TEXT 129
 
-enum FeildColumn
+enum FieldColumn
 {
-	FeildColumn_Nick=0,
-	FeildColumn_Account,
-	FeildColumn_PwdBegin,
-	FeildColumn_PwdLogin = FeildColumn_PwdBegin,
-	FeildColumn_PwdPay,
-	FeildColumn_PwdOther,
-	FeildColumn_PwdEnd = FeildColumn_PwdOther,
-	FeildColumn_Relation,
-	FeildColumn_Describe,
+	FieldColumn_Nick=0,
+	FieldColumn_Account,
+	FieldColumn_PwdBegin,
+	FieldColumn_PwdLogin = FieldColumn_PwdBegin,
+	FieldColumn_PwdPay,
+	FieldColumn_PwdOther,
+	FieldColumn_PwdEnd = FieldColumn_PwdOther,
+	FieldColumn_Relation,
+	FieldColumn_Describe,
 
-	FeildColumn_Max
+	FieldColumn_Max
 };
 
-static TCHAR g_FeildName[FeildColumn_Max][16] = { _T("NickName"), _T("Account"), _T("LoginPwd"), _T("PayPwd"), _T("OtherPwd"), _T("Relation"), _T("Describe")};
-static uint8 g_FeildLen[FeildColumn_Max] = {100,160,130,130,130,200,200};
+static TCHAR g_FieldName[FieldColumn_Max][16] = { _T("NickName"), _T("Account"), _T("LoginPwd"), _T("PayPwd"), _T("OtherPwd"), _T("Relation"), _T("Describe")};
+static uint8 g_FieldLen[FieldColumn_Max] = {100,160,130,130,130,200,200};
 struct FIELD_ITEM
 {
 	uint32	id;
@@ -47,7 +47,7 @@ enum SHOW_ITEM_LV
 	SHOW_ITEM_LV_SECRET=4,
 };
 typedef std::vector<FIELD_ITEM>	VEC_ITEMS;
-struct User_Feild
+struct User_Field
 {
 	uint32		iLastLogoinTime;		
 	uint32		iVaildLoginTime;
@@ -60,4 +60,17 @@ struct User_Feild
 };
 
 
-#endif // !FERTRHTH_FeildDeifne_h
+struct Account_Info
+{
+	char	strName[MAX_LEN_NAME];
+	char	strPwd[MAX_LEN_PWD];
+};
+typedef std::vector<Account_Info> VEC_ACCOUNTS;
+struct Config_Info
+{
+	char	strFieldPwd[MAX_LEN_PWD];
+	char	strPwdPwd[MAX_LEN_PWD];
+	VEC_ACCOUNTS vecUse;
+	VEC_ACCOUNTS vecAbandon;
+};
+#endif // !FERTRHTH_FieldDeifne_h

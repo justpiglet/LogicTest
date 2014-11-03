@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DllTest", "Project.2013\Dll
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NewLogic", "Project.2013\Logic\NewLogic.vcxproj", "{A5EE41E8-ED64-482D-B592-BA74F0D31397}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FeildEditor", "Project.2013\FeildEditor\FeildEditor.vcxproj", "{150278C7-8778-4391-B429-946C89F9314F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FieldEditor", "Project.2013\FeildEditor\FeildEditor.vcxproj", "{150278C7-8778-4391-B429-946C89F9314F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

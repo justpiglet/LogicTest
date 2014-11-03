@@ -1,5 +1,9 @@
-#include "UserFeildManage.h"
+#include "UserFieldManage.h"
+#include "GobalConfig.h"
 #include "depend/cantools/tools.h"
+
+#define FLORD_NAME "Dont_Delete"
+#define CONFIG_FILE "FieldConfig"
 
 CField::CField()
 {
@@ -36,8 +40,8 @@ void CField::ParsingString(const char* pSrc)
 	for (uint32 i = 0; i < iItemCount; ++i)
 	{
 		memset(&mItem, 0, sizeof(mItem));
-
-		ParsingStringCopy(pIndex, &mItem.id, sizeof(mItem.id));
+		mItem.id = i;
+		//ParsingStringCopy(pIndex, &mItem.id, sizeof(mItem.id));
 		ParsingStringCopy(pIndex, &mItem.iLv, sizeof(mItem.iLv));
 
 		ParsingStringCopy(pIndex, mItem.strNameNick, sizeof(mItem.strNameNick));
@@ -117,7 +121,7 @@ void CField::GetDataToChar(std::string& strOut)
 	VEC_ITEMS::iterator itor = listItem.begin(), itor_end = listItem.end();
 	for (; itor != itor_end; ++itor)
 	{
-		strOut.append((char*)&(itor->id), sizeof(itor->id));
+		//strOut.append((char*)&(itor->id), sizeof(itor->id));
 		strOut.append((char*)&(itor->iLv), sizeof(itor->iLv));
 
 		strOut.append(itor->strNameNick, sizeof(itor->strNameNick));
@@ -144,7 +148,7 @@ bool CField::WriteBuffer(std::ofstream& wFile)
 	return true;
 }
 
-const char* CField::GetFieldString(uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)
+const char* CField::GetFieldString(uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)const
 {
 	if (!pField)
 		if (!(pField = GetItem(iRow)))
@@ -152,41 +156,41 @@ const char* CField::GetFieldString(uint8 iRow, uint8 iColumn, const FIELD_ITEM* 
 
 	switch (iColumn)
 	{
-	case FeildColumn_Nick:
+	case FieldColumn_Nick:
 		return pField->strNameNick;
-	case FeildColumn_Account:
+	case FieldColumn_Account:
 		return pField->strAccount;
-	case FeildColumn_PwdLogin:
+	case FieldColumn_PwdLogin:
 		return pField->strLoginPwd;
-	case FeildColumn_PwdPay:
+	case FieldColumn_PwdPay:
 		return pField->strPayPwd;
-	case FeildColumn_PwdOther:
+	case FieldColumn_PwdOther:
 		return pField->strOtherPwd;
-	case FeildColumn_Relation:
+	case FieldColumn_Relation:
 		return pField->strRelation;
-	case FeildColumn_Describe:
+	case FieldColumn_Describe:
 		return pField->strDescribe;
 	default:
 		return NULL;
 	}
 }
 
-bool CField::IsVaild(uint8 iRow, uint8 iColumn /*= 0*/)
+bool CField::IsVaild(uint8 iRow, uint8 iColumn /*= 0*/)const
 {
-	if (iRow >= GetFeildRow() || iColumn >= FeildColumn_Max)
+	if (iRow >= GetFieldRow() || iColumn >= FieldColumn_Max)
 		return false;
 	else
 		return true;
 }
 
-const FIELD_ITEM* CField::GetItem(uint8 iRow)
+const FIELD_ITEM* CField::GetItem(uint8 iRow)const
 {
 	if (!IsVaild(iRow))
 		return NULL;
 	return &listItem[iRow];
 }
 
-bool CField::IsShowRow(uint8 iRow)
+bool CField::IsShowRow(uint8 iRow)const
 {
 	const FIELD_ITEM* pField = GetItem(iRow);
 	if (pField && (pField->iLv == SHOW_ITEM_LV_NOR || (iShowLevel&pField->iLv) == pField->iLv))
@@ -197,7 +201,7 @@ bool CField::IsShowRow(uint8 iRow)
 
 
 
-CString CField::GetFeildItemCS(uint8 iRow, uint8 iColumn, bool isHideParts)
+CString CField::GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isHideParts)const
 {
 	const FIELD_ITEM* pField = GetItem(iRow);
 	if (!pField)
@@ -221,7 +225,7 @@ CString CField::GetFeildItemCS(uint8 iRow, uint8 iColumn, bool isHideParts)
 	return strTemp;
 }
 
-bool CField::IsNeedHideParts(bool isHideParts, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)
+bool CField::IsNeedHideParts(bool isHideParts, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)const
 {
 	if (!isHideParts)
 		return false;
@@ -230,8 +234,8 @@ bool CField::IsNeedHideParts(bool isHideParts, uint8 iRow, uint8 iColumn, const 
 		if (!(pField = GetItem(iRow)))
 			return false;
 
-	if ((iHideParts&pField->iLv) == pField->iLv && (iColumn == FeildColumn_Account ||
-		iColumn == FeildColumn_Relation || iColumn == FeildColumn_Describe))
+	if ((iHideParts&pField->iLv) == pField->iLv && (iColumn == FieldColumn_Account ||
+		iColumn == FieldColumn_Relation || iColumn == FieldColumn_Describe))
 		return true;
 	else
 		return false;
@@ -240,100 +244,86 @@ bool CField::IsNeedHideParts(bool isHideParts, uint8 iRow, uint8 iColumn, const 
 
 
 //////////////////////////////////////////////////////////////////////////
-UserFeildManage* UserFeildManage::m_gShare=NULL;
-UserFeildManage::UserFeildManage() :m_curUser(NULL)
+UserFieldManage* UserFieldManage::m_gShare=NULL;
+UserFieldManage::UserFieldManage() :m_curUser(NULL)
 {
 }
 
-UserFeildManage::~UserFeildManage()
+UserFieldManage::~UserFieldManage()
 {
-	VEC_FEILDS::iterator itor;
-	while (m_vecUserInfo.size())
-	{
-		itor = m_vecUserInfo.begin();
-		delete (*itor);
-		m_vecUserInfo.erase(itor);
-	}
+	if (m_curUser)
+		delete m_curUser;
 }
 
-UserFeildManage* UserFeildManage::Share()
+UserFieldManage* UserFieldManage::Share()
 {
 	if (!m_gShare)
-		m_gShare = new UserFeildManage;
+		m_gShare = new UserFieldManage;
 
 	return m_gShare;
 }
 
-bool UserFeildManage::LoadData()
+bool UserFieldManage::InitData()
 {
-	std::string strFilePath=GetResourceFileName("Important.db");
+	CreateDirectoryA(GetResourcePath().c_str(), NULL);
+
+	std::string strFilePath = GetResourceFileName(CONFIG_FILE);
 
 	//load config
-
-	rapidjson::Document document;
-	if (!_CANNP_NAME::files::ReadFileRapidJson(strFilePath.c_str(), document))
-		return false;
-
-	const rapidjson::Value& accounts = document["Account"];
-	uint16 counts = accounts.Size();
-	
-	const char* pSz = NULL;
-	for (uint16 i = 0; i < counts; ++i)
+	std::ifstream rFile(strFilePath.c_str());
+	if (!rFile)
 	{
-		User_Feild* pFeild=new User_Feild;
-		//pFeild->strName = accounts[i]["Name"].GetString();
-		//pSz = accounts[i]["Pwd"].GetString();
-	//	if (pSz)
-		{
-			//std::string aesa = _CANNP_NAME::encrypt::EncryptAES(pSz, pwd);
-		}
-		
+		CGobalConfig::Share()->CreateRandStr(32, m_ConfigInfo.strFieldPwd);
+	}
+	else
+	{
+
 	}
 
 	return true;
 }
 
-std::string UserFeildManage::UserLogoin(const std::string& straNme, const std::string& strPwd)
+std::string UserFieldManage::UserLogoin(const std::string& straNme, const std::string& strPwd)
 {
 	
-	if (!m_vecUserInfo.empty())
-		return std::string("There haven't any user info,you need create one.");
-
-	std::string strError;
-	VEC_FEILDS::iterator itor = m_vecUserInfo.begin(),itor_end = m_vecUserInfo.end();
-	for (; itor != itor_end; ++itor)
-	{
-		if ((*itor)->strName == straNme)
-		{
-			if ((*itor)->strPwd == strPwd)
-			{
-				m_curUser = (*itor);
-				return strError;
-			}
-				
-			else
-				return std::string("PassWord error,input again!");
-		}
-	}
-
+// 	if (!m_vecUserInfo.empty())
+// 		return std::string("There haven't any user info,you need create one.");
+// 
+// 	std::string strError;
+// 	VEC_FEILDS::iterator itor = m_vecUserInfo.begin(),itor_end = m_vecUserInfo.end();
+// 	for (; itor != itor_end; ++itor)
+// 	{
+// 		if ((*itor)->strName == straNme)
+// 		{
+// 			if ((*itor)->strPwd == strPwd)
+// 			{
+// 				m_curUser = (*itor);
+// 				return strError;
+// 			}
+// 				
+// 			else
+// 				return std::string("PassWord error,input again!");
+// 		}
+// 	}
+// 
 	return std::string("Account error,input again!");
 }
 
-CString UserFeildManage::GetFeildItemCS(uint8 iRow, uint8 iColumn, bool isHideParts/* = true*/)
+// CString UserFieldManage::GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isHideParts/* = true*/)
+// {
+// 	if (!m_curUser)
+// 		return CString();
+// 	else
+// 		return m_curUser->GetFieldItemCS(iRow, iColumn, isHideParts);
+// }
+
+
+std::string UserFieldManage::GetResourcePath()
 {
-	if (!m_curUser)
-		return CString();
-	else
-		return m_curUser->GetFeildItemCS(iRow, iColumn, isHideParts);
+	return FLORD_NAME;
 }
 
-
-std::string UserFeildManage::GetResourcePath()
-{
-	return "";
-}
-
-std::string UserFeildManage::GetResourceFileName(const char* szFileName)
+std::string UserFieldManage::GetResourceFileName(const char* szFileName)
 {
 	std::string strPath = GetResourcePath();
 	strPath.append("/");

@@ -1,26 +1,26 @@
 
-// FeildEditor.cpp : 定义应用程序的类行为。
+// FieldEditor.cpp : 定义应用程序的类行为。
 //
 
 #include "stdafx.h"
-#include "FeildEditor.h"
-#include "FeildEditorDlg.h"
+#include "FieldEditor.h"
+#include "FieldEditorDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-// CFeildEditorApp
+// CFieldEditorApp
 
-BEGIN_MESSAGE_MAP(CFeildEditorApp, CWinApp)
+BEGIN_MESSAGE_MAP(CFieldEditorApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 
-// CFeildEditorApp 构造
+// CFieldEditorApp 构造
 
-CFeildEditorApp::CFeildEditorApp()
+CFieldEditorApp::CFieldEditorApp()
 {
 	// 支持重新启动管理器
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
@@ -30,14 +30,14 @@ CFeildEditorApp::CFeildEditorApp()
 }
 
 
-// 唯一的一个 CFeildEditorApp 对象
+// 唯一的一个 CFieldEditorApp 对象
 
-CFeildEditorApp theApp;
+CFieldEditorApp theApp;
 
 
-// CFeildEditorApp 初始化
+// CFieldEditorApp 初始化
 
-BOOL CFeildEditorApp::InitInstance()
+BOOL CFieldEditorApp::InitInstance()
 {
 //TODO: call AfxInitRichEdit2() to initialize richedit2 library.
 	// 如果一个运行在 Windows XP 上的应用程序清单指定要
@@ -71,7 +71,7 @@ BOOL CFeildEditorApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 
-	CFeildEditorDlg dlg;
+	CFieldEditorDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

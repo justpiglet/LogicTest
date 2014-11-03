@@ -14,6 +14,7 @@
     <ProjectGuid>{150278C7-8778-4391-B429-946C89F9314F}</ProjectGuid>
     <RootNamespace>FeildEditor</RootNamespace>
     <Keyword>MFCProj</Keyword>
+    <ProjectName>FieldEditor</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -120,20 +121,20 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\source\FeildEditor\Field\FeildDeifne.h" />
-    <ClInclude Include="..\..\..\source\FeildEditor\Field\UserFeildManage.h" />
-    <ClInclude Include="..\..\..\source\FeildEditor\src\FeildEditor.h" />
-    <ClInclude Include="..\..\..\source\FeildEditor\src\FeildEditorDlg.h" />
-    <ClInclude Include="..\..\..\source\FeildEditor\src\GobalConfig.h" />
+    <ClInclude Include="..\..\..\source\FieldEditor\FieldEditor.h" />
+    <ClInclude Include="..\..\..\source\FieldEditor\FieldEditorDlg.h" />
+    <ClInclude Include="..\..\..\source\FieldEditor\Field\FieldDeifne.h" />
+    <ClInclude Include="..\..\..\source\FieldEditor\Field\GobalConfig.h" />
+    <ClInclude Include="..\..\..\source\FieldEditor\Field\UserFieldManage.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\source\FeildEditor\Field\UserFeildManage.cpp" />
-    <ClCompile Include="..\..\..\source\FeildEditor\src\FeildEditor.cpp" />
-    <ClCompile Include="..\..\..\source\FeildEditor\src\FeildEditorDlg.cpp" />
-    <ClCompile Include="..\..\..\source\FeildEditor\src\GobalConfig.cpp" />
+    <ClCompile Include="..\..\..\source\FieldEditor\FieldEditor.cpp" />
+    <ClCompile Include="..\..\..\source\FieldEditor\FieldEditorDlg.cpp" />
+    <ClCompile Include="..\..\..\source\FieldEditor\Field\GobalConfig.cpp" />
+    <ClCompile Include="..\..\..\source\FieldEditor\Field\UserFieldManage.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

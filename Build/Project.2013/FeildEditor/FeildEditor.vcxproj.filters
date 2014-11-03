@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Feild">
+    <Filter Include="Field">
       <UniqueIdentifier>{add31cbe-ebee-4b1f-8703-c5ef915b7be5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -30,37 +30,37 @@
     <ClInclude Include="Resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\FeildEditor\Field\FeildDeifne.h">
-      <Filter>Feild</Filter>
+    <ClInclude Include="..\..\..\source\FieldEditor\FieldEditor.h">
+      <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\FeildEditor\Field\UserFeildManage.h">
-      <Filter>Feild</Filter>
+    <ClInclude Include="..\..\..\source\FieldEditor\FieldEditorDlg.h">
+      <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\FeildEditor\src\GobalConfig.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="..\..\..\source\FieldEditor\Field\FieldDeifne.h">
+      <Filter>Field</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\FeildEditor\src\FeildEditor.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="..\..\..\source\FieldEditor\Field\GobalConfig.h">
+      <Filter>Field</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\FeildEditor\src\FeildEditorDlg.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="..\..\..\source\FieldEditor\Field\UserFieldManage.h">
+      <Filter>Field</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\FeildEditor\Field\UserFeildManage.cpp">
-      <Filter>Feild</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\FeildEditor\src\FeildEditor.cpp">
+    <ClCompile Include="..\..\..\source\FieldEditor\FieldEditor.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\FeildEditor\src\FeildEditorDlg.cpp">
+    <ClCompile Include="..\..\..\source\FieldEditor\FieldEditorDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\FeildEditor\src\GobalConfig.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="..\..\..\source\FieldEditor\Field\GobalConfig.cpp">
+      <Filter>Field</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\FieldEditor\Field\UserFieldManage.cpp">
+      <Filter>Field</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

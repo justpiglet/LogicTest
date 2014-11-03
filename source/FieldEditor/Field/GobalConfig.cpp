@@ -12,7 +12,7 @@ CGobalConfig::~CGobalConfig()
 {
 }
 
-void CGobalConfig::CreateRandStr(uint8 iLen, std::string& strOut)
+void CGobalConfig::CreateRandStr(uint8 iLen, char szOut[])
 {
 	char szTemp[2] = "";
 	uint16 iRandVal(0);
@@ -20,13 +20,10 @@ void CGobalConfig::CreateRandStr(uint8 iLen, std::string& strOut)
 	{
 		iRandVal = _CANNP_NAME::randoom::GetRandoom(0, 0xffff);
 		
-		szTemp[0] = iRandVal & 0x007f;
-		strOut.append(szTemp,1);
-		++i;
+		szOut[i++] = iRandVal & 0x007f;
 		if (i==iLen-1)
 			break;
-		szTemp[0] = iRandVal >> 5;
-		strOut.append(szTemp,1);
+		szOut[i] = iRandVal >> 5;
 	}
 }
 

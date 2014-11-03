@@ -1,17 +1,17 @@
 
-// FeildEditorDlg.h : 头文件
+// FieldEditorDlg.h : 头文件
 //
 
 #pragma once
 #include "afxcmn.h"
 
 
-// CFeildEditorDlg 对话框
-class CFeildEditorDlg : public CDialogEx
+// CFieldEditorDlg 对话框
+class CFieldEditorDlg : public CDialogEx
 {
 // 构造
 public:
-	CFeildEditorDlg(CWnd* pParent = NULL);	// 标准构造函数
+	CFieldEditorDlg(CWnd* pParent = NULL);	// 标准构造函数
 
 // 对话框数据
 	enum { IDD = IDD_FEILDEDITOR_DIALOG };
@@ -36,7 +36,7 @@ private:
 	CListCtrl m_ListInfo;
 public:
 	afx_msg void OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnMenuClickPeepFeildInfo();
+	afx_msg void OnMenuClickPeepFieldInfo();
 	afx_msg void OnMenuClickPeepPwd();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedLogoin();

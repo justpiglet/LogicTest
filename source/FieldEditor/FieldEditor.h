@@ -1,5 +1,5 @@
 
-// FeildEditor.h : PROJECT_NAME 应用程序的主头文件
+// FieldEditor.h : PROJECT_NAME 应用程序的主头文件
 //
 
 #pragma once
@@ -11,14 +11,14 @@
 #include "resource.h"		// 主符号
 
 
-// CFeildEditorApp: 
-// 有关此类的实现，请参阅 FeildEditor.cpp
+// CFieldEditorApp: 
+// 有关此类的实现，请参阅 FieldEditor.cpp
 //
 
-class CFeildEditorApp : public CWinApp
+class CFieldEditorApp : public CWinApp
 {
 public:
-	CFeildEditorApp();
+	CFieldEditorApp();
 
 // 重写
 public:
@@ -30,4 +30,4 @@ public:
 
 };
 
-extern CFeildEditorApp theApp;
+extern CFieldEditorApp theApp;

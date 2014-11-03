@@ -1,56 +1,56 @@
 
-// FeildEditorDlg.cpp : 实现文件
+// FieldEditorDlg.cpp : 实现文件
 //
 
 #include "stdafx.h"
-#include "FeildEditor.h"
-#include "FeildEditorDlg.h"
+#include "FieldEditor.h"
+#include "FieldEditorDlg.h"
 #include "afxdialogex.h"
 #include "depend/cantools/jsoncpp/json/reader.h"
-#include "../Field/UserFeildManage.h"
-#include "GobalConfig.h"
+#include "Field/UserFieldManage.h"
+#include "Field/GobalConfig.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-// CFeildEditorDlg 对话框
+// CFieldEditorDlg 对话框
 
 
 
-CFeildEditorDlg::CFeildEditorDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CFeildEditorDlg::IDD, pParent)
+CFieldEditorDlg::CFieldEditorDlg(CWnd* pParent /*=NULL*/)
+	: CDialogEx(CFieldEditorDlg::IDD, pParent)
 {
 	AfxInitRichEdit2();
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CFeildEditorDlg::DoDataExchange(CDataExchange* pDX)
+void CFieldEditorDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 
 	DDX_Control(pDX, IDC_LIST_INFO, m_ListInfo);
 }
 
-BEGIN_MESSAGE_MAP(CFeildEditorDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CFieldEditorDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDOK, &CFeildEditorDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDOK, &CFieldEditorDlg::OnBnClickedOk)
 
-	ON_NOTIFY(NM_RCLICK, IDC_LIST_INFO, &CFeildEditorDlg::OnNMRClickListInfo)
-	ON_COMMAND(ID_FEILD_INFO_PEEP, &CFeildEditorDlg::OnMenuClickPeepFeildInfo)
-	ON_COMMAND(ID_SINGLE_PEEP, &CFeildEditorDlg::OnMenuClickPeepPwd)
-	ON_BN_CLICKED(IDC_BUTTON2, &CFeildEditorDlg::OnBnClickedLogoin)
-	ON_BN_CLICKED(IDC_BUTTON3, &CFeildEditorDlg::OnBnClickedInsertInfo)
-	ON_BN_CLICKED(IDC_BUTTON4, &CFeildEditorDlg::OnBnClickedSetting)
-	ON_BN_CLICKED(IDC_BUTTON1, &CFeildEditorDlg::OnBnClickedCreateUser)
+	ON_NOTIFY(NM_RCLICK, IDC_LIST_INFO, &CFieldEditorDlg::OnNMRClickListInfo)
+	ON_COMMAND(ID_FEILD_INFO_PEEP, &CFieldEditorDlg::OnMenuClickPeepFieldInfo)
+	ON_COMMAND(ID_SINGLE_PEEP, &CFieldEditorDlg::OnMenuClickPeepPwd)
+	ON_BN_CLICKED(IDC_BUTTON2, &CFieldEditorDlg::OnBnClickedLogoin)
+	ON_BN_CLICKED(IDC_BUTTON3, &CFieldEditorDlg::OnBnClickedInsertInfo)
+	ON_BN_CLICKED(IDC_BUTTON4, &CFieldEditorDlg::OnBnClickedSetting)
+	ON_BN_CLICKED(IDC_BUTTON1, &CFieldEditorDlg::OnBnClickedCreateUser)
 END_MESSAGE_MAP()
 
 
-// CFeildEditorDlg 消息处理程序
+// CFieldEditorDlg 消息处理程序
 
-BOOL CFeildEditorDlg::OnInitDialog()
+BOOL CFieldEditorDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -59,9 +59,11 @@ BOOL CFeildEditorDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
+	UserFieldManage::Share()->InitData();
+
 	// TODO:  在此添加额外的初始化代码
-	for (int i(0); i < FeildColumn_Max;++i)
-		m_ListInfo.InsertColumn(i, g_FeildName[i], LVCFMT_LEFT, g_FeildLen[i], -1);
+	for (int i(0); i < FieldColumn_Max;++i)
+		m_ListInfo.InsertColumn(i, g_FieldName[i], LVCFMT_LEFT, g_FieldLen[i], -1);
 	UpdateListControl();
 
 	GetDlgItem(IDC_BUTTON2)->SetWindowText(_T("(&L)Change"));
@@ -73,7 +75,7 @@ BOOL CFeildEditorDlg::OnInitDialog()
 //  来绘制该图标。  对于使用文档/视图模型的 MFC 应用程序，
 //  这将由框架自动完成。
 
-void CFeildEditorDlg::OnPaint()
+void CFieldEditorDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -100,14 +102,14 @@ void CFeildEditorDlg::OnPaint()
 
 //当用户拖动最小化窗口时系统调用此函数取得光标
 //显示。
-HCURSOR CFeildEditorDlg::OnQueryDragIcon()
+HCURSOR CFieldEditorDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
 
 
-void CFeildEditorDlg::OnBnClickedOk()
+void CFieldEditorDlg::OnBnClickedOk()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	CDialogEx::OnOK();
@@ -116,7 +118,7 @@ void CFeildEditorDlg::OnBnClickedOk()
 
 
 
-void CFeildEditorDlg::OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult)
+void CFieldEditorDlg::OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	// TODO:  在此添加控件通知处理程序代码
@@ -127,7 +129,7 @@ void CFeildEditorDlg::OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult)
 	}
 	else
 	{
-		if (pNMItemActivate->iSubItem >= FeildColumn_PwdLogin && pNMItemActivate->iSubItem <=FeildColumn_PwdLogin)
+		if (pNMItemActivate->iSubItem >= FieldColumn_PwdLogin && pNMItemActivate->iSubItem <=FieldColumn_PwdLogin)
 		{
 			isShow = true;
 			isAll = false;
@@ -153,7 +155,7 @@ void CFeildEditorDlg::OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult)
 }
 
 
-void CFeildEditorDlg::OnMenuClickPeepFeildInfo()
+void CFieldEditorDlg::OnMenuClickPeepFieldInfo()
 {
 	// TODO:  在此添加命令处理程序代码
 	int a = 9;
@@ -161,61 +163,65 @@ void CFeildEditorDlg::OnMenuClickPeepFeildInfo()
 }
 
 
-void CFeildEditorDlg::OnMenuClickPeepPwd()
+void CFieldEditorDlg::OnMenuClickPeepPwd()
 {
 	// TODO:  在此添加命令处理程序代码
 	int a = 9;
 	a = a;
 }
 
-void CFeildEditorDlg::UpdateListControl()
+void CFieldEditorDlg::UpdateListControl()
 {
 	m_ListInfo.DeleteAllItems();
-	uint16 iCount = UserFeildManage::Share()->GetFeildRow();
+	const CField* pField=UserFieldManage::Share()->GetCurUserFields();
+	if (!pField)
+		return;
+
+	uint16 iCount = pField->GetFieldRow();
 	for (int iRow(0), iColumn(0); iRow < iCount; ++iRow)
 	{
-		if (UserFeildManage::Share()->IsShowRow(iRow))
+		if (pField->IsShowRow(iRow))
 		{
-			const void* pData = UserFeildManage::Share()->GetItem(iRow);
+			const void* pData = pField->GetItem(iRow);
 			if (pData)
 			{
 				m_ListInfo.SetItemData(iRow, (DWORD)pData);
-				for (iColumn = 0; iColumn < FeildColumn_Max; ++iColumn)
+				for (iColumn = 0; iColumn < FieldColumn_Max; ++iColumn)
 				{
 					if (iColumn == 0)
-						m_ListInfo.InsertItem(iRow, UserFeildManage::Share()->GetFeildItemCS(iRow, iColumn));
+						m_ListInfo.InsertItem(iRow, pField->GetFieldItemCS(iRow, iColumn,true));
 					else
-						m_ListInfo.SetItemText(iRow, iColumn, UserFeildManage::Share()->GetFeildItemCS(iRow, iColumn));
+						m_ListInfo.SetItemText(iRow, iColumn, pField->GetFieldItemCS(iRow, iColumn, true));
 
 				}
 			}// end if (pData)
 
-		}//end if if (UserFeildManage::Share()->IsShowRow(iRow))
+		}//end if if (UserFieldManage::Share()->IsShowRow(iRow))
 
 	}
 }
 
 
-void CFeildEditorDlg::OnBnClickedLogoin()
+void CFieldEditorDlg::OnBnClickedLogoin()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	
 }
 
 
-void CFeildEditorDlg::OnBnClickedInsertInfo()
+void CFieldEditorDlg::OnBnClickedInsertInfo()
 {
 	// TODO:  在此添加控件通知处理程序代码
 }
 
 
-void CFeildEditorDlg::OnBnClickedSetting()
+void CFieldEditorDlg::OnBnClickedSetting()
 {
 	// TODO:  在此添加控件通知处理程序代码
 }
 
 
-void CFeildEditorDlg::OnBnClickedCreateUser()
+void CFieldEditorDlg::OnBnClickedCreateUser()
 {
 	// TODO:  在此添加控件通知处理程序代码
 }
