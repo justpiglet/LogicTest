@@ -75,10 +75,7 @@ public:
 	static int32 GetRandoom(int32 min = 0, int32 max = 0x7fff);
 	//##Get a arrary index by arrary value prencent. param@1 arrary,@2count  ##
 	static uint8 GetIndex(const uint16* pArr, const uint8& count);
-private:
-	static bool m_isInit;
 };
-
 /////////////////////////////////////////////////////////////////////////////random end
 
 
