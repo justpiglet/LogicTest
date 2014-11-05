@@ -40,9 +40,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(SolutionDir)Bin\Obj\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir>$(SolutionDir)Bin\Obj\$(Configuration)\$(ProjectName)</IntDir>
     <TargetName>$(ProjectName)D</TargetName>
-    <OutDir>$(SolutionDir)Bin\$(Configuration)\$(ProjectName)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\$(ProjectName)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(SolutionDir)Bin\Obj\$(Configuration)\$(ProjectName)\</IntDir>

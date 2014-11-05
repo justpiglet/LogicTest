@@ -5,9 +5,14 @@
 #include <list>
 #include <vector>
 
-#define MAX_LEN_NAME 33
-#define MAX_LEN_PWD  33
-#define MAX_LEN_TEXT 129
+#define MAX_LEN_AES  16   //include end
+#define MAX_LEN_NAME 32
+#define MAX_LEN_PWD  32
+#define MAX_LEN_TEXT 128
+
+#define DEFINE_LEN_AES 17
+#define DEFINE_LEN_NAME 33
+#define DEFINE_LEN_PWD 33
 
 enum FieldColumn
 {

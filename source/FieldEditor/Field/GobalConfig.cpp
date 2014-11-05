@@ -21,7 +21,7 @@ void CGobalConfig::CreateRandStr(uint8 iLen, char szOut[])
 		iRandVal = _CANNP_NAME::randoom::GetRandoom(0, 0xffff);
 		
 		szOut[i++] = iRandVal & 0x007f;
-		if (i==iLen-1)
+		if (i>=iLen)
 			break;
 		szOut[i] = iRandVal >> 5;
 	}

@@ -68,15 +68,17 @@ bool CaLogicPool::Check(/**/)
 	m_State = STATE_OK;
 
 	char pwd[] = "!#$%^GRG&*%#$@$#WFfsdfsdf#%32";
-	std::string cpuid = _CANNP_NAME::encrypt::CPUID2();
-	cpuid.append(_CANNP_NAME::encrypt::MAC_ETHERNET());
-	std::string aa = _CANNP_NAME::encrypt::EncryptMD5(cpuid.c_str(), cpuid.length());
-	std::string aesa = _CANNP_NAME::encrypt::EncryptAES(aa.c_str(), pwd);
-	std::string aesb = _CANNP_NAME::encrypt::EncryptAES(aa.c_str() + 16, pwd);
-	std::string strAll = aesa;
-	strAll.append(aesb);
-	std::string aesa1 = _CANNP_NAME::encrypt::DecryptAES(strAll.c_str(), pwd);
-	std::string aesb1 = _CANNP_NAME::encrypt::DecryptAES(strAll.c_str() + 16, pwd);
+	std::string cpuid,strMac;
+	_CANNP_NAME::encrypt::CPUID2(cpuid);
+	_CANNP_NAME::encrypt::MAC_ETHERNET(strMac);
+	cpuid.append(strMac);
+	std::string strMd5,strAes1,strAes2;
+	_CANNP_NAME::encrypt::EncryptMD5(cpuid.c_str(), cpuid.length(), strMd5);
+	_CANNP_NAME::encrypt::EncryptAES(strMd5.c_str(), pwd, strAes1);
+	_CANNP_NAME::encrypt::EncryptAES(strMd5.c_str() + 16, pwd, strAes2);
+	strAes1.append(strAes2);
+	//std::string aesa1 = _CANNP_NAME::encrypt::DecryptAES(strAes1.c_str(), pwd);
+	//std::string aesb1 = _CANNP_NAME::encrypt::DecryptAES(strAes1.c_str() + 16, pwd);
 	//aesa1.append(aesb1);
 
 	Point start(4*1.414213562373095f, 0.0f);

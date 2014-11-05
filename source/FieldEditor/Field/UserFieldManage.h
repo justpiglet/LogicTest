@@ -29,7 +29,7 @@ protected:
 private:
 	void GetDataToChar(std::string&);
 	void ParsingString(const char*);
-	void ParsingStringCopy(const char*,void*,uint32 iLen);
+	
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -37,6 +37,21 @@ class UserFieldManage
 {
 public:
 	static UserFieldManage* Share();
+
+	inline static void ParsingStringCopy(const char* pIndex, void* pDest, uint32 iLen)
+	{
+		memcpy(pDest, pIndex, iLen);
+		pIndex = pIndex + iLen;
+	}
+	inline static uint32 ParsingStringCopy(const std::string& strSrc,uint32& iOffset, void* pDest, uint32 iLen)
+	{
+		if (iOffset + iLen >= strSrc.length())
+			return iOffset;
+		memcpy(pDest,strSrc.c_str() + iOffset, iLen);
+		iOffset += iLen;
+		return iOffset;
+	}
+
 	bool InitData();
 	//return error
 	std::string UserLogoin(const std::string& straNme, const std::string& strPwd);
@@ -44,7 +59,7 @@ public:
 	const CField* GetCurUserFields(){ return m_curUser; }
 
 	void SaveConfigField();
-
+	bool LoadConfigField(std::ifstream& rFile);
 private:
 	UserFieldManage();
 	~UserFieldManage();

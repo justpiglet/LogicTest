@@ -41,9 +41,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IntDir>$(SolutionDir)Bin\Obj\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir>$(SolutionDir)Bin\Obj\$(Configuration)\$(ProjectName)</IntDir>
     <TargetName>$(ProjectName)D</TargetName>
-    <OutDir>$(SolutionDir)Bin\$(Configuration)\$(ProjectName)\</OutDir>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\$(ProjectName)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
