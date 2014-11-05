@@ -434,3 +434,31 @@ bool UserFieldManage::LoadConfigField(std::ifstream& rFile)
 	else
 		return false;
 }
+
+uint32 UserFieldManage::GetUserCount(VEC_STR& vecOut, bool isUse/* = true*/)
+{
+	VEC_ACCOUNTS::iterator itor, itor_end;
+	if (isUse)
+	{
+		itor = m_ConfigInfo.vecUse.begin();
+		itor_end = m_ConfigInfo.vecUse.end();
+	}
+	else
+	{
+		itor = m_ConfigInfo.vecAbandon.begin();
+		itor_end = m_ConfigInfo.vecAbandon.end();
+	}
+
+	for (; itor != itor_end; ++itor)
+		vecOut.push_back(itor->strName);
+	
+	return vecOut.size();
+}
+
+uint32 UserFieldManage::GetUserCount(bool isUse/* = true*/)
+{
+	if (isUse)
+		return m_ConfigInfo.vecUse.size();
+	else
+		return m_ConfigInfo.vecAbandon.size();
+}

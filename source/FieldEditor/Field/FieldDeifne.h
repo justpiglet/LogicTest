@@ -14,6 +14,8 @@
 #define DEFINE_LEN_NAME 33
 #define DEFINE_LEN_PWD 33
 
+typedef std::vector<std::string> VEC_STR;
+
 enum FieldColumn
 {
 	FieldColumn_Nick=0,

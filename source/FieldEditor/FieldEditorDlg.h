@@ -4,11 +4,17 @@
 
 #pragma once
 #include "afxcmn.h"
-
+#include "base/basedefine.h"
 
 // CFieldEditorDlg 对话框
 class CFieldEditorDlg : public CDialogEx
 {
+	enum EOpSatus
+	{
+		EOpSatus_NULL = 0,
+		EOpSatus_Logoin,
+	};
+	typedef void (CFieldEditorDlg::*func)();
 // 构造
 public:
 	CFieldEditorDlg(CWnd* pParent = NULL);	// 标准构造函数
@@ -29,18 +35,36 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 protected:
 	void UpdateListControl();
 private:
-
-	CListCtrl m_ListInfo;
+	void ButtonClicked(uint8);
 public:
 	afx_msg void OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnMenuClickPeepFieldInfo();
 	afx_msg void OnMenuClickPeepPwd();
 	afx_msg void OnBnClickedOk();
-	afx_msg void OnBnClickedLogoin();
-	afx_msg void OnBnClickedInsertInfo();
-	afx_msg void OnBnClickedSetting();
-	afx_msg void OnBnClickedCreateUser();
+private:
+	void DoNothing();
+	void Logoin();
+	void CreateNewUser();
+	void Setting();
+
+	void LogoinOut();
+	void CreateNewField();
+	void TrashBasket();
+	void SettingUpdate();
+
+	void UpdateButton();
+private:
+	EOpSatus m_status;
+	CListCtrl m_ListInfo;
+	func m_fun[2][4];
+	TCHAR* m_butName[2][4];
+
+	int32 m_curRow;
+public:
+	afx_msg void OnNMDblclkListInfo(NMHDR *pNMHDR, LRESULT *pResult);
 };

@@ -19,6 +19,7 @@ public:
 	CString GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isHideParts)const;
 
 	const FIELD_ITEM* GetItem(uint8 iRow)const;
+	
 protected:
 	
 
@@ -60,6 +61,9 @@ public:
 
 	void SaveConfigField();
 	bool LoadConfigField(std::ifstream& rFile);
+
+	uint32 GetUserCount(VEC_STR& vecOut,bool isUse=true);
+	uint32 GetUserCount(bool isUse = true);
 private:
 	UserFieldManage();
 	~UserFieldManage();
