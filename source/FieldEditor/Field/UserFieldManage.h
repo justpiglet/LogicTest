@@ -20,10 +20,8 @@ public:
 	const FIELD_ITEM* GetItem(uint8 iRow)const;
 	
 protected:
-	
-
-	bool WriteBuffer(std::ofstream& wFile);
-	bool LoadBuffer(std::ifstream& rFile);
+	void WriteBuffer(const std::string& strName, const std::string& strPwd);
+	bool LoadBuffer(std::ifstream& rFile, const std::string& strName, const std::string& strPwd);
 
 	bool IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
 private:
@@ -35,6 +33,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 class UserFieldManage
 {
+	friend class CField;
 public:
 	static UserFieldManage* Share();
 
@@ -54,14 +53,15 @@ public:
 
 	bool InitData();
 	//return error
-	std::string UserLogoin(const std::string& straNme, const std::string& strPwd);
+	uint8 UserLogoin(const std::string& straNme, const std::string& strPwd);
 
-	bool CreateAccount(const char* szAccount, uint32 iLenA, const char*szPwd, uint32 iLenP);
+	uint32 CreateAccount(const char* szAccount, uint32 iLenA, const char*szPwd, uint32 iLenP);
 
-	const CField* GetCurUserFields(){ return m_curUser; }
+	const CField* GetCurUserFields(){ return m_pCurUser; }
+	const Account_Info* GetCurAccount(){ return m_pCurAccount; }
 
 	void SaveConfigField();
-	bool LoadConfigField(std::ifstream& rFile);
+	bool LoadConfigField(const std::string& strName);
 
 	uint32 GetUserCount(VEC_STR& vecOut,bool isUse=true);
 	uint32 GetUserCount(bool isUse = true);
@@ -69,13 +69,18 @@ private:
 	UserFieldManage();
 	~UserFieldManage();
 
-	
+protected:
 	std::string GetResourcePath();
 	std::string GetResourceFileName(const char*);
+
+	void WriteInfo(const std::string& strName, const std::string& strSrc, const std::string& strPwd="");
+	bool ReadInfo(const std::string& strName, std::string& strOut, const std::string& strPwd = "");
 private:
 	static UserFieldManage* m_gShare;
 	Config_Info m_ConfigInfo;
-	CField* m_curUser;
+	CField* m_pCurUser;
+	Account_Info* m_pCurAccount;
+	std::string m_strBasePwd;
 };
 
 

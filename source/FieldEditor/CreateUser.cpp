@@ -94,7 +94,7 @@ void CCreateUser::OnBnClickedOk()
 	{
 		Exchange(strAccount, m_strAccount);
 		Exchange(strPwd, m_strPwd);
-		if (UserFieldManage::Share()->CreateAccount(m_strAccount.c_str(), m_strAccount.length(),m_strPwd.c_str(),m_strPwd.length()))
+		if (UserFieldManage::Share()->CreateAccount(m_strAccount.c_str(), m_strAccount.length(),m_strPwd.c_str(),m_strPwd.length())>0)
 		{
 			
 			CDialogEx::OnOK();

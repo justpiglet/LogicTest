@@ -10,13 +10,14 @@
 #include "Field/UserFieldManage.h"
 #include "Field/GobalConfig.h"
 
+#include "CreateUser.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
 // CFieldEditorDlg ¶Ô»°¿ò
-
 
 
 CFieldEditorDlg::CFieldEditorDlg(CWnd* pParent /*=NULL*/)
@@ -44,6 +45,8 @@ CFieldEditorDlg::CFieldEditorDlg(CWnd* pParent /*=NULL*/)
 	m_butName[1][1] = _T("(&N)NewField");
 	m_butName[1][2] = _T("(&T)Trash");
 	m_butName[1][3] = _T("(&S)Setting");
+
+	g_pMainDlgHandle = this;
 }
 
 void CFieldEditorDlg::DoDataExchange(CDataExchange* pDX)
@@ -266,6 +269,21 @@ void CFieldEditorDlg::LogoinOut()
 
 void CFieldEditorDlg::CreateNewUser()
 {
+	CCreateUser dlg;
+	if (dlg.DoModal() == IDOK)
+	{
+		std::string strName, strPwd;
+		if (dlg.GetCreateUersInfo(strName, strPwd))
+		{
+			uint8 iRet = UserFieldManage::Share()->UserLogoin(strName, strPwd);
+			if (iRet == 0)
+			{
+				LoginSuccessUpdate(strName);
+			}
+			else
+				MessageBox(_T("Account or Password Error!"));
+		}
+	}
 
 }
 
@@ -307,4 +325,14 @@ void CFieldEditorDlg::UpdateButton()
 
 		GetDlgItem(IDC_BUTTON1)->EnableWindow(isEnable);
 	}
+}
+
+void CFieldEditorDlg::MainDlgLogoin()
+{
+
+}
+
+void CFieldEditorDlg::LoginSuccessUpdate(const std::string& strName)
+{
+	SetWindowTextA(m_hWnd, strName.c_str());
 }

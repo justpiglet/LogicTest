@@ -6,8 +6,13 @@
 #include "afxcmn.h"
 #include "base/basedefine.h"
 
+__interface IMainDlgHandle
+{
+	virtual void MainDlgLogoin()=0;
+};
+
 // CFieldEditorDlg ¶Ô»°¿ò
-class CFieldEditorDlg : public CDialogEx
+class CFieldEditorDlg : public CDialogEx, public IMainDlgHandle
 {
 	enum EOpSatus
 	{
@@ -37,6 +42,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+
+	virtual void MainDlgLogoin() ;
+
 protected:
 	void UpdateListControl();
 private:
@@ -59,12 +67,15 @@ private:
 
 	void UpdateButton();
 private:
+	void LoginSuccessUpdate(const std::string&);
+private:
 	EOpSatus m_status;
 	CListCtrl m_ListInfo;
 	func m_fun[2][4];
 	TCHAR* m_butName[2][4];
 
 	int32 m_curRow;
+	IMainDlgHandle* g_pMainDlgHandle;
 public:
 	afx_msg void OnNMDblclkListInfo(NMHDR *pNMHDR, LRESULT *pResult);
 };
