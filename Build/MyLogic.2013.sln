@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NewLogic", "Project.2013\Lo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FieldEditor", "Project.2013\FeildEditor\FeildEditor.vcxproj", "{150278C7-8778-4391-B429-946C89F9314F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cantools", "Project.2013\cantools\cantools.vcxproj", "{FC9A2BAD-DEC5-452D-B7B4-E276F2BFB735}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -33,6 +35,10 @@ Global
 		{150278C7-8778-4391-B429-946C89F9314F}.Debug|Win32.Build.0 = Debug|Win32
 		{150278C7-8778-4391-B429-946C89F9314F}.Release|Win32.ActiveCfg = Release|Win32
 		{150278C7-8778-4391-B429-946C89F9314F}.Release|Win32.Build.0 = Release|Win32
+		{FC9A2BAD-DEC5-452D-B7B4-E276F2BFB735}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FC9A2BAD-DEC5-452D-B7B4-E276F2BFB735}.Debug|Win32.Build.0 = Debug|Win32
+		{FC9A2BAD-DEC5-452D-B7B4-E276F2BFB735}.Release|Win32.ActiveCfg = Release|Win32
+		{FC9A2BAD-DEC5-452D-B7B4-E276F2BFB735}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

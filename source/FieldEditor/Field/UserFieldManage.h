@@ -14,9 +14,8 @@ public:
 	bool IsShowRow(uint8 iRow) const;
 	bool IsVaild(uint8 iRow, uint8 iColumn = 0) const;
 
-	const char* GetUserName() const { return strName;}
 	const char* GetFieldString(uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
-	CString GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isHideParts)const;
+	CString GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isNeedHide)const;
 
 	const FIELD_ITEM* GetItem(uint8 iRow)const;
 	
@@ -26,7 +25,7 @@ protected:
 	bool WriteBuffer(std::ofstream& wFile);
 	bool LoadBuffer(std::ifstream& rFile);
 
-	bool IsNeedHideParts(bool isHideParts, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
+	bool IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
 private:
 	void GetDataToChar(std::string&);
 	void ParsingString(const char*);
@@ -56,6 +55,8 @@ public:
 	bool InitData();
 	//return error
 	std::string UserLogoin(const std::string& straNme, const std::string& strPwd);
+
+	bool CreateAccount(const char* szAccount, uint32 iLenA, const char*szPwd, uint32 iLenP);
 
 	const CField* GetCurUserFields(){ return m_curUser; }
 

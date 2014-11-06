@@ -18,14 +18,13 @@ void CField::ParsingString(const char* pSrc)
 	if (!pSrc)
 		return;
 	const char* pIndex = pSrc;
+
+	UserFieldManage::ParsingStringCopy(pIndex, &iId, sizeof(iId));
 	UserFieldManage::ParsingStringCopy(pIndex, &iLastLogoinTime, sizeof(iLastLogoinTime));
 	UserFieldManage::ParsingStringCopy(pIndex, &iVaildLoginTime, sizeof(iVaildLoginTime));
 	UserFieldManage::ParsingStringCopy(pIndex, &iShowItemTime, sizeof(iShowItemTime));
 	UserFieldManage::ParsingStringCopy(pIndex, &iShowLevel, sizeof(iShowLevel));
 	UserFieldManage::ParsingStringCopy(pIndex, &iHideParts, sizeof(iHideParts));
-
-	UserFieldManage::ParsingStringCopy(pIndex, strName, sizeof(strName));
-	UserFieldManage::ParsingStringCopy(pIndex, strPwd, sizeof(strPwd));
 
 	uint32 iItemCount(0);
 	UserFieldManage::ParsingStringCopy(pIndex, &iItemCount, sizeof(iItemCount));
@@ -97,14 +96,13 @@ bool CField::LoadBuffer(std::ifstream& rFile)
 
 void CField::GetDataToChar(std::string& strOut)
 {
+	
+	strOut.append((char*)&iId, sizeof(iId));
 	strOut.append((char*)&iLastLogoinTime, sizeof(iLastLogoinTime));
 	strOut.append((char*)&iVaildLoginTime, sizeof(iVaildLoginTime));
 	strOut.append((char*)&iShowItemTime, sizeof(iShowItemTime));
 	strOut.append((char*)&iShowLevel, sizeof(iShowLevel));
 	strOut.append((char*)&iHideParts, sizeof(iHideParts));
-
-	strOut.append((char*)&strName, sizeof(strName));
-	strOut.append((char*)&strPwd, sizeof(strPwd));
 
 	uint32 iItemCount = listItem.size();
 	strOut.append((char*)&iItemCount, sizeof(uint32));
@@ -195,7 +193,7 @@ bool CField::IsShowRow(uint8 iRow)const
 
 
 
-CString CField::GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isHideParts)const
+CString CField::GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isNeedHide)const
 {
 	const FIELD_ITEM* pField = GetItem(iRow);
 	if (!pField)
@@ -208,7 +206,7 @@ CString CField::GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isHideParts)const
 	CString strTemp(szTemp);
 	uint32 iLen = strTemp.GetLength();
 
-	if (IsNeedHideParts(isHideParts, iRow, iColumn, pField))
+	if (IsNeedHideParts(isNeedHide, iRow, iColumn, pField))
 	{
 		uint32 index = iLen / 4;
 		uint32 iCount = max(1, index + index);
@@ -219,9 +217,9 @@ CString CField::GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isHideParts)const
 	return strTemp;
 }
 
-bool CField::IsNeedHideParts(bool isHideParts, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)const
+bool CField::IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)const
 {
-	if (!isHideParts)
+	if (!isNeedHide)
 		return false;
 
 	if (!pField)
@@ -272,6 +270,7 @@ bool UserFieldManage::InitData()
 
 	if (isCreate)
 	{
+		m_ConfigInfo.iCurID = 0;
 		CGobalConfig::Share()->CreateRandStr(32, m_ConfigInfo.strFieldPwd);
 		m_ConfigInfo.strFieldPwd[32] = '\0';
 		CGobalConfig::Share()->CreateRandStr(32, m_ConfigInfo.strPwdPwd);
@@ -336,6 +335,7 @@ void UserFieldManage::SaveConfigField()
 	//wFile.flush();
 
 	std::string strBuff;
+	strBuff.append((char*)&m_ConfigInfo.iCurID, sizeof(m_ConfigInfo.iCurID));
 	strBuff.append((char*)&m_ConfigInfo.strFieldPwd, MAX_LEN_PWD);
 	strBuff.append((char*)&m_ConfigInfo.strPwdPwd, MAX_LEN_PWD);
 
@@ -347,6 +347,7 @@ void UserFieldManage::SaveConfigField()
 		VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin(), itor_end = m_ConfigInfo.vecUse.end();
 		for (; itor != itor_end; ++itor)
 		{
+			strBuff.append((char*)&itor->iId, sizeof(itor->iId));
 			strBuff.append((char*)&itor->strName, MAX_LEN_NAME);
 			strBuff.append((char*)&itor->strPwd, MAX_LEN_PWD);
 		}
@@ -359,6 +360,7 @@ void UserFieldManage::SaveConfigField()
 		VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecAbandon.begin(), itor_end = m_ConfigInfo.vecAbandon.end();
 		for (; itor != itor_end; ++itor)
 		{
+			strBuff.append((char*)&itor->iId, sizeof(itor->iId));
 			strBuff.append((char*)&itor->strName, MAX_LEN_NAME);
 			strBuff.append((char*)&itor->strPwd, MAX_LEN_PWD);
 		}
@@ -407,6 +409,7 @@ bool UserFieldManage::LoadConfigField(std::ifstream& rFile)
 		pBuffer = NULL;
 
 		uint32 iOffset(0);
+		UserFieldManage::ParsingStringCopy(strDes, iOffset, &m_ConfigInfo.iCurID, sizeof(m_ConfigInfo.iCurID));
 		UserFieldManage::ParsingStringCopy(strDes, iOffset, &m_ConfigInfo.strFieldPwd, MAX_LEN_PWD);
 		UserFieldManage::ParsingStringCopy(strDes,iOffset, &m_ConfigInfo.strPwdPwd, MAX_LEN_PWD);
 
@@ -416,6 +419,7 @@ bool UserFieldManage::LoadConfigField(std::ifstream& rFile)
 		for (uint32 i = 0; i < iTemp; ++i)
 		{
 			memset(&mInfo, 0, sizeof(mInfo));
+			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.iId, sizeof(mInfo.iId));
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strName, MAX_LEN_NAME);
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strPwd, MAX_LEN_AES);
 			m_ConfigInfo.vecUse.push_back(mInfo);
@@ -424,6 +428,7 @@ bool UserFieldManage::LoadConfigField(std::ifstream& rFile)
 		for (uint32 i = 0; i < iTemp; ++i)
 		{
 			memset(&mInfo, 0, sizeof(mInfo));
+			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.iId, sizeof(mInfo.iId));
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strName, MAX_LEN_NAME);
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strPwd, MAX_LEN_PWD);
 			m_ConfigInfo.vecAbandon.push_back(mInfo);
@@ -461,4 +466,23 @@ uint32 UserFieldManage::GetUserCount(bool isUse/* = true*/)
 		return m_ConfigInfo.vecUse.size();
 	else
 		return m_ConfigInfo.vecAbandon.size();
+}
+
+bool UserFieldManage::CreateAccount(const char* szAccount, uint32 iLenA, const char*szPwd, uint32 iLenP)
+{
+	VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin(), itor_end = m_ConfigInfo.vecUse.end();
+	for (; itor != itor_end; ++itor)
+	{
+		if (strcmp(itor->strName, szAccount) == 0)
+			return false;
+	}
+	Account_Info mAccountInfo;
+	++m_ConfigInfo.iCurID;
+	mAccountInfo.iId = m_ConfigInfo.iCurID;
+	memcpy_s(mAccountInfo.strName, MAX_LEN_NAME, szAccount, iLenA);
+	memcpy_s(mAccountInfo.strPwd, MAX_LEN_PWD, szPwd, iLenP);
+	m_ConfigInfo.vecUse.push_back(mAccountInfo);
+
+	SaveConfigField();
+	return true;
 }

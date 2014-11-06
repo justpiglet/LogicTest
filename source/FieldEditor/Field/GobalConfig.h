@@ -8,7 +8,7 @@ class CGobalConfig
 public:
 	static CGobalConfig* Share();
 	void CreateRandStr(uint8 iLen, char szOut[]);
-
+	
 private:
 	CGobalConfig();
 	~CGobalConfig();

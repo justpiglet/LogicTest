@@ -121,20 +121,26 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\source\FieldEditor\CreateUser.h" />
     <ClInclude Include="..\..\..\source\FieldEditor\FieldEditor.h" />
     <ClInclude Include="..\..\..\source\FieldEditor\FieldEditorDlg.h" />
     <ClInclude Include="..\..\..\source\FieldEditor\Field\FieldDeifne.h" />
     <ClInclude Include="..\..\..\source\FieldEditor\Field\GobalConfig.h" />
     <ClInclude Include="..\..\..\source\FieldEditor\Field\UserFieldManage.h" />
+    <ClInclude Include="..\..\..\source\FieldEditor\Setting.h" />
+    <ClInclude Include="..\..\..\source\FieldEditor\UserLogin.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\source\FieldEditor\CreateUser.cpp" />
     <ClCompile Include="..\..\..\source\FieldEditor\FieldEditor.cpp" />
     <ClCompile Include="..\..\..\source\FieldEditor\FieldEditorDlg.cpp" />
     <ClCompile Include="..\..\..\source\FieldEditor\Field\GobalConfig.cpp" />
     <ClCompile Include="..\..\..\source\FieldEditor\Field\UserFieldManage.cpp" />
+    <ClCompile Include="..\..\..\source\FieldEditor\Setting.cpp" />
+    <ClCompile Include="..\..\..\source\FieldEditor\UserLogin.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

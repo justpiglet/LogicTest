@@ -56,25 +56,26 @@ enum SHOW_ITEM_LV
 typedef std::vector<FIELD_ITEM>	VEC_ITEMS;
 struct User_Field
 {
+	uint32		iId;
 	uint32		iLastLogoinTime;		
 	uint32		iVaildLoginTime;
 	uint32		iShowItemTime;
 	uint32		iShowLevel; //SHOW_ITEM_LV SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_HIGHT
-	uint32		iHideParts; //SHOW_ITEM_LV SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_HIGHT
-	char		strName[MAX_LEN_NAME];
-	char		strPwd[MAX_LEN_PWD];
+	uint32		iHideParts; //FieldColumn_PwdLogin | FieldColumn_PwdPay 
 	VEC_ITEMS	listItem;
 };
 
 
 struct Account_Info
 {
+	uint32  iId;
 	char	strName[MAX_LEN_NAME];
 	char	strPwd[MAX_LEN_PWD];
 };
 typedef std::vector<Account_Info> VEC_ACCOUNTS;
 struct Config_Info
 {
+	uint32  iCurID;
 	char	strFieldPwd[MAX_LEN_PWD];
 	char	strPwdPwd[MAX_LEN_PWD];
 	VEC_ACCOUNTS vecUse;
