@@ -48,7 +48,7 @@ protected:
 protected:
 	void UpdateListControl();
 private:
-	void ButtonClicked(uint8);
+
 public:
 	afx_msg void OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnMenuClickPeepFieldInfo();

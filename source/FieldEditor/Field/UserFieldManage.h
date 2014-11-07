@@ -52,11 +52,11 @@ public:
 	}
 
 	bool InitData();
-	//return error
-	uint8 UserLogoin(const std::string& straNme, const std::string& strPwd);
 
 	uint32 CreateAccount(const char* szAccount, uint32 iLenA, const char*szPwd, uint32 iLenP);
-
+	uint8 UserLogoin(const char* szName, const char* szPwd);
+	bool UserLogoinSuccess(Account_Info* pInfo);
+	
 	const CField* GetCurUserFields(){ return m_pCurUser; }
 	const Account_Info* GetCurAccount(){ return m_pCurAccount; }
 
@@ -72,6 +72,7 @@ private:
 protected:
 	std::string GetResourcePath();
 	std::string GetResourceFileName(const char*);
+	void SaveCopyOfError(std::ifstream& rFile,const std::string& strName);
 
 	void WriteInfo(const std::string& strName, const std::string& strSrc, const std::string& strPwd="");
 	bool ReadInfo(const std::string& strName, std::string& strOut, const std::string& strPwd = "");

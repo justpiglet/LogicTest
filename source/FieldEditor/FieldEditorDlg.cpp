@@ -11,6 +11,7 @@
 #include "Field/GobalConfig.h"
 
 #include "CreateUser.h"
+#include "UserLogin.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -234,22 +235,23 @@ BOOL CFieldEditorDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 {
 	if (wParam >= IDC_BUTTON1 && wParam <= IDC_BUTTON4)
 	{
-		ButtonClicked(wParam - IDC_BUTTON1);
-
+		(this->*(m_fun[m_status][wParam - IDC_BUTTON1]))();
 		return TRUE;
 	}
 	else
 		return CDialogEx::OnCommand(wParam, lParam);
 }
 
-void CFieldEditorDlg::ButtonClicked(uint8 index)
-{
-
-}
-
 void CFieldEditorDlg::Logoin()
 {
-
+	CUserLogin dlg;
+	if (dlg.DoModal() == IDOK)
+	{
+		if (dlg.IsLogoinSuccess())
+		{
+			LoginSuccessUpdate(UserFieldManage::Share()->GetCurAccount()->strName);
+		}
+	}
 }
 
 void CFieldEditorDlg::DoNothing()
@@ -275,13 +277,16 @@ void CFieldEditorDlg::CreateNewUser()
 		std::string strName, strPwd;
 		if (dlg.GetCreateUersInfo(strName, strPwd))
 		{
-			uint8 iRet = UserFieldManage::Share()->UserLogoin(strName, strPwd);
+			uint8 iRet = UserFieldManage::Share()->UserLogoin(strName.c_str(), strPwd.c_str());
 			if (iRet == 0)
 			{
 				LoginSuccessUpdate(strName);
 			}
 			else
+			{
+				UpdateButton();
 				MessageBox(_T("Account or Password Error!"));
+			}	
 		}
 	}
 
@@ -325,6 +330,8 @@ void CFieldEditorDlg::UpdateButton()
 
 		GetDlgItem(IDC_BUTTON1)->EnableWindow(isEnable);
 	}
+	else
+		GetDlgItem(IDC_BUTTON1)->EnableWindow(true);
 }
 
 void CFieldEditorDlg::MainDlgLogoin()
@@ -334,5 +341,7 @@ void CFieldEditorDlg::MainDlgLogoin()
 
 void CFieldEditorDlg::LoginSuccessUpdate(const std::string& strName)
 {
+	m_status = EOpSatus_Logoin;
 	SetWindowTextA(m_hWnd, strName.c_str());
+	UpdateButton();
 }

@@ -63,36 +63,7 @@ bool CField::LoadBuffer(std::ifstream& rFile, const std::string& strName, const 
 	ParsingString(pNewData);
 
 	delete pNewData;
-// 	rFile.read((char*)&iLastLogoinTime, sizeof(iLastLogoinTime));
-// 	rFile.read((char*)&iVaildLoginTime, sizeof(iVaildLoginTime));
-// 	rFile.read((char*)&iShowItemTime, sizeof(iShowItemTime));
-// 	rFile.read((char*)&iShowLevel, sizeof(iShowLevel));
-// 	rFile.read((char*)&iHideParts, sizeof(iHideParts));
-// 	
-// 	rFile.read(strName, sizeof(strName));
-// 	rFile.read(strPwd, sizeof(strName));
-// 
-// 	uint32 iItemCount(0);
-// 	rFile.read((char*)&iItemCount, sizeof(uint32));
-// 
-// 	FIELD_ITEM mItem;
-// 	for (uint32 i = 0; i < iItemCount; ++i)
-// 	{
-// 		memset(&mItem,0, sizeof(mItem));
-// 
-// 		rFile.read((char*)&mItem.id, sizeof(mItem.id));
-// 		rFile.read((char*)&mItem.iLv, sizeof(mItem.iLv));
-// 
-// 		rFile.read(mItem.strNameNick, sizeof(mItem.strNameNick));
-// 		rFile.read(mItem.strAccount, sizeof(mItem.strAccount));
-// 		rFile.read(mItem.strLoginPwd, sizeof(mItem.strLoginPwd));
-// 		rFile.read(mItem.strPayPwd, sizeof(mItem.strPayPwd));
-// 		rFile.read(mItem.strOtherPwd, sizeof(mItem.strOtherPwd));
-// 		rFile.read(mItem.strRelation, sizeof(mItem.strRelation));
-// 		rFile.read(mItem.strDescribe, sizeof(mItem.strDescribe));
-// 
-// 		listItem.push_back(mItem);
-// 	}
+
 	return true;
 }
 
@@ -112,10 +83,9 @@ void CField::GetDataToChar(std::string& strOut)
 	if (iItemCount == 0)
 		return;
 
-	VEC_ITEMS::iterator itor = listItem.begin(), itor_end = listItem.end();
-	for (; itor != itor_end; ++itor)
+	VEC_ITEMS::iterator itor = listItem.begin();
+	for (int i = 0; i < iItemCount; ++i, ++itor)
 	{
-		//strOut.append((char*)&(itor->id), sizeof(itor->id));
 		strOut.append((char*)&(itor->iLv), sizeof(itor->iLv));
 
 		strOut.append(itor->strNameNick, sizeof(itor->strNameNick));
@@ -126,6 +96,7 @@ void CField::GetDataToChar(std::string& strOut)
 		strOut.append(itor->strRelation, sizeof(itor->strRelation));
 		strOut.append(itor->strDescribe, sizeof(itor->strDescribe));
 	}
+
 }
 
 void CField::WriteBuffer(const std::string& strName, const std::string& strPwd)
@@ -202,8 +173,6 @@ bool CField::IsShowRow(uint8 iRow)const
 	else
 		return false;
 }
-
-
 
 CString CField::GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isNeedHide)const
 {
@@ -303,44 +272,86 @@ std::string UserFieldManage::GetResourceFileName(const char* szFileName)
 	return strPath;
 }
 
-uint8 UserFieldManage::UserLogoin(const std::string& strName, const std::string& strPwd)
+void  UserFieldManage::SaveCopyOfError(std::ifstream& rFile, const std::string& strName)
 {
-	VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin(), itor_end = m_ConfigInfo.vecUse.end();
-	for (; itor != itor_end; ++itor)
+	std::string strPath = GetResourcePath();
+	strPath.append("/ErrorCopy/");
+	CreateDirectoryA(strPath.c_str(), NULL);
+
+	strPath.append(strName);
+	time_t mTime = time(NULL);
+	char tmp[64]="";
+	tm mmTime;
+	localtime_s(&mmTime, &mTime);
+	sprintf_s(tmp, "%02d%02d%02d%02d", mmTime.tm_year - 100, mmTime.tm_mon, mmTime.tm_mday, mmTime.tm_hour);
+	strPath.append(tmp);
+	strPath.append(".can");
+
+	rFile.seekg(0, std::ios::end);
+	std::streampos psEnd = rFile.tellg();
+	rFile.seekg(0, std::ios::beg);
+	uint32 iSize = psEnd;
+	char* pBuffer = new char[iSize + 1];
+	rFile.read(pBuffer, iSize);
+	pBuffer[iSize] = '\0';
+
+	std::ofstream wFile(strPath.c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
+	wFile.write(pBuffer, iSize);
+	wFile.close();
+
+	delete pBuffer;
+}
+
+bool UserFieldManage::UserLogoinSuccess(Account_Info* pInfo)
+{
+	m_pCurAccount = pInfo;
+	m_pCurUser = new CField;
+	std::string strMd5;
+	_CANNP_NAME::encrypt::EncryptMD5(pInfo->strName, strlen(pInfo->strName), strMd5);
+	std::ifstream rFile(GetResourceFileName(strMd5.c_str()), std::ios::binary | std::ios::in);
+	if (rFile)
 	{
-		if (strcmp(itor->strName, strName.c_str()) == 0)
+		m_pCurUser->LoadBuffer(rFile, strMd5, m_strBasePwd);
+	}
+	else
+	{
+		m_pCurUser->iId = m_pCurAccount->iId;
+		m_pCurUser->iLastLogoinTime = time(NULL);
+		m_pCurUser->iVaildLoginTime = 0;
+		m_pCurUser->iShowItemTime = 5;
+		m_pCurUser->iShowLevel = SHOW_ITEM_LV_WEB | SHOW_ITEM_LV_SECRET;
+		m_pCurUser->iHideParts = (1 << FieldColumn_PwdLogin) | (1 << FieldColumn_PwdPay) | (1 << FieldColumn_PwdOther);
+
+		m_pCurUser->WriteBuffer(strMd5, m_strBasePwd);
+	}
+
+	return true;
+}
+
+uint8 UserFieldManage::UserLogoin(const char* szName, const char* szPwd)
+{
+	if (m_ConfigInfo.vecUse.empty())
+		return 1;
+
+	std::string strMd5;
+	_CANNP_NAME::encrypt::EncryptMD5(szPwd, strlen(szPwd), strMd5);
+
+	VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin();
+	for (; itor != m_ConfigInfo.vecUse.end(); ++itor)
+	{
+		if (strcmp(itor->strName, szName) == 0)
 		{
-			if (strcmp(itor->strPwd, strPwd.c_str()) == 0)
+			if (strcmp(itor->strPwd, strMd5.c_str()) == 0)
 			{
-				m_pCurAccount = &(*itor);
-				m_pCurUser = new CField;
-				std::string strMd5;
-				_CANNP_NAME::encrypt::EncryptMD5(strName.c_str(), strName.length(), strMd5);
-				std::ifstream rFile(GetResourceFileName(strMd5.c_str()), std::ios::binary | std::ios::in);
-				if (rFile)
-				{
-					m_pCurUser->LoadBuffer(rFile, strMd5, m_strBasePwd);
-				}
-				else
-				{
-					m_pCurUser->iId = m_pCurAccount->iId;
-					m_pCurUser->iLastLogoinTime = time(NULL);
-					m_pCurUser->iVaildLoginTime = 0;
-					m_pCurUser->iShowItemTime = 5;
-					m_pCurUser->iShowLevel = SHOW_ITEM_LV_WEB | SHOW_ITEM_LV_SECRET;
-					m_pCurUser->iHideParts = (1 << FieldColumn_PwdLogin) | (1 << FieldColumn_PwdPay) | (1 << FieldColumn_PwdOther);
-			
-					m_pCurUser->WriteBuffer(strMd5, m_strBasePwd);
-				}
-				
+				UserLogoinSuccess(&(*itor));
 				return 0;
 			}
 			else
-				return 1;
+				return 2;
 		}
 	}
 
-	return false;
+	return 1;
 }
 
 void UserFieldManage::WriteInfo(const std::string& strName, const std::string& strSrc, const std::string& strPwd/*=""*/)
@@ -369,28 +380,21 @@ void UserFieldManage::WriteInfo(const std::string& strName, const std::string& s
 
 void UserFieldManage::SaveConfigField()
 {
-	//std::ofstream wFile(GetResourceFileName(CONFIG_FILE).c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
-
-	//std::string strValue;
-	//char szPwd[MAX_LEN_PWD+1] = "";
-	//CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, szPwd);
-	//_CANNP_NAME::encrypt::EncryptAES(szPwd, szPwd, strValue);
-	//wFile.write(szPwd, MAX_LEN_PWD);
-	//wFile.write(strValue.c_str(), MAX_LEN_AES);
-	///wFile.flush();
-
 	std::string strBuff;
 	strBuff.append((char*)&m_ConfigInfo.iCurID, sizeof(m_ConfigInfo.iCurID));
 	strBuff.append((char*)&m_ConfigInfo.strFieldPwd, MAX_LEN_PWD);
 	strBuff.append((char*)&m_ConfigInfo.strPwdPwd, MAX_LEN_PWD);
 
-	uint32 iCount(m_ConfigInfo.vecUse.size());
-	strBuff.append((char*)&iCount, sizeof(iCount));
-
-	if (iCount > 0)
+	uint32 iUCount(m_ConfigInfo.vecUse.size());
+	uint32 iACount = m_ConfigInfo.vecAbandon.size();
+	strBuff.append((char*)&iUCount, sizeof(iUCount));
+	strBuff.append((char*)&iACount, sizeof(iACount));
+	
+	
+	if (iUCount > 0)
 	{
-		VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin(), itor_end = m_ConfigInfo.vecUse.end();
-		for (; itor != itor_end; ++itor)
+		VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin();
+		for (int i = 0; i < iUCount; ++i, ++itor)
 		{
 			strBuff.append((char*)&itor->iId, sizeof(itor->iId));
 			strBuff.append((char*)&itor->strName, MAX_LEN_NAME);
@@ -398,12 +402,10 @@ void UserFieldManage::SaveConfigField()
 		}
 	}
 	
-	iCount = m_ConfigInfo.vecAbandon.size();
-	strBuff.append((char*)&iCount, sizeof(iCount));
-	if (iCount > 0)
+	if (iACount > 0)
 	{
-		VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecAbandon.begin(), itor_end = m_ConfigInfo.vecAbandon.end();
-		for (; itor != itor_end; ++itor)
+		VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecAbandon.begin();
+		for (int i = 0; i < iUCount; ++i, ++itor)
 		{
 			strBuff.append((char*)&itor->iId, sizeof(itor->iId));
 			strBuff.append((char*)&itor->strName, MAX_LEN_NAME);
@@ -411,15 +413,6 @@ void UserFieldManage::SaveConfigField()
 		}
 	}
 
-// 	std::string strEn;
-// 	_CANNP_NAME::encrypt::EncryptBuffer(strBuff.c_str(), strBuff.length(), szPwd, strEn);
-// 	uint32 iLen(strBuff.length());
-// 	wFile.write((char*)&iLen, sizeof(iLen));
-// 	iLen = strEn.length();
-// 	wFile.write((char*)&iLen, sizeof(iLen));
-// 	wFile.write(strEn.c_str(), strEn.length());
-// 	
-// 	wFile.close();
 	WriteInfo(CONFIG_FILE, strBuff);
 }
 
@@ -428,6 +421,8 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 	std::ifstream rFile(GetResourceFileName(strName.c_str()).c_str(), std::ios::binary | std::ios::in);
 	if (!rFile)
 		return false;
+	
+	strOut.clear();
 
 	char szPwd[DEFINE_LEN_PWD] = "", szResult[DEFINE_LEN_AES] = "";
 	rFile.read(szPwd, MAX_LEN_PWD);
@@ -435,6 +430,7 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 
 	std::string strDes;
 	_CANNP_NAME::encrypt::EncryptAES(szPwd, szPwd, strDes);
+	bool isSuccess(false);
 	if (strDes.compare(szResult) == 0) //Verification
 	{
 		m_strBasePwd.append(szPwd, MAX_LEN_PWD);
@@ -446,71 +442,54 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 		rFile.seekg(0, std::ios::end);
 		std::streampos psEnd = rFile.tellg();
 
-		if (iEncLen != psEnd - ps)
-			return false;
+		if (iEncLen == psEnd - ps)
+		{
+			rFile.seekg(ps, std::ios::beg);
 
-		rFile.seekg(ps, std::ios::beg);
+			char* pBuffer = new char[iEncLen + 1];
+			pBuffer[iEncLen] = '\0';
+			rFile.read(pBuffer, iEncLen);
 
-		char* pBuffer = new char[iEncLen + 1];
-		pBuffer[iEncLen] = '\0';
-		rFile.read(pBuffer, iEncLen);
+			std::string strEnPwd(strPwd);
+			if (strEnPwd.empty())
+				strEnPwd.append(szPwd, MAX_LEN_PWD);
 
-		strOut.clear();
-		std::string strEnPwd(strPwd);
-		if (strEnPwd.empty())
-			strEnPwd.append(szPwd, MAX_LEN_PWD);
+			_CANNP_NAME::encrypt::DecryptBuffer(pBuffer, iEncLen, strEnPwd.c_str(), strOut);
+			delete pBuffer;
+			pBuffer = NULL;
 
-		_CANNP_NAME::encrypt::DecryptBuffer(pBuffer, iEncLen, strEnPwd.c_str(), strOut);
-		delete pBuffer;
-		pBuffer = NULL;
+			isSuccess = true;
+		}
 	}
+
+	if (!isSuccess)
+	{
+		//
+		SaveCopyOfError(rFile, strName);
+	}
+	return isSuccess;
 }
 
 
 bool UserFieldManage::LoadConfigField(const std::string& strName)
 {
-// 	char szPwd[DEFINE_LEN_PWD] = "", szResult[DEFINE_LEN_AES] = "";
-// 	rFile.read(szPwd, MAX_LEN_PWD);
-// 	rFile.read(szResult, MAX_LEN_AES);
-// 	std::string strDes;
-// 	_CANNP_NAME::encrypt::EncryptAES(szPwd, szPwd, strDes);
-// 	if (strDes.compare(szResult) == 0) //Verification
-// 	{
-// 		m_strBasePwd.append(szPwd, MAX_LEN_PWD);
-// 		uint32 iDecLen,iEncLen(0);
-// 		rFile.read((char*)&iDecLen, sizeof(iDecLen));
-// 		rFile.read((char*)&iEncLen, sizeof(iEncLen));
-// 
-// 		std::streampos ps = rFile.tellg();
-// 		rFile.seekg(0, std::ios::end);
-// 		std::streampos psEnd = rFile.tellg();
-// 		
-// 		if (iEncLen != psEnd - ps)
-// 			return false;
-// 
-// 		rFile.seekg(ps, std::ios::beg);
-// 
-// 		char* pBuffer = new char[iEncLen + 1];
-// 		pBuffer[iEncLen] = '\0';
-// 		rFile.read(pBuffer, iEncLen);
-// 
-// 		std::string strDes;
-// 		_CANNP_NAME::encrypt::DecryptBuffer(pBuffer, iEncLen, szPwd, strDes);
-// 		delete pBuffer;
-// 		pBuffer = NULL;
-
 	std::string strDes;
-	if (!ReadInfo(strName,strDes))
+	if (ReadInfo(strName,strDes))
 	{
+		if (strDes.empty())
+			return true;
+
 		uint32 iOffset(0);
 		UserFieldManage::ParsingStringCopy(strDes, iOffset, &m_ConfigInfo.iCurID, sizeof(m_ConfigInfo.iCurID));
 		UserFieldManage::ParsingStringCopy(strDes, iOffset, &m_ConfigInfo.strFieldPwd, MAX_LEN_PWD);
 		UserFieldManage::ParsingStringCopy(strDes,iOffset, &m_ConfigInfo.strPwdPwd, MAX_LEN_PWD);
 
-		uint32 iTemp(0);
-		UserFieldManage::ParsingStringCopy(strDes, iOffset, &iTemp, sizeof(iTemp));
+		uint32 iUCount(0),iAcount(0);
+		UserFieldManage::ParsingStringCopy(strDes, iOffset, &iUCount, sizeof(iUCount));
+		UserFieldManage::ParsingStringCopy(strDes, iOffset, &iAcount, sizeof(iAcount));
+
 		Account_Info mInfo;
-		for (uint32 i = 0; i < iTemp; ++i)
+		for (uint32 i = 0; i < iUCount; ++i)
 		{
 			memset(&mInfo, 0, sizeof(mInfo));
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.iId, sizeof(mInfo.iId));
@@ -518,8 +497,8 @@ bool UserFieldManage::LoadConfigField(const std::string& strName)
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strPwd, MAX_LEN_AES);
 			m_ConfigInfo.vecUse.push_back(mInfo);
 		}
-		UserFieldManage::ParsingStringCopy(strDes, iOffset, &iTemp, sizeof(iTemp));
-		for (uint32 i = 0; i < iTemp; ++i)
+		
+		for (uint32 i = 0; i < iAcount; ++i)
 		{
 			memset(&mInfo, 0, sizeof(mInfo));
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.iId, sizeof(mInfo.iId));
@@ -536,20 +515,23 @@ bool UserFieldManage::LoadConfigField(const std::string& strName)
 
 uint32 UserFieldManage::GetUserCount(VEC_STR& vecOut, bool isUse/* = true*/)
 {
-	VEC_ACCOUNTS::iterator itor, itor_end;
+	VEC_ACCOUNTS::iterator itor;
 	if (isUse)
 	{
-		itor = m_ConfigInfo.vecUse.begin();
-		itor_end = m_ConfigInfo.vecUse.end();
+		if (m_ConfigInfo.vecUse.empty())
+			return 0;
+
+		for (itor = m_ConfigInfo.vecUse.begin(); itor != m_ConfigInfo.vecUse.end(); ++itor)
+			vecOut.push_back(itor->strName);
 	}
 	else
 	{
-		itor = m_ConfigInfo.vecAbandon.begin();
-		itor_end = m_ConfigInfo.vecAbandon.end();
-	}
+		if (m_ConfigInfo.vecAbandon.empty())
+			return 0;
 
-	for (; itor != itor_end; ++itor)
-		vecOut.push_back(itor->strName);
+		for (itor = m_ConfigInfo.vecAbandon.begin(); itor != m_ConfigInfo.vecAbandon.end(); ++itor)
+			vecOut.push_back(itor->strName);
+	}
 	
 	return vecOut.size();
 }
@@ -564,17 +546,24 @@ uint32 UserFieldManage::GetUserCount(bool isUse/* = true*/)
 
 uint32 UserFieldManage::CreateAccount(const char* szAccount, uint32 iLenA, const char*szPwd, uint32 iLenP)
 {
-	VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin(), itor_end = m_ConfigInfo.vecUse.end();
-	for (; itor != itor_end; ++itor)
+	if (m_ConfigInfo.vecUse.size() > 0)
 	{
-		if (strcmp(itor->strName, szAccount) == 0)
-			return 0;
+		VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin() ;
+		for (; itor != m_ConfigInfo.vecUse.end(); ++itor)
+		{
+			if (strcmp(itor->strName, szAccount) == 0)
+				return 0;
+		}
 	}
+	
 	Account_Info mAccountInfo;
+	
 	++m_ConfigInfo.iCurID;
 	mAccountInfo.iId = m_ConfigInfo.iCurID;
 	memcpy_s(mAccountInfo.strName, MAX_LEN_NAME, szAccount, iLenA);
-	memcpy_s(mAccountInfo.strPwd, MAX_LEN_PWD, szPwd, iLenP);
+	std::string strMd5;
+	_CANNP_NAME::encrypt::EncryptMD5(szPwd, iLenP, strMd5);
+	memcpy_s(mAccountInfo.strPwd, MAX_LEN_PWD, strMd5.c_str(), strMd5.length());
 	m_ConfigInfo.vecUse.push_back(mAccountInfo);
 
 	SaveConfigField();
