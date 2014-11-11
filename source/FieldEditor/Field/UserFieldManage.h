@@ -26,7 +26,7 @@ protected:
 	bool IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
 private:
 	void GetDataToChar(std::string&);
-	void ParsingString(const char*);
+	void ParsingString(const std::string&);
 	
 };
 
@@ -44,7 +44,7 @@ public:
 	}
 	inline static uint32 ParsingStringCopy(const std::string& strSrc,uint32& iOffset, void* pDest, uint32 iLen)
 	{
-		if (iOffset + iLen >= strSrc.length())
+		if (iOffset + iLen > strSrc.length())
 			return iOffset;
 		memcpy(pDest,strSrc.c_str() + iOffset, iLen);
 		iOffset += iLen;

@@ -13,37 +13,65 @@ CField::~CField()
 {
 }
 
-void CField::ParsingString(const char* pSrc)
+void CField::ParsingString(const std::string& strSrc)
 {
-	if (!pSrc)
+	if (strSrc.empty())
 		return;
-	const char* pIndex = pSrc;
+	uint32 iOffset(0);
 
-	UserFieldManage::ParsingStringCopy(pIndex, &iId, sizeof(iId));
-	UserFieldManage::ParsingStringCopy(pIndex, &iLastLogoinTime, sizeof(iLastLogoinTime));
-	UserFieldManage::ParsingStringCopy(pIndex, &iVaildLoginTime, sizeof(iVaildLoginTime));
-	UserFieldManage::ParsingStringCopy(pIndex, &iShowItemTime, sizeof(iShowItemTime));
-	UserFieldManage::ParsingStringCopy(pIndex, &iShowLevel, sizeof(iShowLevel));
-	UserFieldManage::ParsingStringCopy(pIndex, &iHideParts, sizeof(iHideParts));
+	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iId, sizeof(iId));
+	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iLastLogoinTime, sizeof(iLastLogoinTime));
+	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iVaildLoginTime, sizeof(iVaildLoginTime));
+	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iShowItemTime, sizeof(iShowItemTime));
+	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iShowLevel, sizeof(iShowLevel));
+	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iHideParts, sizeof(iHideParts));
 
-	uint32 iItemCount(0);
-	UserFieldManage::ParsingStringCopy(pIndex, &iItemCount, sizeof(iItemCount));
+	uint32 iItemCount(0),iItemR(0);
+	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iItemCount, sizeof(iItemCount));
 	
 	FIELD_ITEM mItem;
-	for (uint32 i = 0; i < iItemCount; ++i)
+	FIELD_PWD_RECORD mItemR;
+	for (uint32 i(0),j(0); i < iItemCount; ++i)
 	{
 		memset(&mItem, 0, sizeof(mItem));
 		mItem.id = i;
 		//ParsingStringCopy(pIndex, &mItem.id, sizeof(mItem.id));
-		UserFieldManage::ParsingStringCopy(pIndex, &mItem.iLv, sizeof(mItem.iLv));
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, &mItem.iLv, sizeof(mItem.iLv));
 
-		UserFieldManage::ParsingStringCopy(pIndex, mItem.strNameNick, sizeof(mItem.strNameNick));
-		UserFieldManage::ParsingStringCopy(pIndex, mItem.strAccount, sizeof(mItem.strAccount));
-		UserFieldManage::ParsingStringCopy(pIndex, mItem.strLoginPwd, sizeof(mItem.strLoginPwd));
-		UserFieldManage::ParsingStringCopy(pIndex, mItem.strPayPwd, sizeof(mItem.strPayPwd));
-		UserFieldManage::ParsingStringCopy(pIndex, mItem.strOtherPwd, sizeof(mItem.strOtherPwd));
-		UserFieldManage::ParsingStringCopy(pIndex, mItem.strRelation, sizeof(mItem.strRelation));
-		UserFieldManage::ParsingStringCopy(pIndex, mItem.strDescribe, sizeof(mItem.strDescribe));
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strNameNick, sizeof(mItem.strNameNick));
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strAccount, sizeof(mItem.strAccount));
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strLoginPwd, sizeof(mItem.strLoginPwd));
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strPayPwd, sizeof(mItem.strPayPwd));
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strOtherPwd, sizeof(mItem.strOtherPwd));
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strRelation, sizeof(mItem.strRelation));
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strDescribe, sizeof(mItem.strDescribe));
+
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iItemR, sizeof(iItemR));
+		for (j = 0; j < iItemR; ++j)
+		{
+			memset(&mItemR, 0, sizeof(mItemR));
+			UserFieldManage::ParsingStringCopy(strSrc, iOffset, &mItemR.iMTime, sizeof(mItemR.iMTime));
+			UserFieldManage::ParsingStringCopy(strSrc, iOffset, &mItemR.strOldPwd, sizeof(mItemR.strOldPwd));
+			mItem.vecLogoin.push_back(mItemR);
+		}
+
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iItemR, sizeof(iItemR));
+		for (j = 0; j < iItemR; ++j)
+		{
+			memset(&mItemR, 0, sizeof(mItemR));
+			UserFieldManage::ParsingStringCopy(strSrc, iOffset, &mItemR.iMTime, sizeof(mItemR.iMTime));
+			UserFieldManage::ParsingStringCopy(strSrc, iOffset, &mItemR.strOldPwd, sizeof(mItemR.strOldPwd));
+			mItem.vecPay.push_back(mItemR);
+		}
+
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iItemR, sizeof(iItemR));
+		for (j = 0; j < iItemR; ++j)
+		{
+			memset(&mItemR, 0, sizeof(mItemR));
+			UserFieldManage::ParsingStringCopy(strSrc, iOffset, &mItemR.iMTime, sizeof(mItemR.iMTime));
+			UserFieldManage::ParsingStringCopy(strSrc, iOffset, &mItemR.strOldPwd, sizeof(mItemR.strOldPwd));
+			mItem.vecOther.push_back(mItemR);
+		}
 
 		listItem.push_back(mItem);
 	}
@@ -57,13 +85,15 @@ bool CField::LoadBuffer(std::ifstream& rFile, const std::string& strName, const 
 	rFile.read((char*)&iLen, sizeof(uint32));
 	rFile.read((char*)&iEnLen, sizeof(uint32));
 	char* pNewData = new char[iLen+1];
-	pNewData[iLen + 1] = '\0';
+	pNewData[iLen] = '\0';
 	rFile.read(pNewData, sizeof(iLen));
 
-	ParsingString(pNewData);
-
+	std::string strDe(""),strEnPwd(strPwd);
+	strEnPwd.append(strName);
+	const char *pEnSrc = pNewData;
+	_CANNP_NAME::encrypt::DecryptBuffer(pEnSrc, iLen, strEnPwd.c_str(), strDe);
 	delete pNewData;
-
+	ParsingString(strDe.c_str());
 	return true;
 }
 
@@ -83,8 +113,10 @@ void CField::GetDataToChar(std::string& strOut)
 	if (iItemCount == 0)
 		return;
 
+	uint32 iRCount(0);
 	VEC_ITEMS::iterator itor = listItem.begin();
-	for (int i = 0; i < iItemCount; ++i, ++itor)
+	VEC_PWD_RECORD::iterator itors;
+	for (int i = 0,j=0; i < iItemCount; ++i, ++itor)
 	{
 		strOut.append((char*)&(itor->iLv), sizeof(itor->iLv));
 
@@ -95,6 +127,33 @@ void CField::GetDataToChar(std::string& strOut)
 		strOut.append(itor->strOtherPwd, sizeof(itor->strOtherPwd));
 		strOut.append(itor->strRelation, sizeof(itor->strRelation));
 		strOut.append(itor->strDescribe, sizeof(itor->strDescribe));
+		
+		iRCount = itor->vecLogoin.size();
+		itors = itor->vecLogoin.begin();
+		strOut.append(iRCount, sizeof(iRCount));
+		for (j = 0; j < iRCount; ++j,++itors)
+		{
+			strOut.append((char*)&(itors->iMTime), sizeof(itors->iMTime));
+			strOut.append((char*)&(itors->strOldPwd), sizeof(itors->strOldPwd));
+		}
+
+		iRCount = itor->vecPay.size();
+		itors = itor->vecPay.begin();
+		strOut.append(iRCount, sizeof(iRCount));
+		for (j = 0; j < iRCount; ++j, ++itors)
+		{
+			strOut.append((char*)&(itors->iMTime), sizeof(itors->iMTime));
+			strOut.append((char*)&(itors->strOldPwd), sizeof(itors->strOldPwd));
+		}
+
+		iRCount = itor->vecOther.size();
+		itors = itor->vecOther.begin();
+		strOut.append(iRCount, sizeof(iRCount));
+		for (j = 0; j < iRCount; ++j, ++itors)
+		{
+			strOut.append((char*)&(itors->iMTime), sizeof(itors->iMTime));
+			strOut.append((char*)&(itors->strOldPwd), sizeof(itors->strOldPwd));
+		}
 	}
 
 }
@@ -494,7 +553,7 @@ bool UserFieldManage::LoadConfigField(const std::string& strName)
 			memset(&mInfo, 0, sizeof(mInfo));
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.iId, sizeof(mInfo.iId));
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strName, MAX_LEN_NAME);
-			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strPwd, MAX_LEN_AES);
+			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strPwd, MAX_LEN_PWD);
 			m_ConfigInfo.vecUse.push_back(mInfo);
 		}
 		
