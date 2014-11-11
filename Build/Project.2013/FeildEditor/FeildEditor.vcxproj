@@ -121,6 +121,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\source\FieldEditor\CreateNewField.h" />
     <ClInclude Include="..\..\..\source\FieldEditor\CreateUser.h" />
     <ClInclude Include="..\..\..\source\FieldEditor\FieldEditor.h" />
     <ClInclude Include="..\..\..\source\FieldEditor\FieldEditorDlg.h" />
@@ -134,6 +135,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\source\FieldEditor\CreateNewField.cpp" />
     <ClCompile Include="..\..\..\source\FieldEditor\CreateUser.cpp" />
     <ClCompile Include="..\..\..\source\FieldEditor\FieldEditor.cpp" />
     <ClCompile Include="..\..\..\source\FieldEditor\FieldEditorDlg.cpp" />

@@ -17,6 +17,8 @@
 #define new DEBUG_NEW
 #endif
 
+TCHAR g_FieldName[FieldColumn_Max][16] = { _T("NickName"), _T("Account"), _T("LoginPwd"), _T("PayPwd"), _T("OtherPwd"), _T("Relation"), _T("Describe") };
+uint8 g_FieldLen[FieldColumn_Max] = { 100, 160, 130, 130, 130, 200, 200 };
 
 // CFieldEditorDlg ¶Ô»°¿ò
 

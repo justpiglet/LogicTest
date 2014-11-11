@@ -54,6 +54,9 @@
     <ClInclude Include="..\..\..\source\FieldEditor\Setting.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\FieldEditor\CreateNewField.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -78,6 +81,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\FieldEditor\UserLogin.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\FieldEditor\CreateNewField.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -14,6 +14,8 @@
 #define DEFINE_LEN_NAME 33
 #define DEFINE_LEN_PWD 33
 #define DEFINE_LEN_TEXT 129
+
+#define MAX_RECORD_COUNT 50
 typedef std::vector<std::string> VEC_STR;
 
 enum FieldColumn
@@ -31,8 +33,14 @@ enum FieldColumn
 	FieldColumn_Max
 };
 
-static TCHAR g_FieldName[FieldColumn_Max][16] = { _T("NickName"), _T("Account"), _T("LoginPwd"), _T("PayPwd"), _T("OtherPwd"), _T("Relation"), _T("Describe")};
-static uint8 g_FieldLen[FieldColumn_Max] = {100,160,130,130,130,200,200};
+
+struct FIELD_PWD_RECORD
+{
+	uint32 iMTime;
+	char   strOldPwd[DEFINE_LEN_PWD];
+};
+typedef std::vector<FIELD_PWD_RECORD> VEC_PWD_RECORD;
+
 struct FIELD_ITEM
 {
 	uint32	id;
@@ -45,6 +53,10 @@ struct FIELD_ITEM
 	char	strRelation[DEFINE_LEN_NAME];
 	char	strDescribe[MAX_LEN_TEXT];
 
+	VEC_PWD_RECORD vecLogoin; //MAX_RECORD_COUNT
+	VEC_PWD_RECORD vecPay;
+	VEC_PWD_RECORD vecOther;
+
 	FIELD_ITEM() :id(0), iLv(0)
 	{
 		memset(strNameNick, 0, DEFINE_LEN_NAME);
@@ -56,7 +68,6 @@ struct FIELD_ITEM
 		memset(strDescribe, 0, MAX_LEN_TEXT);
 	}
 };
-
 enum SHOW_ITEM_LV
 {
 	SHOW_ITEM_LV_NOR = 0, /*allways show*/
