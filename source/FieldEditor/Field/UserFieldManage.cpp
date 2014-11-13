@@ -84,14 +84,14 @@ bool CField::LoadBuffer(std::ifstream& rFile, const std::string& strName, const 
 	uint32 iLen(0),iEnLen(0);
 	rFile.read((char*)&iLen, sizeof(uint32));
 	rFile.read((char*)&iEnLen, sizeof(uint32));
-	char* pNewData = new char[iLen+1];
-	pNewData[iLen] = '\0';
-	rFile.read(pNewData, sizeof(iLen));
+	char* pNewData = new char[iEnLen + 1];
+	pNewData[iEnLen] = '\0';
+	rFile.read(pNewData, iEnLen);
 
 	std::string strDe(""),strEnPwd(strPwd);
 	strEnPwd.append(strName);
 	const char *pEnSrc = pNewData;
-	_CANNP_NAME::encrypt::DecryptBuffer(pEnSrc, iLen, strEnPwd.c_str(), strDe);
+	_CANNP_NAME::encrypt::DecryptBuffer(pEnSrc, iEnLen, strEnPwd.c_str(), strDe);
 	delete pNewData;
 	ParsingString(strDe.c_str());
 	return true;
@@ -413,20 +413,20 @@ uint8 UserFieldManage::UserLogoin(const char* szName, const char* szPwd)
 	return 1;
 }
 
-void UserFieldManage::WriteInfo(const std::string& strName, const std::string& strSrc, const std::string& strPwd/*=""*/)
+void UserFieldManage::WriteInfo(const std::string& strName, const std::string& strSrc)
 {
 	std::ofstream wFile(GetResourceFileName(strName.c_str()).c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
+	CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, m_strBasePwd);
 
-	std::string strValue;
-	char szPwd[MAX_LEN_PWD + 1] = "";
-	CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, szPwd);
-	_CANNP_NAME::encrypt::EncryptAES(szPwd, szPwd, strValue);
-	wFile.write(szPwd, MAX_LEN_PWD);
+	std::string strValue(""),strEn(""), strEnPwd(m_strBasePwd);
+	
+	_CANNP_NAME::encrypt::EncryptAES(strEnPwd.c_str(), strEnPwd.c_str(), strValue);
+	wFile.write(strEnPwd.c_str(), MAX_LEN_PWD);
 	wFile.write(strValue.c_str(), MAX_LEN_AES);
-
-	std::string strEn, strEnPwd(strPwd);
-	if (strEnPwd.empty())
-		strEnPwd.append(szPwd, MAX_LEN_PWD);
+	
+	//if (strEnPwd.empty())
+		//strEnPwd.append(szPwd, MAX_LEN_PWD);
+	strEnPwd.append(strName);
 	_CANNP_NAME::encrypt::EncryptBuffer(strSrc.c_str(), strSrc.length(), strEnPwd.c_str(), strEn);
 	uint32 iLen(strSrc.length());
 	wFile.write((char*)&iLen, sizeof(iLen));
@@ -475,7 +475,7 @@ void UserFieldManage::SaveConfigField()
 	WriteInfo(CONFIG_FILE, strBuff);
 }
 
-bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, const std::string& strPwd /*= ""*/)
+bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut)
 {
 	std::ifstream rFile(GetResourceFileName(strName.c_str()).c_str(), std::ios::binary | std::ios::in);
 	if (!rFile)
@@ -492,6 +492,7 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 	bool isSuccess(false);
 	if (strDes.compare(szResult) == 0) //Verification
 	{
+		m_strBasePwd.clear();
 		m_strBasePwd.append(szPwd, MAX_LEN_PWD);
 		uint32 iDecLen, iEncLen(0);
 		rFile.read((char*)&iDecLen, sizeof(iDecLen));
@@ -509,9 +510,8 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 			pBuffer[iEncLen] = '\0';
 			rFile.read(pBuffer, iEncLen);
 
-			std::string strEnPwd(strPwd);
-			if (strEnPwd.empty())
-				strEnPwd.append(szPwd, MAX_LEN_PWD);
+			std::string strEnPwd(m_strBasePwd);
+			strEnPwd.append(strName);
 
 			_CANNP_NAME::encrypt::DecryptBuffer(pBuffer, iEncLen, strEnPwd.c_str(), strOut);
 			delete pBuffer;
@@ -533,7 +533,7 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 bool UserFieldManage::LoadConfigField(const std::string& strName)
 {
 	std::string strDes;
-	if (ReadInfo(strName,strDes))
+ 	if (ReadInfo(strName,strDes))
 	{
 		if (strDes.empty())
 			return true;

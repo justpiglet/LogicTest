@@ -74,8 +74,8 @@ protected:
 	std::string GetResourceFileName(const char*);
 	void SaveCopyOfError(std::ifstream& rFile,const std::string& strName);
 
-	void WriteInfo(const std::string& strName, const std::string& strSrc, const std::string& strPwd="");
-	bool ReadInfo(const std::string& strName, std::string& strOut, const std::string& strPwd = "");
+	void WriteInfo(const std::string& strName, const std::string& strSrc);
+	bool ReadInfo(const std::string& strName, std::string& strOut);
 private:
 	static UserFieldManage* m_gShare;
 	Config_Info m_ConfigInfo;

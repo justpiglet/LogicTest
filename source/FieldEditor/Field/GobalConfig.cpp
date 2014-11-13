@@ -14,8 +14,8 @@ CGobalConfig::~CGobalConfig()
 
 void CGobalConfig::CreateRandStr(uint8 iLen, char szOut[])
 {
-	char szTemp[2] = "";
 	uint16 iRandVal(0);
+	memset(szOut,0, iLen);
 	for (uint8 i = 0; i < iLen; ++i)
 	{
 		iRandVal = _CANNP_NAME::randoom::GetRandoom(0, 0xffff);
@@ -24,6 +24,24 @@ void CGobalConfig::CreateRandStr(uint8 iLen, char szOut[])
 		if (i>=iLen)
 			break;
 		szOut[i] = iRandVal >> 5;
+	}
+}
+
+void CGobalConfig::CreateRandStr(uint8 iLen, std::string& strOut)
+{
+	uint16 iRandVal(0);
+	strOut.clear();
+	char szTemp[2] = "";
+	for (uint8 i = 0; i < iLen; ++i)
+	{
+		iRandVal = _CANNP_NAME::randoom::GetRandoom(0, 0xffff);
+
+		szTemp[0] = iRandVal & 0x007f;
+		strOut.append(szTemp, 1);
+		if ((++i) >= iLen)
+			break;
+		szTemp[0] = iRandVal >> 5;
+		strOut.append(szTemp, 1);
 	}
 }
 

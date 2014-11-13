@@ -8,7 +8,7 @@ class CGobalConfig
 public:
 	static CGobalConfig* Share();
 	void CreateRandStr(uint8 iLen, char szOut[]);
-	
+	void CreateRandStr(uint8 iLen, std::string&);
 private:
 	CGobalConfig();
 	~CGobalConfig();
