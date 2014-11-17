@@ -13,8 +13,8 @@ uint32 g_ItemLvValue[4] = { 0, 1, 2, 4 };
 
 IMPLEMENT_DYNAMIC(CCreateNewField, CDialogEx)
 
-CCreateNewField::CCreateNewField(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CCreateNewField::IDD, pParent)
+CCreateNewField::CCreateNewField(EDlg_Mode mMode, CWnd* pParent /*=NULL*/)
+: CDialogEx(CCreateNewField::IDD, pParent), m_mode(mMode)
 {
 
 }
@@ -61,4 +61,24 @@ BOOL CCreateNewField::OnInitDialog()
 	pBom->SetCurSel(0);
 
 	return TRUE;
+}
+
+void CCreateNewField::UpdateGui()
+{
+	BOOL isEnable(FALSE);
+	if (m_mode == EDlg_Mode_New)
+		isEnable = TRUE;
+	((CEdit*)GetDlgItem(IDC_FIELD_NICKNAME))->SetReadOnly(isEnable);
+	((CEdit*)GetDlgItem(IDC_FIELD_ACCOUNT))->SetReadOnly(isEnable);
+
+	if (m_mode == EDlg_Mode_Read)
+		isEnable = TRUE;
+	else
+		isEnable = FALSE;
+	((CComboBox*)GetDlgItem(IDC_FIELD_LV_LIST))->EnableWindow(isEnable);
+	((CEdit*)GetDlgItem(IDC_FIELD_PWD1))->SetReadOnly(isEnable);
+	((CEdit*)GetDlgItem(IDC_FIELD_PWD2))->SetReadOnly(isEnable);
+	((CEdit*)GetDlgItem(IDC_FIELD_PWD3))->SetReadOnly(isEnable);
+	((CEdit*)GetDlgItem(IDC_FIELD_RELATION))->SetReadOnly(isEnable);
+	((CEdit*)GetDlgItem(IDC_FIELD_COMMENT))->SetReadOnly(isEnable);
 }

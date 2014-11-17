@@ -98,11 +98,13 @@ struct Account_Info
 	uint32  iId;
 	char	strName[DEFINE_LEN_NAME];
 	char	strPwd[DEFINE_LEN_PWD];
+	char	strOPwd[DEFINE_LEN_PWD];
 
 	Account_Info() :iId(0)
 	{
 		memset(strName, 0, DEFINE_LEN_NAME);
 		memset(strPwd, 0, DEFINE_LEN_PWD);
+		memset(strOPwd, 0, DEFINE_LEN_PWD);
 	}
 };
 typedef std::vector<Account_Info> VEC_ACCOUNTS;

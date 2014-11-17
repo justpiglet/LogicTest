@@ -363,12 +363,12 @@ bool UserFieldManage::UserLogoinSuccess(Account_Info* pInfo)
 	return true;
 }
 
-uint8 UserFieldManage::UserLogoin(const char* szName, const char* szPwd)
+uint8 UserFieldManage::UserLogoin(const char* szName, const char* szPwd, ELOGOIN_MODE mmode/*=ELOGOIN_MODE_NOR*/)
 {
 	if (m_ConfigInfo.vecUse.empty())
-		return 1;
+		return ER_ERROR;
 
-	std::string strMd5;
+	STDSTR strTemp, strMd5;
 	_CANNP_NAME::encrypt::EncryptMD5(szPwd, strlen(szPwd), strMd5);
 
 	VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin();
@@ -376,17 +376,24 @@ uint8 UserFieldManage::UserLogoin(const char* szName, const char* szPwd)
 	{
 		if (strcmp(itor->strName, szName) == 0)
 		{
-			if (strcmp(itor->strPwd, strMd5.c_str()) == 0)
+			if (mmode == ELOGOIN_MODE_NOR)
+				strTemp = itor->strPwd;
+			else
+				strTemp = itor->strOPwd;
+
+			if (strMd5.compare(strTemp) == 0)
 			{
-				UserLogoinSuccess(&(*itor));
-				return 0;
+				if (mmode == ELOGOIN_MODE_NOR)
+					UserLogoinSuccess(&(*itor));
+
+				return ER_SUCCESS;
 			}
 			else
-				return 2;
+				return ER_ERROR_PWD;
 		}
 	}
 
-	return 1;
+	return ER_ERROR_ACCOUNT;
 }
 
 void UserFieldManage::SaveConfigField()
@@ -410,6 +417,7 @@ void UserFieldManage::SaveConfigField()
 			strBuff.append((char*)&itor->iId, sizeof(itor->iId));
 			strBuff.append((char*)&itor->strName, MAX_LEN_NAME);
 			strBuff.append((char*)&itor->strPwd, MAX_LEN_PWD);
+			strBuff.append((char*)&itor->strOPwd, MAX_LEN_PWD);
 		}
 	}
 	
@@ -421,6 +429,7 @@ void UserFieldManage::SaveConfigField()
 			strBuff.append((char*)&itor->iId, sizeof(itor->iId));
 			strBuff.append((char*)&itor->strName, MAX_LEN_NAME);
 			strBuff.append((char*)&itor->strPwd, MAX_LEN_PWD);
+			strBuff.append((char*)&itor->strOPwd, MAX_LEN_PWD);
 		}
 	}
 	
@@ -539,19 +548,19 @@ bool UserFieldManage::LoadConfigField(const std::string& strName)
 		Account_Info mInfo;
 		for (uint32 i = 0; i < iUCount; ++i)
 		{
-			memset(&mInfo, 0, sizeof(mInfo));
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.iId, sizeof(mInfo.iId));
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strName, MAX_LEN_NAME);
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strPwd, MAX_LEN_PWD);
+			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strOPwd, MAX_LEN_PWD);
 			m_ConfigInfo.vecUse.push_back(mInfo);
 		}
 		
 		for (uint32 i = 0; i < iAcount; ++i)
 		{
-			memset(&mInfo, 0, sizeof(mInfo));
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.iId, sizeof(mInfo.iId));
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strName, MAX_LEN_NAME);
 			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strPwd, MAX_LEN_PWD);
+			UserFieldManage::ParsingStringCopy(strDes, iOffset, &mInfo.strOPwd, MAX_LEN_PWD);
 			m_ConfigInfo.vecAbandon.push_back(mInfo);
 		}
 
@@ -592,30 +601,47 @@ uint32 UserFieldManage::GetUserCount(bool isUse/* = true*/)
 		return m_ConfigInfo.vecAbandon.size();
 }
 
-uint32 UserFieldManage::CreateAccount(const char* szAccount, uint32 iLenA, const char*szPwd, uint32 iLenP)
+uint32 UserFieldManage::CreateAccount(const std::string& strA, const std::string& strP, const std::string& strOP)
 {
 	if (m_ConfigInfo.vecUse.size() > 0)
 	{
-		VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin() ;
+		VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin();
 		for (; itor != m_ConfigInfo.vecUse.end(); ++itor)
 		{
-			if (strcmp(itor->strName, szAccount) == 0)
+			if (strcmp(itor->strName, strA.c_str()) == 0)
 				return 0;
 		}
 	}
-	
+
 	Account_Info mAccountInfo;
-	
+
 	++m_ConfigInfo.iCurID;
 	mAccountInfo.iId = m_ConfigInfo.iCurID;
-	memcpy_s(mAccountInfo.strName, MAX_LEN_NAME, szAccount, iLenA);
-	std::string strMd5;
-	_CANNP_NAME::encrypt::EncryptMD5(szPwd, iLenP, strMd5);
+	memcpy_s(mAccountInfo.strName, MAX_LEN_NAME, strA.c_str(), strA.length());
+	std::string strMd5,strOMd5;
+	_CANNP_NAME::encrypt::EncryptMD5(strP.c_str(), strP.length(), strMd5);
 	memcpy_s(mAccountInfo.strPwd, MAX_LEN_PWD, strMd5.c_str(), strMd5.length());
+	_CANNP_NAME::encrypt::EncryptMD5(strOP.c_str(), strOP.length(), strOMd5);
+	memcpy_s(mAccountInfo.strOPwd, MAX_LEN_PWD, strOMd5.c_str(), strOMd5.length());
+	
 	m_ConfigInfo.vecUse.push_back(mAccountInfo);
 
 	SaveConfigField();
 	return mAccountInfo.iId;
+}
+
+bool UserFieldManage::VerifyAccount(CONST_STDSTR& strAccount)
+{
+	if (strAccount.empty())
+		return false;
+
+	for (VEC_ACCOUNTS::iterator itor = m_ConfigInfo.vecUse.begin(); itor != m_ConfigInfo.vecUse.end(); ++itor)
+	{
+		if (strAccount.compare(itor->strName) == 0)
+			return true;
+	}
+	
+	return false;
 }
 
 

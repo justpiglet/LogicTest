@@ -7,7 +7,7 @@ enum EDlg_Mode
 {
 	EDlg_Mode_New=0,
 	EDlg_Mode_Read,
-	EDlg_Mode_Mode,
+	EDlg_Mode_Modify,
 };
 
 class CCreateNewField : public CDialogEx
@@ -15,7 +15,7 @@ class CCreateNewField : public CDialogEx
 	DECLARE_DYNAMIC(CCreateNewField)
 
 public:
-	CCreateNewField(CWnd* pParent = NULL);   // 标准构造函数
+	CCreateNewField(EDlg_Mode mMode,CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CCreateNewField();
 
 // 对话框数据
@@ -25,9 +25,12 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 	virtual BOOL OnInitDialog();
 	DECLARE_MESSAGE_MAP()
+private:
+	void UpdateGui();
 public:
 	afx_msg void OnBnClickedOk();
 
 private:
 	FIELD_ITEM m_filedInfo;
+	EDlg_Mode m_mode;
 };

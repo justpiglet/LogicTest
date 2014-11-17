@@ -13,11 +13,12 @@ public:
 
 // 对话框数据
 	enum { IDD = IDD_CREATE_DLG };
-
-	bool GetCreateUersInfo(std::string&,std::string&);
+	inline uint8 GetLogoinStatus(){ return m_iCStatus;}
+	inline CONST_STDSTR& GetLogoinName(){ return m_strAccount; }
 private:
 	bool IsTextLegal(const CString&);
 	void Exchange(CString&,std::string&);
+	bool GetCreateUersInfo(std::string&, std::string&, std::string&);
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 	virtual BOOL OnInitDialog();
@@ -27,4 +28,6 @@ public:
 private:
 	std::string m_strAccount;
 	std::string m_strPwd;
+	std::string m_strOPwd;
+	uint8 m_iCStatus;
 };

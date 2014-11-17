@@ -39,7 +39,7 @@ CFieldEditorDlg::CFieldEditorDlg(CWnd* pParent /*=NULL*/)
 	m_fun[1][2] = &CFieldEditorDlg::TrashBasket;
 	m_fun[1][3] = &CFieldEditorDlg::SettingUpdate;
 
-	m_butName[0][0] = _T("(&L)Logoin");
+	m_butName[0][0] = _T("(&L)Login");
 	m_butName[0][1] = _T("(&N)New");
 	m_butName[0][2] = _T("");
 	m_butName[0][3] = _T("(&S)Setting");
@@ -246,7 +246,7 @@ BOOL CFieldEditorDlg::OnCommand(WPARAM wParam, LPARAM lParam)
 
 void CFieldEditorDlg::Logoin()
 {
-	CUserLogin dlg;
+	CUserLogin dlg(ELOGOIN_MODE_NOR);
 	if (dlg.DoModal() == IDOK)
 	{
 		if (dlg.IsLogoinSuccess())
@@ -276,22 +276,11 @@ void CFieldEditorDlg::CreateNewUser()
 	CCreateUser dlg;
 	if (dlg.DoModal() == IDOK)
 	{
-		std::string strName, strPwd;
-		if (dlg.GetCreateUersInfo(strName, strPwd))
-		{
-			uint8 iRet = UserFieldManage::Share()->UserLogoin(strName.c_str(), strPwd.c_str());
-			if (iRet == 0)
-			{
-				LoginSuccessUpdate(strName);
-			}
-			else
-			{
-				UpdateButton();
-				MessageBox(_T("Account or Password Error!"));
-			}	
-		}
+		if (dlg.GetLogoinStatus() == ER_SUCCESS)
+			LoginSuccessUpdate(dlg.GetLogoinName());
+		else
+			UpdateButton();
 	}
-
 }
 
 void CFieldEditorDlg::CreateNewField()

@@ -4,6 +4,20 @@
 #include "FieldDeifne.h"
 #include <fstream>
 
+enum ELOGOIN_RET
+{
+	ER_SUCCESS = 0,
+	ER_ERROR_ACCOUNT,
+	ER_ERROR_PWD,
+	ER_ERROR
+};
+
+enum ELOGOIN_MODE
+{
+	ELOGOIN_MODE_NOR=0,
+	ELOGOIN_MODE_OPERATE
+};
+
 class CField : public User_Field
 {
 	friend class UserFieldManage;
@@ -53,8 +67,8 @@ public:
 
 	bool InitData();
 
-	uint32 CreateAccount(const char* szAccount, uint32 iLenA, const char*szPwd, uint32 iLenP);
-	uint8 UserLogoin(const char* szName, const char* szPwd);
+	uint32 CreateAccount(const std::string&, const std::string&, const std::string&);
+	uint8 UserLogoin(const char* szName, const char* szPwd, ELOGOIN_MODE mmode=ELOGOIN_MODE_NOR);
 	bool UserLogoinSuccess(Account_Info* pInfo);
 	
 	const CField* GetCurUserFields(){ return m_pCurUser; }
@@ -65,6 +79,7 @@ public:
 
 	uint32 GetUserCount(VEC_STR& vecOut,bool isUse=true);
 	uint32 GetUserCount(bool isUse = true);
+	bool VerifyAccount(CONST_STDSTR& strAccount);
 private:
 	UserFieldManage();
 	~UserFieldManage();

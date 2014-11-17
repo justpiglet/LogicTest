@@ -10,7 +10,7 @@ class CUserLogin : public CDialogEx
 	DECLARE_DYNAMIC(CUserLogin)
 
 public:
-	CUserLogin(CWnd* pParent = NULL);   // 标准构造函数
+	CUserLogin(ELOGOIN_MODE iMode, STDSTR strAccount=STDSTR(), CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CUserLogin();
 
 // 对话框数据
@@ -27,7 +27,8 @@ public:
 	afx_msg void OnBnClickedLogoinBt();
 private:
 	CComboBox m_AccountList;
-	std::string m_strAccount;
 	VEC_STR m_vecAccount;
 	uint8 m_iStatus;
+	ELOGOIN_MODE m_mode;
+	STDSTR m_strAccount; //only operate use
 };

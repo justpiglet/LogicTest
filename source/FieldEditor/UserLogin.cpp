@@ -11,8 +11,8 @@
 
 IMPLEMENT_DYNAMIC(CUserLogin, CDialogEx)
 
-CUserLogin::CUserLogin(CWnd* pParent /*=NULL*/)
-: CDialogEx(CUserLogin::IDD, pParent), m_iStatus(0)
+CUserLogin::CUserLogin(ELOGOIN_MODE mMode, STDSTR strAccoun/*t = STDSTR()*/, CWnd* pParent /*=NULL*/)
+: CDialogEx(CUserLogin::IDD, pParent), m_iStatus(0), m_mode(mMode), m_strAccount(strAccoun)
 {
 
 }
@@ -36,28 +36,51 @@ BOOL CUserLogin::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	
-	uint32 iCount = UserFieldManage::Share()->GetUserCount(m_vecAccount);
-	if (iCount > 0)
-	{
-		
-#ifdef _UNICODE
-		for (int i = 0; i < iCount; ++i)
-		{
-			wchar_t* pWchar = _CANNP_NAME::code::AsciiToUnicode(m_vecAccount[i].c_str(), m_vecAccount[i].length());
-			m_AccountList.InsertString(i, pWchar);
-			delete pWchar;
-		}
-#else
-		for (int i = 0; i < iCount; ++i)
-		{
-			m_AccountList.InsertString(i, vecOut[i].c_str());
-		}
-#endif
-		
-		m_AccountList.SetCurSel(0);
-	}
+	m_vecAccount.clear();
 
+	if (m_mode == ELOGOIN_MODE_NOR)
+	{
+		uint32 iCount = UserFieldManage::Share()->GetUserCount(m_vecAccount);
+		if (iCount > 0)
+		{
+
+#ifdef _UNICODE
+			for (int i = 0; i < iCount; ++i)
+			{
+				wchar_t* pWchar = _CANNP_NAME::code::AsciiToUnicode(m_vecAccount[i].c_str(), m_vecAccount[i].length());
+				m_AccountList.InsertString(i, pWchar);
+				delete pWchar;
+			}
+#else
+			for (int i = 0; i < iCount; ++i)
+			{
+				m_AccountList.InsertString(i, vecOut[i].c_str());
+			}
+#endif
+
+			m_AccountList.SetCurSel(0);
+		}
+	}
+	else
+	{
+		SetWindowText(_T("Verify"));
+
+		if (UserFieldManage::Share()->VerifyAccount(m_strAccount))
+		{
+#ifdef _UNICODE
+			wchar_t* pWchar = _CANNP_NAME::code::AsciiToUnicode(m_strAccount.c_str(), m_strAccount.length());
+			m_AccountList.InsertString(0, pWchar);
+			delete pWchar;
+#else
+			m_AccountList.InsertString(i, m_strAccount.c_str());
+#endif
+
+			m_AccountList.SetCurSel(0);
+			m_vecAccount.push_back(m_strAccount);
+		}
+			
+	}
+	
 	return TRUE;
 }
 
@@ -72,15 +95,18 @@ void CUserLogin::OnBnClickedLogoinBt()
 		MessageBox(_T("Please Select Account!"));
 	else
 	{
-		CString strPwd;
-		GetDlgItem(IDC_LOGOIN_PWD)->GetWindowText(strPwd);
+		CString cstrPwd;
+		GetDlgItem(IDC_LOGOIN_PWD)->GetWindowText(cstrPwd);
+#ifdef _UNICODE
+		STDSTR strPwd = _CANNP_NAME::code::UnicodeToAscii(cstrPwd.GetBuffer(), cstrPwd.GetLength());
+#else
+		STDSTR strPwd = cstrPwd.GetBuffer();
+#endif
+		m_iStatus = UserFieldManage::Share()->UserLogoin(m_vecAccount[iSel].c_str(), strPwd.c_str(),m_mode);
 
-		char* pAscii = _CANNP_NAME::code::UnicodeToAscii(strPwd.GetBuffer(), strPwd.GetLength());
-		m_iStatus = UserFieldManage::Share()->UserLogoin(m_vecAccount[iSel].c_str(), pAscii);
-		delete pAscii;
-		if (m_iStatus == 1)
+		if (m_iStatus == ER_ERROR_ACCOUNT || m_iStatus == ER_ERROR)
 			MessageBox(_T("Account Error!"));
-		else if (m_iStatus == 2)
+		else if (m_iStatus == ER_ERROR_PWD)
 			MessageBox(_T("Password Error!"));
 	}
 

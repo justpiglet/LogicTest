@@ -13,7 +13,7 @@
 IMPLEMENT_DYNAMIC(CCreateUser, CDialogEx)
 
 CCreateUser::CCreateUser(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CCreateUser::IDD, pParent)
+: CDialogEx(CCreateUser::IDD, pParent), m_iCStatus(0)
 {
 	
 }
@@ -56,7 +56,6 @@ bool CCreateUser::IsTextLegal(const CString& strSrc)
 	return true;
 }
 
-
 // CCreateUser 消息处理程序
 
 
@@ -64,7 +63,8 @@ void CCreateUser::OnBnClickedOk()
 {
 	// TODO:  在此添加控件通知处理程序代码
 	//CDialogEx::OnOK();
-	CString strAccount,strPwd, strError;
+	m_iCStatus = ER_ERROR;
+	CString strAccount,strPwd,strOPwd, strError;
 	uint32 iTemp(0);
 	GetDlgItem(IDC_EDIT_CREATE_ACCOUNT)->GetWindowText(strAccount);
 
@@ -86,7 +86,26 @@ void CCreateUser::OnBnClickedOk()
 			if (strPwd2.IsEmpty())
 				strError = _T("Password Can not empty ,inout again!");
 			else if (strPwd2 != strPwd)
-				strError = _T("Twice input password are different!");
+				strError = _T("Password Twice input are different!");
+			else
+			{
+				GetDlgItem(IDC_EDIT_CREATE_PWD3)->GetWindowText(strOPwd);
+				if (strOPwd.IsEmpty())
+					strError = _T("Operate Password Can not empty ,inout again!");
+				else if (!IsTextLegal(strOPwd))
+					strError = _T("Operate Password There is have illegal characters!");
+				else
+				{
+					CString strPwd4;
+					GetDlgItem(IDC_EDIT_CREATE_PWD4)->GetWindowText(strPwd4);
+					if (strPwd4.IsEmpty())
+						strError = _T("Operate Password Can not empty ,inout again!");
+					else if (strPwd4 != strOPwd)
+						strError = _T("Operate password Twice input are different!");
+				}
+			}
+
+
 		}
 	}
 
@@ -94,9 +113,10 @@ void CCreateUser::OnBnClickedOk()
 	{
 		Exchange(strAccount, m_strAccount);
 		Exchange(strPwd, m_strPwd);
-		if (UserFieldManage::Share()->CreateAccount(m_strAccount.c_str(), m_strAccount.length(),m_strPwd.c_str(),m_strPwd.length())>0)
+		Exchange(strOPwd, m_strOPwd);
+		if (UserFieldManage::Share()->CreateAccount(m_strAccount, m_strPwd,m_strOPwd)>0)
 		{
-			
+			m_iCStatus = UserFieldManage::Share()->UserLogoin(m_strAccount.c_str(), m_strPwd.c_str());
 			CDialogEx::OnOK();
 		}
 		else
@@ -104,20 +124,19 @@ void CCreateUser::OnBnClickedOk()
 			m_strAccount = "";
 			MessageBox(_T("Account already exsist!"));
 		}
-
-		
 	}
 	else
 		MessageBox(strError);
 }
 
-bool CCreateUser::GetCreateUersInfo(std::string& strA, std::string& strP)
+bool CCreateUser::GetCreateUersInfo(std::string& strA, std::string& strP, std::string& strOP)
 {
 	if (m_strAccount.empty() || m_strPwd.empty())
 		return false;
 
 	strA=m_strAccount;
 	strP = m_strPwd;
+	strOP = m_strOPwd;
 	return true;
 }
 

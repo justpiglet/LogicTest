@@ -6,6 +6,9 @@
 #include <list>
 #include "macro.h"
 
+typedef std::string STDSTR;
+typedef const std::string CONST_STDSTR;
+
 typedef struct Point
 {
 	DECIMALS x, y;
