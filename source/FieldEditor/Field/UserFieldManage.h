@@ -75,7 +75,7 @@ protected:
 	void SaveCopyOfError(std::ifstream& rFile,const std::string& strName);
 
 	void WriteInfo(const std::string& strName, const std::string& strSrc);
-	bool ReadInfo(const std::string& strName, std::string& strOut);
+	bool ReadInfo(const std::string& strName, std::string& strOut, std::string& strBasePwd = std::string());
 private:
 	static UserFieldManage* m_gShare;
 	Config_Info m_ConfigInfo;

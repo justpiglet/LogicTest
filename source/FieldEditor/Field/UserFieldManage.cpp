@@ -413,30 +413,6 @@ uint8 UserFieldManage::UserLogoin(const char* szName, const char* szPwd)
 	return 1;
 }
 
-void UserFieldManage::WriteInfo(const std::string& strName, const std::string& strSrc)
-{
-	std::ofstream wFile(GetResourceFileName(strName.c_str()).c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
-	CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, m_strBasePwd);
-
-	std::string strValue(""),strEn(""), strEnPwd(m_strBasePwd);
-	
-	_CANNP_NAME::encrypt::EncryptAES(strEnPwd.c_str(), strEnPwd.c_str(), strValue);
-	wFile.write(strEnPwd.c_str(), MAX_LEN_PWD);
-	wFile.write(strValue.c_str(), MAX_LEN_AES);
-	
-	//if (strEnPwd.empty())
-		//strEnPwd.append(szPwd, MAX_LEN_PWD);
-	strEnPwd.append(strName);
-	_CANNP_NAME::encrypt::EncryptBuffer(strSrc.c_str(), strSrc.length(), strEnPwd.c_str(), strEn);
-	uint32 iLen(strSrc.length());
-	wFile.write((char*)&iLen, sizeof(iLen));
-	iLen = strEn.length();
-	wFile.write((char*)&iLen, sizeof(iLen));
-	wFile.write(strEn.c_str(), strEn.length());
-
-	wFile.close();
-}
-
 void UserFieldManage::SaveConfigField()
 {
 	std::string strBuff;
@@ -475,7 +451,39 @@ void UserFieldManage::SaveConfigField()
 	WriteInfo(CONFIG_FILE, strBuff);
 }
 
-bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut)
+void UserFieldManage::WriteInfo(const std::string& strName, const std::string& strSrc)
+{
+	std::string strValue(""), strEn(""), strEnPwd(""),strHead(""),strHeadEn("");
+	uint32 iLen(0);
+
+	std::ofstream wFile(GetResourceFileName(strName.c_str()).c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
+	
+	CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, strEnPwd);
+	if (m_strBasePwd.empty())
+		CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, m_strBasePwd);
+
+	_CANNP_NAME::encrypt::EncryptAES(strEnPwd.c_str(), strEnPwd.c_str(), strValue);
+
+	strHead.append(strValue);
+	strHead.append(strEnPwd);
+	strHead.append(m_strBasePwd);
+	_CANNP_NAME::encrypt::EncryptBuffer(strHead.c_str(), strHead.length(), strName.c_str(), strHeadEn);
+	iLen = strHeadEn.length();
+	wFile.write((char*)&iLen, sizeof(iLen));
+	wFile.write(strHeadEn.c_str(), iLen);
+
+	strEnPwd.append(m_strBasePwd);
+	_CANNP_NAME::encrypt::EncryptBuffer(strSrc.c_str(), strSrc.length(), strEnPwd.c_str(), strEn);
+	iLen = strSrc.length();
+	wFile.write((char*)&iLen, sizeof(iLen));
+	iLen = strEn.length();
+	wFile.write((char*)&iLen, sizeof(iLen));
+	wFile.write(strEn.c_str(), strEn.length());
+
+	wFile.close();
+}
+
+bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, std::string& strBasePwd /*= std::string()*/)
 {
 	std::ifstream rFile(GetResourceFileName(strName.c_str()).c_str(), std::ios::binary | std::ios::in);
 	if (!rFile)
@@ -483,17 +491,25 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut)
 	
 	strOut.clear();
 
-	char szPwd[DEFINE_LEN_PWD] = "", szResult[DEFINE_LEN_AES] = "";
-	rFile.read(szPwd, MAX_LEN_PWD);
-	rFile.read(szResult, MAX_LEN_AES);
+	uint32 iLen(0);
+	std::string strDes(""), strPwd(""), strValue("");
+	
+	rFile.read((char*)&iLen, sizeof(iLen));
+	char* pHeads = new char[iLen + 1];
+	rFile.read(pHeads, iLen);
+	pHeads[iLen] = '\0';
 
-	std::string strDes;
-	_CANNP_NAME::encrypt::EncryptAES(szPwd, szPwd, strDes);
+	_CANNP_NAME::encrypt::DecryptBuffer(pHeads, iLen, strName.c_str(), strDes);
+	delete pHeads;
+
+	strValue = strDes.substr(0, MAX_LEN_AES);
+	strPwd = strDes.substr(MAX_LEN_AES, MAX_LEN_PWD);
+	strBasePwd = strDes.substr(MAX_LEN_AES+MAX_LEN_PWD, MAX_LEN_PWD);
+
+	_CANNP_NAME::encrypt::EncryptAES(strPwd.c_str(), strPwd.c_str(), strDes);
 	bool isSuccess(false);
-	if (strDes.compare(szResult) == 0) //Verification
+	if (strDes.compare(strValue) == 0) //Verification
 	{
-		m_strBasePwd.clear();
-		m_strBasePwd.append(szPwd, MAX_LEN_PWD);
 		uint32 iDecLen, iEncLen(0);
 		rFile.read((char*)&iDecLen, sizeof(iDecLen));
 		rFile.read((char*)&iEncLen, sizeof(iEncLen));
@@ -510,10 +526,8 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut)
 			pBuffer[iEncLen] = '\0';
 			rFile.read(pBuffer, iEncLen);
 
-			std::string strEnPwd(m_strBasePwd);
-			strEnPwd.append(strName);
-
-			_CANNP_NAME::encrypt::DecryptBuffer(pBuffer, iEncLen, strEnPwd.c_str(), strOut);
+			strPwd.append(strBasePwd);
+			_CANNP_NAME::encrypt::DecryptBuffer(pBuffer, iEncLen, strPwd.c_str(), strOut);
 			delete pBuffer;
 			pBuffer = NULL;
 
@@ -528,7 +542,6 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut)
 	}
 	return isSuccess;
 }
-
 
 bool UserFieldManage::LoadConfigField(const std::string& strName)
 {
