@@ -13,10 +13,10 @@ CField::~CField()
 {
 }
 
-void CField::ParsingString(const std::string& strSrc)
+bool CField::ParsingString(const std::string& strSrc)
 {
 	if (strSrc.empty())
-		return;
+		return false;
 	uint32 iOffset(0);
 
 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iId, sizeof(iId));
@@ -75,31 +75,20 @@ void CField::ParsingString(const std::string& strSrc)
 
 		listItem.push_back(mItem);
 	}
-}
 
-bool CField::LoadBuffer(std::ifstream& rFile, const std::string& strName, const std::string& strPwd)
-{
-	if (!rFile.is_open())
-		return false;
-	uint32 iLen(0),iEnLen(0);
-	rFile.read((char*)&iLen, sizeof(uint32));
-	rFile.read((char*)&iEnLen, sizeof(uint32));
-	char* pNewData = new char[iEnLen + 1];
-	pNewData[iEnLen] = '\0';
-	rFile.read(pNewData, iEnLen);
-
-	std::string strDe(""),strEnPwd(strPwd);
-	strEnPwd.append(strName);
-	const char *pEnSrc = pNewData;
-	_CANNP_NAME::encrypt::DecryptBuffer(pEnSrc, iEnLen, strEnPwd.c_str(), strDe);
-	delete pNewData;
-	ParsingString(strDe.c_str());
 	return true;
+}
+bool CField::ReadBuffer(const std::string& strName, const std::string& strPwd)
+{
+	std::string strDe(""),strBasePwd(strPwd);
+	if (UserFieldManage::Share()->ReadInfo(strName, strDe, strBasePwd))
+		return ParsingString(strDe);
+	else
+		return false;
 }
 
 void CField::GetDataToChar(std::string& strOut)
 {
-	
 	strOut.append((char*)&iId, sizeof(iId));
 	strOut.append((char*)&iLastLogoinTime, sizeof(iLastLogoinTime));
 	strOut.append((char*)&iVaildLoginTime, sizeof(iVaildLoginTime));
@@ -167,19 +156,8 @@ void CField::WriteBuffer(const std::string& strName, const std::string& strPwd)
 
 	std::string strData;
 	GetDataToChar(strData);
-	uint32 iLen = strData.length();
-	wFile.write((char*)&iLen, sizeof(iLen));
 
-	std::string strEn, strEnPwd(strPwd);
-	strEnPwd.append(strName);
-
-	_CANNP_NAME::encrypt::EncryptBuffer(strData.c_str(), strData.length(), strEnPwd.c_str(), strEn);
-	
-	iLen = strEn.length();
-	wFile.write((char*)&iLen, sizeof(iLen));
-	wFile.write(strEn.c_str(), strEn.length());
-	
-	wFile.close();
+	UserFieldManage::Share()->WriteInfo(strName, strData, strPwd);
 }
 
 const char* CField::GetFieldString(uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)const
@@ -311,6 +289,8 @@ bool UserFieldManage::InitData()
 		CGobalConfig::Share()->CreateRandStr(32, m_ConfigInfo.strPwdPwd);
 		m_ConfigInfo.strPwdPwd[32] = '\0';
 
+		m_strBasePwd.clear();
+		CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, m_strBasePwd);
 		SaveConfigField();
 	}
 	
@@ -367,12 +347,8 @@ bool UserFieldManage::UserLogoinSuccess(Account_Info* pInfo)
 	m_pCurUser = new CField;
 	std::string strMd5;
 	_CANNP_NAME::encrypt::EncryptMD5(pInfo->strName, strlen(pInfo->strName), strMd5);
-	std::ifstream rFile(GetResourceFileName(strMd5.c_str()), std::ios::binary | std::ios::in);
-	if (rFile)
-	{
-		m_pCurUser->LoadBuffer(rFile, strMd5, m_strBasePwd);
-	}
-	else
+	//std::ifstream rFile(GetResourceFileName(strMd5.c_str()), std::ios::binary | std::ios::in);
+	if (!m_pCurUser->ReadBuffer(strMd5, m_strBasePwd))
 	{
 		m_pCurUser->iId = m_pCurAccount->iId;
 		m_pCurUser->iLastLogoinTime = time(NULL);
@@ -447,11 +423,11 @@ void UserFieldManage::SaveConfigField()
 			strBuff.append((char*)&itor->strPwd, MAX_LEN_PWD);
 		}
 	}
-
-	WriteInfo(CONFIG_FILE, strBuff);
+	
+	WriteInfo(CONFIG_FILE, strBuff, m_strBasePwd,true);
 }
 
-void UserFieldManage::WriteInfo(const std::string& strName, const std::string& strSrc)
+void UserFieldManage::WriteInfo(const std::string& strName, const std::string& strSrc, const std::string& strBasePwd, bool isMainConfig/* = false*/)
 {
 	std::string strValue(""), strEn(""), strEnPwd(""),strHead(""),strHeadEn("");
 	uint32 iLen(0);
@@ -459,20 +435,19 @@ void UserFieldManage::WriteInfo(const std::string& strName, const std::string& s
 	std::ofstream wFile(GetResourceFileName(strName.c_str()).c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
 	
 	CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, strEnPwd);
-	if (m_strBasePwd.empty())
-		CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, m_strBasePwd);
 
 	_CANNP_NAME::encrypt::EncryptAES(strEnPwd.c_str(), strEnPwd.c_str(), strValue);
 
 	strHead.append(strValue);
 	strHead.append(strEnPwd);
-	strHead.append(m_strBasePwd);
+	if (isMainConfig)
+		strHead.append(strBasePwd);
 	_CANNP_NAME::encrypt::EncryptBuffer(strHead.c_str(), strHead.length(), strName.c_str(), strHeadEn);
 	iLen = strHeadEn.length();
 	wFile.write((char*)&iLen, sizeof(iLen));
 	wFile.write(strHeadEn.c_str(), iLen);
 
-	strEnPwd.append(m_strBasePwd);
+	strEnPwd.append(strBasePwd);
 	_CANNP_NAME::encrypt::EncryptBuffer(strSrc.c_str(), strSrc.length(), strEnPwd.c_str(), strEn);
 	iLen = strSrc.length();
 	wFile.write((char*)&iLen, sizeof(iLen));
@@ -504,7 +479,8 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 
 	strValue = strDes.substr(0, MAX_LEN_AES);
 	strPwd = strDes.substr(MAX_LEN_AES, MAX_LEN_PWD);
-	strBasePwd = strDes.substr(MAX_LEN_AES+MAX_LEN_PWD, MAX_LEN_PWD);
+	if (iLen>MAX_LEN_AES + MAX_LEN_PWD)
+		strBasePwd = strDes.substr(MAX_LEN_AES+MAX_LEN_PWD, MAX_LEN_PWD);
 
 	_CANNP_NAME::encrypt::EncryptAES(strPwd.c_str(), strPwd.c_str(), strDes);
 	bool isSuccess(false);
@@ -546,7 +522,7 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 bool UserFieldManage::LoadConfigField(const std::string& strName)
 {
 	std::string strDes;
- 	if (ReadInfo(strName,strDes))
+	if (ReadInfo(strName, strDes, m_strBasePwd))
 	{
 		if (strDes.empty())
 			return true;

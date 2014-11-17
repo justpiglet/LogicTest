@@ -21,12 +21,12 @@ public:
 	
 protected:
 	void WriteBuffer(const std::string& strName, const std::string& strPwd);
-	bool LoadBuffer(std::ifstream& rFile, const std::string& strName, const std::string& strPwd);
+	bool ReadBuffer(const std::string& strName, const std::string& strPwd);
 
 	bool IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
 private:
 	void GetDataToChar(std::string&);
-	void ParsingString(const std::string&);
+	bool ParsingString(const std::string&);
 	
 };
 
@@ -74,7 +74,8 @@ protected:
 	std::string GetResourceFileName(const char*);
 	void SaveCopyOfError(std::ifstream& rFile,const std::string& strName);
 
-	void WriteInfo(const std::string& strName, const std::string& strSrc);
+	const std::string& GetBasePwd(){ return m_strBasePwd; }
+	void WriteInfo(const std::string& strName, const std::string& strSrc,const std::string& strBasePwd,bool isMainConfig=false);
 	bool ReadInfo(const std::string& strName, std::string& strOut, std::string& strBasePwd = std::string());
 private:
 	static UserFieldManage* m_gShare;
