@@ -75,7 +75,9 @@ private:
 	TCHAR* m_butName[2][4];
 
 	int32 m_curRow;
-	IMainDlgHandle* g_pMainDlgHandle;
+	//IMainDlgHandle* g_pMainDlgHandle;
 public:
 	afx_msg void OnNMDblclkListInfo(NMHDR *pNMHDR, LRESULT *pResult);
 };
+
+extern IMainDlgHandle* g_mainDlg;

@@ -12,7 +12,7 @@
 IMPLEMENT_DYNAMIC(CUserLogin, CDialogEx)
 
 CUserLogin::CUserLogin(ELOGOIN_MODE mMode, STDSTR strAccoun/*t = STDSTR()*/, CWnd* pParent /*=NULL*/)
-: CDialogEx(CUserLogin::IDD, pParent), m_iStatus(0), m_mode(mMode), m_strAccount(strAccoun)
+: CDialogEx(CUserLogin::IDD, pParent), m_iStatus(ER_ERROR), m_mode(mMode), m_strAccount(strAccoun)
 {
 
 }

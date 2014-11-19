@@ -5,6 +5,7 @@
 #include "FieldEditor.h"
 #include "CreateNewField.h"
 #include "afxdialogex.h"
+#include "UserLogin.h"
 
 TCHAR* g_ItemLvName[4] = { _T("Nomal"), _T("Email"), _T("Web"), _T("Secrect") };
 uint32 g_ItemLvValue[4] = { 0, 1, 2, 4 };
@@ -13,7 +14,7 @@ uint32 g_ItemLvValue[4] = { 0, 1, 2, 4 };
 
 IMPLEMENT_DYNAMIC(CCreateNewField, CDialogEx)
 
-CCreateNewField::CCreateNewField(EDlg_Mode mMode, CWnd* pParent /*=NULL*/)
+CCreateNewField::CCreateNewField(uint32 iID, EDlg_Mode mMode, CWnd* pParent /*=NULL*/)
 : CDialogEx(CCreateNewField::IDD, pParent), m_mode(mMode)
 {
 
@@ -31,6 +32,8 @@ void CCreateNewField::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CCreateNewField, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CCreateNewField::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_MODIFY_BTN, &CCreateNewField::OnBnClickedModifyBtn)
+	ON_BN_CLICKED(IDC_DELETE_BTN, &CCreateNewField::OnBnClickedDeleteBtn)
 END_MESSAGE_MAP()
 
 
@@ -81,4 +84,29 @@ void CCreateNewField::UpdateGui()
 	((CEdit*)GetDlgItem(IDC_FIELD_PWD3))->SetReadOnly(isEnable);
 	((CEdit*)GetDlgItem(IDC_FIELD_RELATION))->SetReadOnly(isEnable);
 	((CEdit*)GetDlgItem(IDC_FIELD_COMMENT))->SetReadOnly(isEnable);
+	GetDlgItem(IDC_MODIFY_BTN)->ShowWindow(isEnable ? SW_SHOW : SW_HIDE);
+	GetDlgItem(IDC_DELETE_BTN)->ShowWindow(isEnable ? SW_SHOW : SW_HIDE);
+}
+
+
+void CCreateNewField::OnBnClickedModifyBtn()
+{
+	// TODO:  在此添加控件通知处理程序代码
+	m_mode = EDlg_Mode_Modify;
+	UpdateGui();
+}
+
+
+void CCreateNewField::OnBnClickedDeleteBtn()
+{
+	// TODO:  在此添加控件通知处理程序代码
+}
+
+bool CCreateNewField::VerifyPassword()
+{
+	CUserLogin dlg(ELOGOIN_MODE_OPERATE, UserFieldManage::Share()->GetCurAccount()->strName);
+	if (dlg.DoModal() == IDOK)
+		return dlg.IsLogoinSuccess();
+	
+	return false;
 }

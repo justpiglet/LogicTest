@@ -15,7 +15,7 @@ class CCreateNewField : public CDialogEx
 	DECLARE_DYNAMIC(CCreateNewField)
 
 public:
-	CCreateNewField(EDlg_Mode mMode,CWnd* pParent = NULL);   // 标准构造函数
+	CCreateNewField(uint32 iID,EDlg_Mode mMode,CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CCreateNewField();
 
 // 对话框数据
@@ -27,10 +27,12 @@ protected:
 	DECLARE_MESSAGE_MAP()
 private:
 	void UpdateGui();
-public:
-	afx_msg void OnBnClickedOk();
-
+	bool VerifyPassword();
 private:
 	FIELD_ITEM m_filedInfo;
 	EDlg_Mode m_mode;
+public:
+	afx_msg void OnBnClickedModifyBtn();
+	afx_msg void OnBnClickedDeleteBtn();
+	afx_msg void OnBnClickedOk();
 };

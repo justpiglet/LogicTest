@@ -22,7 +22,7 @@ uint8 g_FieldLen[FieldColumn_Max] = { 100, 160, 130, 130, 130, 200, 200 };
 
 // CFieldEditorDlg ¶Ô»°¿ò
 
-
+IMainDlgHandle* g_mainDlg=NULL;
 CFieldEditorDlg::CFieldEditorDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CFieldEditorDlg::IDD, pParent), m_status(EOpSatus_NULL), m_curRow(-1)
 {
@@ -49,7 +49,7 @@ CFieldEditorDlg::CFieldEditorDlg(CWnd* pParent /*=NULL*/)
 	m_butName[1][2] = _T("(&T)Trash");
 	m_butName[1][3] = _T("(&S)Setting");
 
-	g_pMainDlgHandle = this;
+	g_mainDlg = this;
 }
 
 void CFieldEditorDlg::DoDataExchange(CDataExchange* pDX)
