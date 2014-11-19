@@ -19,13 +19,6 @@ bool CField::ParsingString(const std::string& strSrc)
 {
 	uint32 iOffset(0),iIDTemp(0);
 
-// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iId, sizeof(iId));
-// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iLastLogoinTime, sizeof(iLastLogoinTime));
-// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iVaildLoginTime, sizeof(iVaildLoginTime));
-// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iShowItemTime, sizeof(iShowItemTime));
-// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iShowLevel, sizeof(iShowLevel));
-// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iHideParts, sizeof(iHideParts));
-
 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iIDTemp, sizeof(iIDTemp));
 	if (m_iID != iIDTemp)
 		return false;
@@ -101,13 +94,6 @@ bool CField::ReadBuffer(const std::string& strName, const std::string& strPwd)
 
 void CField::GetDataToChar(std::string& strOut)
 {
-// 	strOut.append((char*)&iId, sizeof(iId));
-// 	strOut.append((char*)&iLastLogoinTime, sizeof(iLastLogoinTime));
-// 	strOut.append((char*)&iVaildLoginTime, sizeof(iVaildLoginTime));
-// 	strOut.append((char*)&iShowItemTime, sizeof(iShowItemTime));
-// 	strOut.append((char*)&iShowLevel, sizeof(iShowLevel));
-// 	strOut.append((char*)&iHideParts, sizeof(iHideParts));
-
 	uint32 iItemCount = listItem.size();
 
 	strOut.append((char*)&m_iID, sizeof(m_iID));
@@ -175,7 +161,7 @@ void CField::WriteUserSet(const std::string& strName, const std::string& strPwd)
 	uint32 iOffset(0);
 
 	strOut.append((char*)&m_iID, sizeof(m_iID));
-	strOut.append((char*)&m_userSet.iLastLogoinTime, sizeof(m_userSet.iLastLogoinTime));
+	//strOut.append((char*)&m_userSet.iLastLogoinTime, sizeof(m_userSet.iLastLogoinTime));
 	strOut.append((char*)&m_userSet.iVaildLoginTime, sizeof(m_userSet.iVaildLoginTime));
 	strOut.append((char*)&m_userSet.iShowItemTime, sizeof(m_userSet.iShowItemTime));
 	strOut.append((char*)&m_userSet.iShowLevel, sizeof(m_userSet.iShowLevel));
@@ -197,7 +183,7 @@ bool CField::ReadUserSet(const std::string& strName, const std::string& strPwd)
 		if (iIdTemp != m_iID)
 			return false;
 
-		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iLastLogoinTime, sizeof(m_userSet.iLastLogoinTime));
+		//UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iLastLogoinTime, sizeof(m_userSet.iLastLogoinTime));
 		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iVaildLoginTime, sizeof(m_userSet.iVaildLoginTime));
 		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iShowItemTime, sizeof(m_userSet.iShowItemTime));
 		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iShowLevel, sizeof(m_userSet.iShowLevel));

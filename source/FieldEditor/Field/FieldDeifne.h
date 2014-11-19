@@ -83,15 +83,15 @@ struct User_Field
 
 struct User_Set
 {
-	uint32		iLastLogoinTime;
+	//uint32		iLastLogoinTime;
 	uint32		iVaildLoginTime;
 	uint32		iShowItemTime;
 	uint32		iShowLevel; //SHOW_ITEM_LV SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_HIGHT
 	uint32		iHideParts; //FieldColumn_PwdLogin | FieldColumn_PwdPay 
 	
 	User_Set() 
-		: iLastLogoinTime(time(NULL))
-		, iVaildLoginTime(0)
+		//: iLastLogoinTime(time(NULL))
+		: iVaildLoginTime(0)
 		, iShowItemTime(5)
 		, iShowLevel(SHOW_ITEM_LV_WEB | SHOW_ITEM_LV_SECRET)
 		, iHideParts( (1 << FieldColumn_PwdLogin) | (1 << FieldColumn_PwdPay) | (1 << FieldColumn_PwdOther) )
