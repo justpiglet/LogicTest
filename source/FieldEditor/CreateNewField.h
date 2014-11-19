@@ -29,7 +29,7 @@ private:
 	void UpdateGui();
 	bool VerifyPassword();
 private:
-	FIELD_ITEM m_filedInfo;
+	uint32 m_iFieldId;
 	EDlg_Mode m_mode;
 public:
 	afx_msg void OnBnClickedModifyBtn();

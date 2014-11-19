@@ -43,7 +43,7 @@ typedef std::vector<FIELD_PWD_RECORD> VEC_PWD_RECORD;
 
 struct FIELD_ITEM
 {
-	uint32	id;
+	mutable uint32	id;
 	uint32	iLv;
 	char	strNameNick[DEFINE_LEN_NAME];
 	char	strAccount[DEFINE_LEN_NAME];
@@ -66,6 +66,21 @@ struct FIELD_ITEM
 		memset(strOtherPwd, 0, DEFINE_LEN_PWD);
 		memset(strRelation, 0, DEFINE_LEN_NAME);
 		memset(strDescribe, 0, MAX_LEN_TEXT);
+	}
+
+	FIELD_ITEM& operator=(const FIELD_ITEM &other)
+	{
+		this->id = other.id;
+		this->iLv = other.iLv;
+		memcpy(this->strNameNick, other.strNameNick, DEFINE_LEN_NAME);
+		memcpy(this->strAccount, other.strAccount, DEFINE_LEN_NAME);
+		memcpy(this->strLoginPwd, other.strLoginPwd, DEFINE_LEN_PWD);
+		memcpy(this->strPayPwd, other.strPayPwd, DEFINE_LEN_PWD);
+		memcpy(this->strOtherPwd, other.strOtherPwd, DEFINE_LEN_PWD);
+		memcpy(this->strRelation, other.strRelation, DEFINE_LEN_NAME);
+		memcpy(this->strDescribe, other.strDescribe, MAX_LEN_TEXT);
+
+		return *this;
 	}
 };
 enum SHOW_ITEM_LV

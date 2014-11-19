@@ -6,7 +6,7 @@
 #define CONFIG_FILE "ConfigFile"
 #define SETTING_FILE "ConfigFile"
 
-CField::CField(uint32 iId) :m_iID(iId)
+CField::CField(uint32 iId) :m_iUserID(iId)
 {
 
 }
@@ -20,7 +20,7 @@ bool CField::ParsingString(const std::string& strSrc)
 	uint32 iOffset(0),iIDTemp(0);
 
 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iIDTemp, sizeof(iIDTemp));
-	if (m_iID != iIDTemp)
+	if (m_iUserID != iIDTemp)
 		return false;
 
 	uint32 iItemCount(0),iItemR(0);
@@ -96,7 +96,7 @@ void CField::GetDataToChar(std::string& strOut)
 {
 	uint32 iItemCount = listItem.size();
 
-	strOut.append((char*)&m_iID, sizeof(m_iID));
+	strOut.append((char*)&m_iUserID, sizeof(m_iUserID));
 	strOut.append((char*)&iItemCount, sizeof(uint32));
 
 	if (iItemCount == 0)
@@ -160,7 +160,7 @@ void CField::WriteUserSet(const std::string& strName, const std::string& strPwd)
 	std::string strOut(""), strNameAdd(strName);
 	uint32 iOffset(0);
 
-	strOut.append((char*)&m_iID, sizeof(m_iID));
+	strOut.append((char*)&m_iUserID, sizeof(m_iUserID));
 	//strOut.append((char*)&m_userSet.iLastLogoinTime, sizeof(m_userSet.iLastLogoinTime));
 	strOut.append((char*)&m_userSet.iVaildLoginTime, sizeof(m_userSet.iVaildLoginTime));
 	strOut.append((char*)&m_userSet.iShowItemTime, sizeof(m_userSet.iShowItemTime));
@@ -180,7 +180,7 @@ bool CField::ReadUserSet(const std::string& strName, const std::string& strPwd)
 	{
 
 		UserFieldManage::ParsingStringCopy(strDe, iOffset, &iIdTemp, sizeof(iIdTemp));
-		if (iIdTemp != m_iID)
+		if (iIdTemp != m_iUserID)
 			return false;
 
 		//UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iLastLogoinTime, sizeof(m_userSet.iLastLogoinTime));
@@ -285,6 +285,37 @@ bool CField::IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const F
 		return true;
 	else
 		return false;
+}
+
+bool CField::InsertNewField(const FIELD_ITEM& mNewField)
+{
+	uint32 iCount = this->GetFieldRow();
+	if (mNewField.id != iCount)
+		mNewField.id = iCount;
+	listItem.push_back(mNewField);
+	
+	return true;
+}
+
+bool CField::InsertModifyField(const FIELD_ITEM& mNewField)
+{
+	if (!IsVaild(mNewField.id))
+		return false;
+	if (listItem[mNewField.id].id == mNewField.id)
+	{
+		listItem[mNewField.id] = mNewField;
+		return true;
+	}
+
+	return false;
+}
+
+bool CField::DeleteField(const uint32 iId)
+{
+	if (!IsVaild(iId))
+		return false;
+	//listItem.erase()
+	return true;
 }
 
 

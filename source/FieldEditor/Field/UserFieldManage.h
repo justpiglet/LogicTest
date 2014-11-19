@@ -22,7 +22,7 @@ class CField : public User_Field
 {
 	friend class UserFieldManage;
 public:
-	CField(uint32 iId);
+	CField(uint32 iUserId);
 	~CField();
 	uint16 GetFieldRow() const { return listItem.size(); }
 	bool IsShowRow(uint8 iRow) const;
@@ -32,7 +32,9 @@ public:
 	CString GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isNeedHide)const;
 
 	const FIELD_ITEM* GetItem(uint8 iRow)const;
-	
+	bool InsertNewField(const FIELD_ITEM&);
+	bool InsertModifyField(const FIELD_ITEM&);
+	bool DeleteField(const uint32 iId);
 protected:
 	void WriteBuffer(const std::string& strName, const std::string& strPwd);
 	bool ReadBuffer(const std::string& strName, const std::string& strPwd);
@@ -46,7 +48,7 @@ private:
 	bool ParsingString(const std::string&);
 
 private:
-	uint32 m_iID;
+	uint32 m_iUserID;
 	User_Set m_userSet;
 };
 

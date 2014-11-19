@@ -15,9 +15,9 @@ uint32 g_ItemLvValue[4] = { 0, 1, 2, 4 };
 IMPLEMENT_DYNAMIC(CCreateNewField, CDialogEx)
 
 CCreateNewField::CCreateNewField(uint32 iID, EDlg_Mode mMode, CWnd* pParent /*=NULL*/)
-: CDialogEx(CCreateNewField::IDD, pParent), m_mode(mMode)
+: CDialogEx(CCreateNewField::IDD, pParent), m_mode(mMode), m_iFieldId(iID)
 {
-
+	
 }
 
 CCreateNewField::~CCreateNewField()
@@ -42,7 +42,6 @@ END_MESSAGE_MAP()
 
 void CCreateNewField::OnBnClickedOk()
 {
-	// TODO:  在此添加控件通知处理程序代码
 	CDialogEx::OnOK();
 }
 

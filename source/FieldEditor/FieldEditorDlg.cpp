@@ -12,6 +12,7 @@
 
 #include "CreateUser.h"
 #include "UserLogin.h"
+#include "CreateNewField.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -285,7 +286,7 @@ void CFieldEditorDlg::CreateNewUser()
 
 void CFieldEditorDlg::CreateNewField()
 {
-
+	CCreateNewField dlg(UserFieldManage::Share()->GetCurUserFields()->GetFieldRow(),EDlg_Mode_New);
 }
 
 void CFieldEditorDlg::TrashBasket()
