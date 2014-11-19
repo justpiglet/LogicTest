@@ -22,7 +22,7 @@ class CField : public User_Field
 {
 	friend class UserFieldManage;
 public:
-	CField();
+	CField(uint32 iId);
 	~CField();
 	uint16 GetFieldRow() const { return listItem.size(); }
 	bool IsShowRow(uint8 iRow) const;
@@ -37,11 +37,17 @@ protected:
 	void WriteBuffer(const std::string& strName, const std::string& strPwd);
 	bool ReadBuffer(const std::string& strName, const std::string& strPwd);
 
+	void WriteUserSet(const std::string& strName, const std::string& strPwd);
+	bool ReadUserSet(const std::string& strName, const std::string& strPwd);
+
 	bool IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
 private:
 	void GetDataToChar(std::string&);
 	bool ParsingString(const std::string&);
-	
+
+private:
+	uint32 m_iID;
+	User_Set m_userSet;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -87,7 +93,8 @@ private:
 protected:
 	std::string GetResourcePath();
 	std::string GetResourceFileName(const char*);
-	void SaveCopyOfError(std::ifstream& rFile,const std::string& strName);
+	std::string GetResourceFileNameMD5(const char*,const char* szAdd=NULL);
+	void SaveCopyOfError(const std::string& strName);
 
 	const std::string& GetBasePwd(){ return m_strBasePwd; }
 	void WriteInfo(const std::string& strName, const std::string& strSrc,const std::string& strBasePwd,bool isMainConfig=false);

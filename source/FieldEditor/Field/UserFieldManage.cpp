@@ -3,10 +3,12 @@
 #include "depend/cantools/tools.h"
 
 #define FLORD_NAME "Dont_Delete"
-#define CONFIG_FILE "f68dc1044703e358580461aec4504fdf"
+#define CONFIG_FILE "ConfigFile"
+#define SETTING_FILE "ConfigFile"
 
-CField::CField()
+CField::CField(uint32 iId) :m_iID(iId)
 {
+
 }
 
 CField::~CField()
@@ -15,16 +17,18 @@ CField::~CField()
 
 bool CField::ParsingString(const std::string& strSrc)
 {
-	if (strSrc.empty())
-		return false;
-	uint32 iOffset(0);
+	uint32 iOffset(0),iIDTemp(0);
 
-	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iId, sizeof(iId));
-	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iLastLogoinTime, sizeof(iLastLogoinTime));
-	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iVaildLoginTime, sizeof(iVaildLoginTime));
-	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iShowItemTime, sizeof(iShowItemTime));
-	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iShowLevel, sizeof(iShowLevel));
-	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iHideParts, sizeof(iHideParts));
+// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iId, sizeof(iId));
+// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iLastLogoinTime, sizeof(iLastLogoinTime));
+// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iVaildLoginTime, sizeof(iVaildLoginTime));
+// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iShowItemTime, sizeof(iShowItemTime));
+// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iShowLevel, sizeof(iShowLevel));
+// 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iHideParts, sizeof(iHideParts));
+
+	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iIDTemp, sizeof(iIDTemp));
+	if (m_iID != iIDTemp)
+		return false;
 
 	uint32 iItemCount(0),iItemR(0);
 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iItemCount, sizeof(iItemCount));
@@ -80,23 +84,33 @@ bool CField::ParsingString(const std::string& strSrc)
 }
 bool CField::ReadBuffer(const std::string& strName, const std::string& strPwd)
 {
-	std::string strDe(""),strBasePwd(strPwd);
+	std::string strDe(""), strBasePwd(strPwd);;
 	if (UserFieldManage::Share()->ReadInfo(strName, strDe, strBasePwd))
-		return ParsingString(strDe);
-	else
-		return false;
+	{
+		if (!strDe.empty())
+		{
+			if (!ParsingString(strDe))
+				UserFieldManage::Share()->SaveCopyOfError(strName);
+			else
+				return true;
+		}
+	}
+			
+	return false;
 }
 
 void CField::GetDataToChar(std::string& strOut)
 {
-	strOut.append((char*)&iId, sizeof(iId));
-	strOut.append((char*)&iLastLogoinTime, sizeof(iLastLogoinTime));
-	strOut.append((char*)&iVaildLoginTime, sizeof(iVaildLoginTime));
-	strOut.append((char*)&iShowItemTime, sizeof(iShowItemTime));
-	strOut.append((char*)&iShowLevel, sizeof(iShowLevel));
-	strOut.append((char*)&iHideParts, sizeof(iHideParts));
+// 	strOut.append((char*)&iId, sizeof(iId));
+// 	strOut.append((char*)&iLastLogoinTime, sizeof(iLastLogoinTime));
+// 	strOut.append((char*)&iVaildLoginTime, sizeof(iVaildLoginTime));
+// 	strOut.append((char*)&iShowItemTime, sizeof(iShowItemTime));
+// 	strOut.append((char*)&iShowLevel, sizeof(iShowLevel));
+// 	strOut.append((char*)&iHideParts, sizeof(iHideParts));
 
 	uint32 iItemCount = listItem.size();
+
+	strOut.append((char*)&m_iID, sizeof(m_iID));
 	strOut.append((char*)&iItemCount, sizeof(uint32));
 
 	if (iItemCount == 0)
@@ -149,16 +163,52 @@ void CField::GetDataToChar(std::string& strOut)
 
 void CField::WriteBuffer(const std::string& strName, const std::string& strPwd)
 {
-	std::string strFilePath = UserFieldManage::Share()->GetResourceFileName(strName.c_str());
-	std::ofstream wFile(strFilePath.c_str(), std::ios::binary | std::ios::out);
-	if (!wFile.is_open())
-		return ;
-
 	std::string strData;
 	GetDataToChar(strData);
 
 	UserFieldManage::Share()->WriteInfo(strName, strData, strPwd);
 }
+
+void CField::WriteUserSet(const std::string& strName, const std::string& strPwd)
+{
+	std::string strOut(""), strNameAdd(strName);
+	uint32 iOffset(0);
+
+	strOut.append((char*)&m_iID, sizeof(m_iID));
+	strOut.append((char*)&m_userSet.iLastLogoinTime, sizeof(m_userSet.iLastLogoinTime));
+	strOut.append((char*)&m_userSet.iVaildLoginTime, sizeof(m_userSet.iVaildLoginTime));
+	strOut.append((char*)&m_userSet.iShowItemTime, sizeof(m_userSet.iShowItemTime));
+	strOut.append((char*)&m_userSet.iShowLevel, sizeof(m_userSet.iShowLevel));
+	strOut.append((char*)&m_userSet.iHideParts, sizeof(m_userSet.iHideParts));
+	
+	strNameAdd.append(SETTING_FILE);
+	UserFieldManage::Share()->WriteInfo(strNameAdd, strOut, strPwd);
+}
+
+bool CField::ReadUserSet(const std::string& strName, const std::string& strPwd)
+{
+	std::string strDe(""), strBasePwd(strPwd), strNameAdd(strName);
+	uint32 iOffset(0),iIdTemp(0);
+	strNameAdd.append(SETTING_FILE);
+	if (UserFieldManage::Share()->ReadInfo(strNameAdd, strDe, strBasePwd))
+	{
+
+		UserFieldManage::ParsingStringCopy(strDe, iOffset, &iIdTemp, sizeof(iIdTemp));
+		if (iIdTemp != m_iID)
+			return false;
+
+		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iLastLogoinTime, sizeof(m_userSet.iLastLogoinTime));
+		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iVaildLoginTime, sizeof(m_userSet.iVaildLoginTime));
+		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iShowItemTime, sizeof(m_userSet.iShowItemTime));
+		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iShowLevel, sizeof(m_userSet.iShowLevel));
+		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iHideParts, sizeof(m_userSet.iHideParts));
+
+		return true;
+	}
+	else
+		return false;
+}
+
 
 const char* CField::GetFieldString(uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)const
 {
@@ -205,7 +255,7 @@ const FIELD_ITEM* CField::GetItem(uint8 iRow)const
 bool CField::IsShowRow(uint8 iRow)const
 {
 	const FIELD_ITEM* pField = GetItem(iRow);
-	if (pField && (pField->iLv == SHOW_ITEM_LV_NOR || (iShowLevel&pField->iLv) == pField->iLv))
+	if (pField && (pField->iLv == SHOW_ITEM_LV_NOR || (m_userSet.iShowLevel&pField->iLv) == pField->iLv))
 		return true;
 	else
 		return false;
@@ -244,13 +294,12 @@ bool CField::IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const F
 		if (!(pField = GetItem(iRow)))
 			return false;
 
-	if ((iHideParts&pField->iLv) == pField->iLv && (iColumn == FieldColumn_Account ||
+	if ((m_userSet.iHideParts&pField->iLv) == pField->iLv && (iColumn == FieldColumn_Account ||
 		iColumn == FieldColumn_Relation || iColumn == FieldColumn_Describe))
 		return true;
 	else
 		return false;
 }
-
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -311,13 +360,30 @@ std::string UserFieldManage::GetResourceFileName(const char* szFileName)
 	return strPath;
 }
 
-void  UserFieldManage::SaveCopyOfError(std::ifstream& rFile, const std::string& strName)
+std::string UserFieldManage::GetResourceFileNameMD5(const char* szFileName, const char* szAdd/*=NULL*/)
 {
-	std::string strPath = GetResourcePath();
+	STDSTR strName(szFileName), strMd5("");
+	if (szAdd)	
+		strName.append(szAdd);
+
+	_CANNP_NAME::encrypt::EncryptMD5(strName.c_str(), strName.length(), strMd5);
+	return this->GetResourceFileName(strMd5.c_str());
+}
+
+void  UserFieldManage::SaveCopyOfError(const std::string& strName)
+{
+	STDSTR strPath, strMd5, strFileName;
+
+	strPath = GetResourcePath();
+	_CANNP_NAME::encrypt::EncryptMD5(strName.c_str(), strName.length(), strMd5);
+
+	strFileName = GetResourceFileName(strMd5.c_str());
+	std::ifstream rFile(strFileName.c_str(), std::ios::binary | std::ios::in);
+
 	strPath.append("/ErrorCopy/");
 	CreateDirectoryA(strPath.c_str(), NULL);
 
-	strPath.append(strName);
+	strPath.append(strMd5);
 	time_t mTime = time(NULL);
 	char tmp[64]="";
 	tm mmTime;
@@ -333,6 +399,7 @@ void  UserFieldManage::SaveCopyOfError(std::ifstream& rFile, const std::string& 
 	char* pBuffer = new char[iSize + 1];
 	rFile.read(pBuffer, iSize);
 	pBuffer[iSize] = '\0';
+	rFile.close();
 
 	std::ofstream wFile(strPath.c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
 	wFile.write(pBuffer, iSize);
@@ -344,21 +411,13 @@ void  UserFieldManage::SaveCopyOfError(std::ifstream& rFile, const std::string& 
 bool UserFieldManage::UserLogoinSuccess(Account_Info* pInfo)
 {
 	m_pCurAccount = pInfo;
-	m_pCurUser = new CField;
-	std::string strMd5;
-	_CANNP_NAME::encrypt::EncryptMD5(pInfo->strName, strlen(pInfo->strName), strMd5);
-	//std::ifstream rFile(GetResourceFileName(strMd5.c_str()), std::ios::binary | std::ios::in);
-	if (!m_pCurUser->ReadBuffer(strMd5, m_strBasePwd))
-	{
-		m_pCurUser->iId = m_pCurAccount->iId;
-		m_pCurUser->iLastLogoinTime = time(NULL);
-		m_pCurUser->iVaildLoginTime = 0;
-		m_pCurUser->iShowItemTime = 5;
-		m_pCurUser->iShowLevel = SHOW_ITEM_LV_WEB | SHOW_ITEM_LV_SECRET;
-		m_pCurUser->iHideParts = (1 << FieldColumn_PwdLogin) | (1 << FieldColumn_PwdPay) | (1 << FieldColumn_PwdOther);
-
-		m_pCurUser->WriteBuffer(strMd5, m_strBasePwd);
-	}
+	m_pCurUser = new CField(m_pCurAccount->iId);
+	
+	if (!m_pCurUser->ReadBuffer(pInfo->strName, m_strBasePwd))
+		m_pCurUser->WriteBuffer(pInfo->strName, m_strBasePwd);
+	
+	if (!m_pCurUser->ReadUserSet(pInfo->strName, m_strBasePwd))
+		m_pCurUser->WriteUserSet(pInfo->strName, m_strBasePwd);
 
 	return true;
 }
@@ -441,7 +500,7 @@ void UserFieldManage::WriteInfo(const std::string& strName, const std::string& s
 	std::string strValue(""), strEn(""), strEnPwd(""),strHead(""),strHeadEn("");
 	uint32 iLen(0);
 
-	std::ofstream wFile(GetResourceFileName(strName.c_str()).c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
+	std::ofstream wFile(GetResourceFileNameMD5(strName.c_str()).c_str(), std::ios::binary | std::ios::out | std::ios::trunc);
 	
 	CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, strEnPwd);
 
@@ -469,7 +528,8 @@ void UserFieldManage::WriteInfo(const std::string& strName, const std::string& s
 
 bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, std::string& strBasePwd /*= std::string()*/)
 {
-	std::ifstream rFile(GetResourceFileName(strName.c_str()).c_str(), std::ios::binary | std::ios::in);
+	STDSTR strFileName = GetResourceFileNameMD5(strName.c_str());
+	std::ifstream rFile(strFileName.c_str(), std::ios::binary | std::ios::in);
 	if (!rFile)
 		return false;
 	
@@ -519,12 +579,11 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 			isSuccess = true;
 		}
 	}
+	rFile.close();
 
 	if (!isSuccess)
-	{
-		//
-		SaveCopyOfError(rFile, strName);
-	}
+		SaveCopyOfError(strName);
+	
 	return isSuccess;
 }
 

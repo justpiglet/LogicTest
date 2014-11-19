@@ -78,20 +78,27 @@ enum SHOW_ITEM_LV
 typedef std::vector<FIELD_ITEM>	VEC_ITEMS;
 struct User_Field
 {
-	uint32		iId;
-	uint32		iLastLogoinTime;		
+	VEC_ITEMS	listItem;
+};
+
+struct User_Set
+{
+	uint32		iLastLogoinTime;
 	uint32		iVaildLoginTime;
 	uint32		iShowItemTime;
 	uint32		iShowLevel; //SHOW_ITEM_LV SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_HIGHT
 	uint32		iHideParts; //FieldColumn_PwdLogin | FieldColumn_PwdPay 
-	VEC_ITEMS	listItem;
-
-	User_Field() :iId(0), iLastLogoinTime(0), iVaildLoginTime(0), iShowItemTime(0), iShowLevel(0), iHideParts(0)
+	
+	User_Set() 
+		: iLastLogoinTime(time(NULL))
+		, iVaildLoginTime(0)
+		, iShowItemTime(5)
+		, iShowLevel(SHOW_ITEM_LV_WEB | SHOW_ITEM_LV_SECRET)
+		, iHideParts( (1 << FieldColumn_PwdLogin) | (1 << FieldColumn_PwdPay) | (1 << FieldColumn_PwdOther) )
 	{
 
 	}
 };
-
 
 struct Account_Info
 {
