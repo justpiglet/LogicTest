@@ -27,14 +27,20 @@ public:
 	uint16 GetFieldRow() const { return listItem.size(); }
 	bool IsShowRow(uint8 iRow) const;
 	bool IsVaild(uint8 iRow, uint8 iColumn = 0) const;
+	inline bool IsVaildId(uint32 iId)const { return iId <= m_userSet.iCurFiledId; }
 
-	const char* GetFieldString(uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
-	CString GetFieldItemCS(uint8 iRow, uint8 iColumn, bool isNeedHide)const;
+	const char* GetFieldString(const FIELD_ITEM* pField, uint8 iColumn)const;
+	STDSTR GetFieldHideParts(uint8 iRow, uint8 iColumn, bool isNeedHide)const;
+	STDSTR GetFieldHideParts(const FIELD_ITEM* pField, uint8 iColumn, bool isNeedHide)const;
 
 	const FIELD_ITEM* GetItem(uint8 iRow)const;
-	bool InsertNewField(const FIELD_ITEM&);
-	bool InsertModifyField(const FIELD_ITEM&);
+
+	bool IsCanUseNickName(const char*)const;
+
+	bool ModifyField(const FIELD_ITEM&);
 	bool DeleteField(const uint32 iId);
+
+	inline uint32 GetShowPwdTime()const { return m_userSet.iShowItemTime; }
 protected:
 	void WriteBuffer(const std::string& strName, const std::string& strPwd);
 	bool ReadBuffer(const std::string& strName, const std::string& strPwd);
@@ -88,6 +94,9 @@ public:
 	uint32 GetUserCount(VEC_STR& vecOut,bool isUse=true);
 	uint32 GetUserCount(bool isUse = true);
 	bool VerifyAccount(CONST_STDSTR& strAccount);
+
+	bool UserFieldModify(const FIELD_ITEM&);
+	bool UserFieldDelete(const uint32& iFieldId);
 private:
 	UserFieldManage();
 	~UserFieldManage();

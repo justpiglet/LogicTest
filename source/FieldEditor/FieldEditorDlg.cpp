@@ -222,9 +222,9 @@ void CFieldEditorDlg::UpdateListControl()
 				for (iColumn = 0; iColumn < FieldColumn_Max; ++iColumn)
 				{
 					if (iColumn == 0)
-						m_ListInfo.InsertItem(iRow, pField->GetFieldItemCS(iRow, iColumn,true));
+						m_ListInfo.InsertItem(iRow, CString(pField->GetFieldHideParts(iRow, iColumn, true).c_str()));
 					else
-						m_ListInfo.SetItemText(iRow, iColumn, pField->GetFieldItemCS(iRow, iColumn, true));
+						m_ListInfo.SetItemText(iRow, iColumn, CString(pField->GetFieldHideParts(iRow, iColumn, true).c_str()));
 
 				}
 			}// end if (pData)
@@ -286,7 +286,7 @@ void CFieldEditorDlg::CreateNewUser()
 
 void CFieldEditorDlg::CreateNewField()
 {
-	CCreateNewField dlg(UserFieldManage::Share()->GetCurUserFields()->GetFieldRow(),EDlg_Mode_New);
+	CCreateNewField dlg(EDlg_Mode_New);
 }
 
 void CFieldEditorDlg::TrashBasket()

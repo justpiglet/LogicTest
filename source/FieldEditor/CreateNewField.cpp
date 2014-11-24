@@ -6,16 +6,17 @@
 #include "CreateNewField.h"
 #include "afxdialogex.h"
 #include "UserLogin.h"
+#include "Depend/cantools/tools.h"
 
-TCHAR* g_ItemLvName[4] = { _T("Nomal"), _T("Email"), _T("Web"), _T("Secrect") };
-uint32 g_ItemLvValue[4] = { 0, 1, 2, 4 };
+TCHAR* g_ItemLvName[] = { _T("NULL"), _T("Nomal"), _T("Email"), _T("Web"), _T("Secrect") };
+uint32 g_ItemLvValue[] = { 0, 1, 2, 4 ,8};
 
 // CCreateNewField 对话框
 
 IMPLEMENT_DYNAMIC(CCreateNewField, CDialogEx)
 
-CCreateNewField::CCreateNewField(uint32 iID, EDlg_Mode mMode, CWnd* pParent /*=NULL*/)
-: CDialogEx(CCreateNewField::IDD, pParent), m_mode(mMode), m_iFieldId(iID)
+CCreateNewField::CCreateNewField(EDlg_Mode mMode, CWnd* pParent /*= NULL*/)
+: CDialogEx(CCreateNewField::IDD, pParent), m_mode(mMode), m_pReadField(NULL), m_iShowPwdTime(-1)
 {
 	
 }
@@ -34,6 +35,8 @@ BEGIN_MESSAGE_MAP(CCreateNewField, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CCreateNewField::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_MODIFY_BTN, &CCreateNewField::OnBnClickedModifyBtn)
 	ON_BN_CLICKED(IDC_DELETE_BTN, &CCreateNewField::OnBnClickedDeleteBtn)
+	ON_BN_CLICKED(IDC_SHOWPWD_BTN, &CCreateNewField::OnBnClickedShowpwdBtn)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -42,6 +45,27 @@ END_MESSAGE_MAP()
 
 void CCreateNewField::OnBnClickedOk()
 {
+	if (m_mode == EDlg_Mode_Modify || m_mode == EDlg_Mode_New)
+	{
+		FIELD_ITEM mField;
+		ReadEdit(IDC_FIELD_NICKNAME, mField.strNameNick, MAX_LEN_NAME);
+		ReadEdit(IDC_FIELD_ACCOUNT, mField.strNameNick, MAX_LEN_NAME);
+		int32 inDex= ((CComboBox*)GetDlgItem(IDC_FIELD_LV_LIST))->GetCurSel();
+		if (inDex == -1)
+			inDex = 0;
+		if (inDex == 0)
+			mField.iLv = 0;
+		else if (inDex<4)
+			mField.iLv = 1 << inDex;
+
+		ReadEdit(IDC_FIELD_PWD1, mField.strLoginPwd, MAX_LEN_PWD);
+		ReadEdit(IDC_FIELD_PWD2, mField.strPayPwd, MAX_LEN_PWD);
+		ReadEdit(IDC_FIELD_PWD3, mField.strOtherPwd, MAX_LEN_PWD);
+
+		ReadEdit(IDC_FIELD_RELATION, mField.strRelation, MAX_LEN_NAME);
+		ReadEdit(IDC_FIELD_COMMENT, mField.strDescribe, MAX_LEN_TEXT);
+	}
+
 	CDialogEx::OnOK();
 }
 
@@ -77,6 +101,7 @@ void CCreateNewField::UpdateGui()
 		isEnable = TRUE;
 	else
 		isEnable = FALSE;
+
 	((CComboBox*)GetDlgItem(IDC_FIELD_LV_LIST))->EnableWindow(isEnable);
 	((CEdit*)GetDlgItem(IDC_FIELD_PWD1))->SetReadOnly(isEnable);
 	((CEdit*)GetDlgItem(IDC_FIELD_PWD2))->SetReadOnly(isEnable);
@@ -85,9 +110,24 @@ void CCreateNewField::UpdateGui()
 	((CEdit*)GetDlgItem(IDC_FIELD_COMMENT))->SetReadOnly(isEnable);
 	GetDlgItem(IDC_MODIFY_BTN)->ShowWindow(isEnable ? SW_SHOW : SW_HIDE);
 	GetDlgItem(IDC_DELETE_BTN)->ShowWindow(isEnable ? SW_SHOW : SW_HIDE);
+	GetDlgItem(IDC_SHOWPWD_BTN)->ShowWindow(isEnable ? SW_SHOW : SW_HIDE);
 }
 
-
+void CCreateNewField::OnTimer(UINT_PTR nIDEvent)
+{
+	if (nIDEvent == EVENT_CREATE_FILED_TIMER)
+	{
+		if (m_mode == EDlg_Mode_Read  && m_iShowPwdTime > 0)
+		{
+			++m_iShowPwdTime;
+			if (m_iShowPwdTime > UserFieldManage::Share()->GetCurUserFields()->GetShowPwdTime())
+			{
+				m_iShowPwdTime = -1;
+				GetDlgItem(IDC_SHOWPWD_BTN)->EnableWindow(true);
+			}
+		}
+	}
+}
 void CCreateNewField::OnBnClickedModifyBtn()
 {
 	// TODO:  在此添加控件通知处理程序代码
@@ -99,6 +139,10 @@ void CCreateNewField::OnBnClickedModifyBtn()
 void CCreateNewField::OnBnClickedDeleteBtn()
 {
 	// TODO:  在此添加控件通知处理程序代码
+	if (!m_pReadField)
+		return;
+
+	UserFieldManage::Share()->UserFieldDelete(m_pReadField->iFieldId);
 }
 
 bool CCreateNewField::VerifyPassword()
@@ -108,4 +152,69 @@ bool CCreateNewField::VerifyPassword()
 		return dlg.IsLogoinSuccess();
 	
 	return false;
+}
+
+void CCreateNewField::SetReadInfo(const FIELD_ITEM* pFiled)
+{
+	if (m_mode != EDlg_Mode_Read)
+		return;
+
+	m_pReadField = pFiled;
+
+	((CEdit*)GetDlgItem(IDC_FIELD_NICKNAME))->SetWindowText(CString(pFiled->strNameNick));
+	((CEdit*)GetDlgItem(IDC_FIELD_ACCOUNT))->SetWindowText(CString(pFiled->strAccount));
+
+	for (int32 i = sizeof(g_ItemLvValue) - 1; i >= 0; --i)
+		if (g_ItemLvValue[i] == pFiled->iLv)
+			((CComboBox*)GetDlgItem(IDC_FIELD_LV_LIST))->SetCurSel(i);
+
+	ShowPassword(pFiled, true);
+	
+	((CEdit*)GetDlgItem(IDC_FIELD_RELATION))->SetWindowText(CString(pFiled->strRelation));
+	((CEdit*)GetDlgItem(IDC_FIELD_COMMENT))->SetWindowText(CString(pFiled->strDescribe));
+	
+}
+
+
+void CCreateNewField::OnBnClickedShowpwdBtn()
+{
+
+	if (m_mode == EDlg_Mode_Read && m_pReadField != NULL)
+	{
+		ShowPassword(m_pReadField, false);
+	}
+		
+}
+
+void CCreateNewField::ShowPassword(const FIELD_ITEM* pFiled,bool isHidePart /*= true*/)
+{
+	if (!isHidePart)
+	{
+		GetDlgItem(IDC_SHOWPWD_BTN)->EnableWindow(false);
+		m_iShowPwdTime = 0;
+	}
+		
+
+	STDSTR strTemp = UserFieldManage::Share()->GetCurUserFields()->GetFieldHideParts(pFiled, FieldColumn_PwdLogin, isHidePart);
+	((CEdit*)GetDlgItem(IDC_FIELD_PWD1))->SetWindowText(CString(strTemp.c_str()));
+
+	strTemp = UserFieldManage::Share()->GetCurUserFields()->GetFieldHideParts(pFiled, FieldColumn_PwdPay, isHidePart);
+	((CEdit*)GetDlgItem(IDC_FIELD_PWD2))->SetWindowText(CString(strTemp.c_str()));
+
+	strTemp = UserFieldManage::Share()->GetCurUserFields()->GetFieldHideParts(pFiled, FieldColumn_PwdOther, isHidePart);
+	((CEdit*)GetDlgItem(IDC_FIELD_PWD3))->SetWindowText(CString(strTemp.c_str()));
+}
+
+void CCreateNewField::ReadEdit(uint32 iItemId, void* pDest, uint16 Len)
+{
+	CString cstrText("");
+	GetDlgItemText(iItemId, cstrText);
+	STDSTR strText("");
+#ifdef _UNICODE
+	char* pText = _CANNP_NAME::code::UnicodeToAscii(cstrText.GetBuffer(), cstrText.GetLength());
+	memcpy_s(pDest, Len, pText, strlen(pText));
+	delete pText;
+#else
+	memcpy_s(pDest, Len, cstrText.GetBuffer(), cstrText.GetLength());
+#endif
 }

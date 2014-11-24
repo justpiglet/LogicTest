@@ -3,6 +3,7 @@
 #include "base/basedefine.h"
 #include <string.h>
 #include <list>
+#include <queue>
 #include <vector>
 
 #define MAX_LEN_AES  16   //include end
@@ -33,17 +34,30 @@ enum FieldColumn
 	FieldColumn_Max
 };
 
+enum SHOW_ITEM_LV
+{
+	SHOW_ITEM_LV_NULL = 0,/*allways show*/
+	SHOW_ITEM_LV_NOR = 1, 
+	SHOW_ITEM_LV_EMAIL = 2,
+	SHOW_ITEM_LV_WEB = 4,
+	SHOW_ITEM_LV_SECRET = 8,
+};
 
 struct FIELD_PWD_RECORD
 {
 	uint32 iMTime;
 	char   strOldPwd[DEFINE_LEN_PWD];
+
+	FIELD_PWD_RECORD() :iMTime(time(NULL))
+	{
+		memset(strOldPwd, 0, DEFINE_LEN_NAME);
+	}
 };
-typedef std::vector<FIELD_PWD_RECORD> VEC_PWD_RECORD;
+typedef std::list<FIELD_PWD_RECORD> LIST_PWD_RECORD;
 
 struct FIELD_ITEM
 {
-	mutable uint32	id;
+	uint32	iFieldId;
 	uint32	iLv;
 	char	strNameNick[DEFINE_LEN_NAME];
 	char	strAccount[DEFINE_LEN_NAME];
@@ -53,11 +67,9 @@ struct FIELD_ITEM
 	char	strRelation[DEFINE_LEN_NAME];
 	char	strDescribe[MAX_LEN_TEXT];
 
-	VEC_PWD_RECORD vecLogoin; //MAX_RECORD_COUNT
-	VEC_PWD_RECORD vecPay;
-	VEC_PWD_RECORD vecOther;
+	LIST_PWD_RECORD listRecord[FieldColumn_PwdEnd - FieldColumn_PwdBegin + 1]; //MAX_RECORD_COUNT
 
-	FIELD_ITEM() :id(0), iLv(0)
+	FIELD_ITEM() :iFieldId(0), iLv(SHOW_ITEM_LV_NULL)
 	{
 		memset(strNameNick, 0, DEFINE_LEN_NAME);
 		memset(strAccount, 0, DEFINE_LEN_NAME);
@@ -68,28 +80,43 @@ struct FIELD_ITEM
 		memset(strDescribe, 0, MAX_LEN_TEXT);
 	}
 
-	FIELD_ITEM& operator=(const FIELD_ITEM &other)
+	void ReplaceFiled(char* pDest, uint32 iLenD, const char* pSrc, uint32 iLenS, FieldColumn mColumn)
 	{
-		this->id = other.id;
-		this->iLv = other.iLv;
-		memcpy(this->strNameNick, other.strNameNick, DEFINE_LEN_NAME);
-		memcpy(this->strAccount, other.strAccount, DEFINE_LEN_NAME);
-		memcpy(this->strLoginPwd, other.strLoginPwd, DEFINE_LEN_PWD);
-		memcpy(this->strPayPwd, other.strPayPwd, DEFINE_LEN_PWD);
-		memcpy(this->strOtherPwd, other.strOtherPwd, DEFINE_LEN_PWD);
-		memcpy(this->strRelation, other.strRelation, DEFINE_LEN_NAME);
-		memcpy(this->strDescribe, other.strDescribe, MAX_LEN_TEXT);
+		if (strcmp(pDest, pSrc) != 0)
+		{
+			if (mColumn >= FieldColumn_PwdBegin && mColumn <= FieldColumn_PwdEnd)
+			{
+				LIST_PWD_RECORD& vecTemp = listRecord[mColumn - FieldColumn_PwdBegin];
+				if (vecTemp.size() >= MAX_RECORD_COUNT)
+					vecTemp.erase(vecTemp.begin());
 
-		return *this;
+				FIELD_PWD_RECORD mRecord;
+				memcpy_s(mRecord.strOldPwd, MAX_LEN_PWD, pSrc, iLenS);
+				vecTemp.push_back(mRecord);
+			}
+			memcpy_s(pDest, iLenD, pSrc, iLenS);
+		}
 	}
+
+	void ReplaceField(const FIELD_ITEM &mNew)
+	{
+		if (this->iFieldId != mNew.iFieldId)
+			return;
+
+		this->iLv = mNew.iLv;
+		ReplaceFiled(this->strNameNick, MAX_LEN_NAME, mNew.strNameNick, MAX_LEN_NAME, FieldColumn_Nick);
+		ReplaceFiled(this->strAccount, MAX_LEN_NAME, mNew.strAccount, MAX_LEN_NAME, FieldColumn_Account);
+		ReplaceFiled(this->strRelation, MAX_LEN_NAME, mNew.strRelation, MAX_LEN_NAME, FieldColumn_Relation);
+		ReplaceFiled(this->strDescribe, MAX_LEN_TEXT, mNew.strDescribe, MAX_LEN_TEXT, FieldColumn_Describe);
+
+		ReplaceFiled(this->strLoginPwd, MAX_LEN_PWD, mNew.strLoginPwd, MAX_LEN_PWD, FieldColumn_PwdLogin);
+		ReplaceFiled(this->strPayPwd, MAX_LEN_PWD, mNew.strPayPwd, MAX_LEN_PWD, FieldColumn_PwdPay);
+		ReplaceFiled(this->strOtherPwd, MAX_LEN_PWD, mNew.strOtherPwd, MAX_LEN_PWD, FieldColumn_PwdOther);
+	}
+
+	bool IsEmpty(){ return this->iLv == SHOW_ITEM_LV_NULL; }
 };
-enum SHOW_ITEM_LV
-{
-	SHOW_ITEM_LV_NOR = 0, /*allways show*/
-	SHOW_ITEM_LV_EMAIL=1,
-	SHOW_ITEM_LV_WEB = 2,
-	SHOW_ITEM_LV_SECRET=4,
-};
+
 typedef std::vector<FIELD_ITEM>	VEC_ITEMS;
 struct User_Field
 {
@@ -99,6 +126,7 @@ struct User_Field
 struct User_Set
 {
 	//uint32		iLastLogoinTime;
+	uint32		iCurFiledId;
 	uint32		iVaildLoginTime;
 	uint32		iShowItemTime;
 	uint32		iShowLevel; //SHOW_ITEM_LV SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_HIGHT
@@ -106,7 +134,8 @@ struct User_Set
 	
 	User_Set() 
 		//: iLastLogoinTime(time(NULL))
-		: iVaildLoginTime(0)
+		: iCurFiledId(1)
+		, iVaildLoginTime(0)
 		, iShowItemTime(5)
 		, iShowLevel(SHOW_ITEM_LV_WEB | SHOW_ITEM_LV_SECRET)
 		, iHideParts( (1 << FieldColumn_PwdLogin) | (1 << FieldColumn_PwdPay) | (1 << FieldColumn_PwdOther) )
