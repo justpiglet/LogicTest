@@ -49,20 +49,29 @@ void CCreateNewField::OnBnClickedOk()
 	if (m_mode == EDlg_Mode_Modify || m_mode == EDlg_Mode_New)
 	{
 		FIELD_ITEM mField;
-		ReadEdit(IDC_FIELD_NICKNAME, mField.strNameNick, MAX_LEN_NAME);
-		ReadEdit(IDC_FIELD_ACCOUNT, mField.strNameNick, MAX_LEN_NAME);
+		mField.iFieldId = 1 + UserFieldManage::Share()->GetCurUserFields()->GetCurMaxFieldId();
+		if (!ReadEdit(IDC_FIELD_NICKNAME, mField.strNameNick, MAX_LEN_NAME))
+		{
+			MessageBox(_T("NickName is NULL!"));
+			return;
+		}
+
+		if (!ReadEdit(IDC_FIELD_ACCOUNT, mField.strAccount, MAX_LEN_NAME))
+		{
+			MessageBox(_T("Account is NULL!"));
+			return;
+		}
+
 		int32 inDex= ((CComboBox*)GetDlgItem(IDC_FIELD_LV_LIST))->GetCurSel();
 		if (inDex == -1)
 			inDex = 0;
-		if (inDex == 0)
-			mField.iLv = 0;
-		else if (inDex<4)
+
+		if (inDex<=SHOW_ITEM_LV_COUNT)
 			mField.iLv = 1 << inDex;
 
 		ReadEdit(IDC_FIELD_PWD1, mField.strLoginPwd, MAX_LEN_PWD);
 		ReadEdit(IDC_FIELD_PWD2, mField.strPayPwd, MAX_LEN_PWD);
 		ReadEdit(IDC_FIELD_PWD3, mField.strOtherPwd, MAX_LEN_PWD);
-
 		ReadEdit(IDC_FIELD_RELATION, mField.strRelation, MAX_LEN_NAME);
 		ReadEdit(IDC_FIELD_COMMENT, mField.strDescribe, MAX_LEN_TEXT);
 
@@ -89,7 +98,7 @@ BOOL CCreateNewField::OnInitDialog()
 
 	CComboBox* pBom = (CComboBox*)GetDlgItem(IDC_FIELD_LV_LIST);
 	for (uint8 i = SHOW_ITEM_LV_NOR; i < SHOW_ITEM_LV_SECRET;++i)
-		pBom->InsertString(i,g_ItemLvName[i]);
+		pBom->InsertString(i-1,g_ItemLvName[i]);
 	pBom->SetCurSel(0);
 
 	return TRUE;
@@ -210,16 +219,20 @@ void CCreateNewField::ShowPassword(const FIELD_ITEM* pFiled,bool isHidePart /*= 
 	((CEdit*)GetDlgItem(IDC_FIELD_PWD3))->SetWindowText(CString(strTemp.c_str()));
 }
 
-void CCreateNewField::ReadEdit(uint32 iItemId, void* pDest, uint16 Len)
+bool CCreateNewField::ReadEdit(uint32 iItemId, void* pDest, uint16 Len)
 {
 	CString cstrText("");
 	GetDlgItemText(iItemId, cstrText);
+	if (cstrText.IsEmpty())
+		return false;
+
 	STDSTR strText("");
 #ifdef _UNICODE
 	char* pText = _CANNP_NAME::code::UnicodeToAscii(cstrText.GetBuffer(), cstrText.GetLength());
-	memcpy_s(pDest, Len, pText, strlen(pText));
+	memcpy_s(pDest, Len, pText, cstrText.GetLength());
 	delete pText;
 #else
 	memcpy_s(pDest, Len, cstrText.GetBuffer(), cstrText.GetLength());
 #endif
+	return true;
 }

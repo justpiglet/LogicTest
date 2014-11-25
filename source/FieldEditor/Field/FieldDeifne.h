@@ -36,11 +36,13 @@ enum FieldColumn
 
 enum SHOW_ITEM_LV
 {
-	SHOW_ITEM_LV_NULL = 0,/*allways show*/
-	SHOW_ITEM_LV_NOR = 1, 
-	SHOW_ITEM_LV_EMAIL = 2,
-	SHOW_ITEM_LV_WEB = 4,
-	SHOW_ITEM_LV_SECRET = 8,
+	SHOW_ITEM_LV_NULL	= 0,/*allways show*/
+	SHOW_ITEM_LV_NOR	= 1, 
+	SHOW_ITEM_LV_EMAIL	= 1<<1,
+	SHOW_ITEM_LV_WEB	= 1<<2,
+	SHOW_ITEM_LV_SECRET = 1<<3,
+
+	SHOW_ITEM_LV_COUNT	= 3
 };
 
 struct FIELD_PWD_RECORD
@@ -70,15 +72,9 @@ struct FIELD_ITEM
 	LIST_PWD_RECORD listRecord[FieldColumn_PwdEnd - FieldColumn_PwdBegin + 1]; //MAX_RECORD_COUNT
 
 public:
-	FIELD_ITEM() :iFieldId(0), iLv(SHOW_ITEM_LV_NULL)
+	FIELD_ITEM() 
 	{
-		memset(strNameNick, 0, DEFINE_LEN_NAME);
-		memset(strAccount, 0, DEFINE_LEN_NAME);
-		memset(strLoginPwd, 0, DEFINE_LEN_PWD);
-		memset(strPayPwd, 0, DEFINE_LEN_PWD);
-		memset(strOtherPwd, 0, DEFINE_LEN_PWD);
-		memset(strRelation, 0, DEFINE_LEN_NAME);
-		memset(strDescribe, 0, MAX_LEN_TEXT);
+		ClearData();
 	}
 	const char* GetText(uint32 iColumn) const
 	{
@@ -138,6 +134,22 @@ public:
 	}
 
 	bool IsEmpty()const{ return this->iLv == SHOW_ITEM_LV_NULL; }
+
+	void ClearData()
+	{
+		iFieldId = 0;
+		iLv = SHOW_ITEM_LV_NULL;
+		memset(strNameNick, 0, DEFINE_LEN_NAME);
+		memset(strAccount, 0, DEFINE_LEN_NAME);
+		memset(strLoginPwd, 0, DEFINE_LEN_PWD);
+		memset(strPayPwd, 0, DEFINE_LEN_PWD);
+		memset(strOtherPwd, 0, DEFINE_LEN_PWD);
+		memset(strRelation, 0, DEFINE_LEN_NAME);
+		memset(strDescribe, 0, MAX_LEN_TEXT);
+
+		for (uint32 i = 0; i < FieldColumn_PwdEnd - FieldColumn_PwdBegin + 1; ++i)
+			listRecord[i].clear();
+	}
 };
 
 typedef std::vector<FIELD_ITEM>	VEC_ITEMS;
@@ -157,10 +169,10 @@ struct User_Set
 	
 	User_Set() 
 		//: iLastLogoinTime(time(NULL))
-		: iCurFiledId(1)
+		: iCurFiledId(0)
 		, iVaildLoginTime(0)
 		, iShowItemTime(5)
-		, iShowLevel(SHOW_ITEM_LV_WEB | SHOW_ITEM_LV_SECRET)
+		, iShowLevel(SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_EMAIL)
 		, iHideParts( (1 << FieldColumn_PwdLogin) | (1 << FieldColumn_PwdPay) | (1 << FieldColumn_PwdOther) )
 	{
 

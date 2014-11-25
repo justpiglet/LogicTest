@@ -25,7 +25,7 @@ public:
 	CField(uint32 iUserId);
 	~CField();
 	uint16 GetFieldRow() const { return listItem.size(); }
-	bool IsShowRow(uint8 index) const;
+	bool IsShowRow(const FIELD_ITEM* pField) const;
 	bool IsVaild(uint8 index, uint8 iColumn = 0) const;
 	inline bool IsVaildId(uint32 iId)const { return iId <= m_userSet.iCurFiledId; }
 
@@ -33,7 +33,7 @@ public:
 	STDSTR GetFieldHideParts(uint8 index, uint8 iColumn, bool isNeedHide)const;
 
 	const FIELD_ITEM* GetItem(uint8 index)const;
-
+	uint32 GetCurMaxFieldId()const { return m_userSet.iCurFiledId; }
 	bool IsCanUseNickName(const char*)const;
 
 	const FIELD_ITEM* ModifyField(const FIELD_ITEM&);
@@ -110,6 +110,8 @@ protected:
 	const std::string& GetBasePwd(){ return m_strBasePwd; }
 	void WriteInfo(const std::string& strName, const std::string& strSrc,const std::string& strBasePwd,bool isMainConfig=false);
 	bool ReadInfo(const std::string& strName, std::string& strOut, std::string& strBasePwd = std::string());
+
+	void NeedSaveFieldInfo(bool isSet = false);
 private:
 	static UserFieldManage* m_gShare;
 	Config_Info m_ConfigInfo;

@@ -36,7 +36,7 @@ private:
 	bool Create();
 
 	void ShowPassword(const FIELD_ITEM* pFiled, bool isHidePart = true);
-	void ReadEdit(uint32 iItemId,void* pDest,uint16 iLen);
+	bool ReadEdit(uint32 iItemId,void* pDest,uint16 iLen);
 private:
 	EDlg_Mode m_mode;
 	const FIELD_ITEM* m_pReadField;

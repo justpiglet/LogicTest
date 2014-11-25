@@ -30,7 +30,8 @@ bool CField::ParsingString(const std::string& strSrc)
 	FIELD_PWD_RECORD mItemR;
 	for (uint32 i(0),j(0),listCount(0); i < iItemCount; ++i)
 	{
-		memset(&mItem, 0, sizeof(mItem));
+		if (i > 0)
+			mItem.ClearData();
 
 		UserFieldManage::ParsingStringCopy(strSrc, iOffset, &mItem.iFieldId, sizeof(mItem.iFieldId));
 		UserFieldManage::ParsingStringCopy(strSrc, iOffset, &mItem.iLv, sizeof(mItem.iLv));
@@ -41,8 +42,7 @@ bool CField::ParsingString(const std::string& strSrc)
 		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strPayPwd, sizeof(mItem.strPayPwd));
 		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strOtherPwd, sizeof(mItem.strOtherPwd));
 		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strRelation, sizeof(mItem.strRelation));
-		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strDescribe, sizeof(mItem.strDescribe));
-
+		
 		for (listCount = 0; listCount < FieldColumn_PwdEnd - FieldColumn_PwdBegin + 1; ++listCount)
 		{
 			UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iItemR, sizeof(iItemR));
@@ -54,6 +54,7 @@ bool CField::ParsingString(const std::string& strSrc)
 				mItem.listRecord[listCount].push_back(mItemR);
 			}
 		}
+		UserFieldManage::ParsingStringCopy(strSrc, iOffset, mItem.strDescribe, sizeof(mItem.strDescribe));
 
 		listItem.push_back(mItem);
 	}
@@ -101,22 +102,22 @@ void CField::GetDataToChar(std::string& strOut)
 		strOut.append(itor->strPayPwd, sizeof(itor->strPayPwd));
 		strOut.append(itor->strOtherPwd, sizeof(itor->strOtherPwd));
 		strOut.append(itor->strRelation, sizeof(itor->strRelation));
-		strOut.append(itor->strDescribe, sizeof(itor->strDescribe));
 		
 		for (vecCount = 0; vecCount < FieldColumn_PwdEnd - FieldColumn_PwdBegin + 1; ++vecCount)
 		{
 			LIST_PWD_RECORD& vecTemp = itor->listRecord[vecCount];
 			iRCount = vecTemp.size();
 			itorR = vecTemp.begin();
-			strOut.append(iRCount, sizeof(iRCount));
+			strOut.append((char*)&iRCount, sizeof(iRCount));
 
 			for (j = 0; j < iRCount; ++j, ++itorR)
 			{
 				strOut.append((char*)&(itorR->iMTime), sizeof(itorR->iMTime));
 				strOut.append((char*)&(itorR->strOldPwd), MAX_LEN_PWD);
 			}
-
 		}
+
+		strOut.append(itor->strDescribe, sizeof(itor->strDescribe));
 	}
 
 }
@@ -184,9 +185,8 @@ const FIELD_ITEM* CField::GetItem(uint8 index)const
 	return &listItem[index];
 }
 
-bool CField::IsShowRow(uint8 index)const
+bool CField::IsShowRow(const FIELD_ITEM* pField)const
 {
-	const FIELD_ITEM* pField = GetItem(index);
 	if (pField && (m_userSet.iShowLevel&pField->iLv == pField->iLv))
 		return true;
 	else
@@ -258,6 +258,8 @@ const FIELD_ITEM* CField::ModifyField(const FIELD_ITEM& mNewField)
 	{
 		if (IsCanUseNickName(mNewField.strNameNick))
 			listItem.push_back(mNewField);
+
+		return &listItem[iCount];
 	}
 	else
 	{
@@ -311,7 +313,6 @@ bool CField::IsVaildFiled(const FIELD_ITEM* pData)const
 	else
 		return false;
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 UserFieldManage* UserFieldManage::m_gShare=NULL;
@@ -716,10 +717,15 @@ bool UserFieldManage::VerifyAccount(CONST_STDSTR& strAccount)
 
 const FIELD_ITEM* UserFieldManage::UserFieldModify(const FIELD_ITEM& mField)
 {
+	const FIELD_ITEM* pItem = NULL;
 	if (m_pCurUser)
-		return m_pCurUser->ModifyField(mField);
-	else
-		return NULL;
+	{
+		pItem = m_pCurUser->ModifyField(mField);
+		if (pItem)
+			NeedSaveFieldInfo(false);
+	}
+	
+	return pItem;
 }
 
 bool UserFieldManage::UserFieldDelete(const uint32& iFieldId)
@@ -728,6 +734,17 @@ bool UserFieldManage::UserFieldDelete(const uint32& iFieldId)
 		return m_pCurUser->DeleteField(iFieldId);
 	else
 		return false;
+}
+
+void UserFieldManage::NeedSaveFieldInfo(bool isSet /*= false*/)
+{
+	if (m_pCurUser)
+	{
+		if (isSet)
+			m_pCurUser->WriteUserSet(m_pCurAccount->strName, m_strBasePwd);
+		else
+			m_pCurUser->WriteBuffer(m_pCurAccount->strName, m_strBasePwd);
+	}	
 }
 
 

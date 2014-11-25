@@ -11,7 +11,7 @@ __interface IMainDlgHandle
 {
 	virtual void MainDlgLogoin()=0;
 	virtual void UpdateListControl() = 0;
-	virtual void UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData)=0;
+	virtual bool UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData) = 0;
 };
 
 // CFieldEditorDlg ¶Ô»°¿ò
@@ -50,7 +50,7 @@ protected:
 
 public:
 	virtual void UpdateListControl();
-	virtual void UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData);
+	virtual bool UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData);
 private:
 
 public:
@@ -73,6 +73,8 @@ private:
 private:
 	void LoginSuccessUpdate(const std::string&);
 	uint32 GetClickRow(CPoint point);
+
+	const FIELD_ITEM* GetCurFieldItem();
 private:
 	EOpSatus m_status;
 	CListCtrl m_ListInfo;

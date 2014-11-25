@@ -91,13 +91,14 @@ BOOL CFieldEditorDlg::OnInitDialog()
 	for (int i(0); i < FieldColumn_Max;++i)
 		m_ListInfo.InsertColumn(i, g_FieldName[i], LVCFMT_LEFT, g_FieldLen[i]);
 	
-	m_ListInfo.InsertItem(0, _T("bbbb"));
-	for (int iaa(1); iaa < FieldColumn_Max; ++iaa)
-		m_ListInfo.SetItemText(0, iaa, _T("aaaaa"));
-
-	m_ListInfo.InsertItem(1, _T("ccc"));
-	for (int iaa(1); iaa < FieldColumn_Max; ++iaa)
-		m_ListInfo.SetItemText(1, iaa, _T("aaaaa"));
+	m_ListInfo.EnableWindow(false);
+// 	m_ListInfo.InsertItem(0, _T("bbbb"));
+// 	for (int iaa(1); iaa < FieldColumn_Max; ++iaa)
+// 		m_ListInfo.SetItemText(0, iaa, _T("aaaaa"));
+// 
+// 	m_ListInfo.InsertItem(1, _T("ccc"));
+// 	for (int iaa(1); iaa < FieldColumn_Max; ++iaa)
+// 		m_ListInfo.SetItemText(1, iaa, _T("aaaaa"));
 	//GetDlgItem(IDC_BUTTON2)->SetWindowText(_T("(&L)Change"));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -166,7 +167,7 @@ void CFieldEditorDlg::OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult)
 	bool isAll(true),isShow(false);
 	if (pNMItemActivate->iItem != -1)
 	{
-		isShow = true;
+		//isShow = true;
 	}
 	else
 	{
@@ -179,14 +180,19 @@ void CFieldEditorDlg::OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult)
 		
 	if (isShow)
 	{
-			DWORD dwpos = GetMessagePos();
-			CPoint points(LOWORD(dwpos), HIWORD(dwpos));
-			CMenu menu;
-			VERIFY(menu.LoadMenu(IDR_MENU_USER_INFO));
-			CMenu* popup = menu.GetSubMenu(isAll?1:0);
-			if (popup)
-				popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, points.x, points.y, this);
+		DWORD dwpos = GetMessagePos();
+		CPoint points(LOWORD(dwpos), HIWORD(dwpos));
+
+		m_curRow = GetClickRow(points);
+
+		CMenu menu;
+		VERIFY(menu.LoadMenu(IDR_MENU_USER_INFO));
+		CMenu* popup = menu.GetSubMenu(isAll ? 1 : 0);
+		if (popup)
+			popup->TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, points.x, points.y, this);
 	}
+	else
+		m_curRow = -1;
 
 	*pResult = 0;
 }
@@ -195,10 +201,16 @@ void CFieldEditorDlg::OnNMDblclkListInfo(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	// TODO:  在此添加控件通知处理程序代码
-	if (pNMItemActivate->iItem != -1)
+	if (pNMItemActivate->iItem != -1 || pNMItemActivate->iSubItem > 0)
 	{
+		DWORD dwpos = GetMessagePos();
+		CPoint points(LOWORD(dwpos), HIWORD(dwpos));
 
+		m_curRow = GetClickRow(points);
+		OnMenuClickPeepFieldInfo();
 	}
+	else
+		m_curRow = -1;
 	*pResult = 0;
 }
 
@@ -208,7 +220,8 @@ void CFieldEditorDlg::OnMenuClickPeepFieldInfo()
 {
 	// TODO:  在此添加命令处理程序代码
 	CCreateNewField dlg(EDlg_Mode_Read);
-
+	dlg.SetDataInfo(m_curRow, GetCurFieldItem());
+	m_curRow = -1;
 }
 
 
@@ -226,35 +239,28 @@ void CFieldEditorDlg::UpdateListControl()
 		return;
 
 	uint16 iCount = m_pCurField->GetFieldRow();
-	for (int iRow(0), iColumn(0), index(0); iRow < iCount; ++index)
+	for (int iRow(0), iColumn(0), index(0); index < iCount; ++index)
 	{
-		if (m_pCurField->IsShowRow(index))
-		{
-			const void* pData = m_pCurField->GetItem(index);
-			if (pData)
-			{
-				UpdateListControlOneRow(iRow, (FIELD_ITEM*)pData);
-				++iRow;
-			}// end if (pData)
-
-		}//end if if (UserFieldManage::Share()->IsShowRow(index))
-
+		if (UpdateListControlOneRow(iRow, m_pCurField->GetItem(index)))
+			++iRow;
 	}
 }
 
-void CFieldEditorDlg::UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData)
+bool CFieldEditorDlg::UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData)
 {
-	if (!m_pCurField || iRow>m_ListInfo.GetItemCount())
-		return;
+	if (!m_pCurField || !pData || iRow>m_ListInfo.GetItemCount() || !m_pCurField->IsShowRow(pData))
+		return false;
 
-	m_ListInfo.SetItemData(iRow, (DWORD)pData);
+	m_ListInfo.SetItemData(iRow, (DWORD_PTR)pData);
 	for (uint32 iColumn = 0; iColumn < FieldColumn_Max; ++iColumn)
 	{
-		//if (iColumn == 0)
-			//m_ListInfo.InsertItem(iRow, CString(m_pCurField->GetFieldHideParts((FIELD_ITEM*)pData, iColumn, true).c_str()));
-		//else
+		if (iColumn == 0)
+			m_ListInfo.InsertItem(iRow, CString(m_pCurField->GetFieldHideParts((FIELD_ITEM*)pData, iColumn, true).c_str()));
+		else
 			m_ListInfo.SetItemText(iRow, iColumn, CString(m_pCurField->GetFieldHideParts((FIELD_ITEM*)pData, iColumn, true).c_str()));
 	}
+
+	return true;
 }
 
 BOOL CFieldEditorDlg::OnCommand(WPARAM wParam, LPARAM lParam)
@@ -310,6 +316,8 @@ void CFieldEditorDlg::CreateNewUser()
 void CFieldEditorDlg::CreateNewField()
 {
 	CCreateNewField dlg(EDlg_Mode_New);
+	dlg.SetDataInfo(m_ListInfo.GetItemCount());
+	dlg.DoModal();
 }
 
 void CFieldEditorDlg::TrashBasket()
@@ -360,4 +368,18 @@ void CFieldEditorDlg::LoginSuccessUpdate(const std::string& strName)
 	m_status = EOpSatus_Logoin;
 	SetWindowTextA(m_hWnd, strName.c_str());
 	UpdateButton();
+	m_ListInfo.EnableWindow(true);
+	UpdateListControl();
+}
+
+const FIELD_ITEM* CFieldEditorDlg::GetCurFieldItem()
+{
+	const FIELD_ITEM* pData = NULL;
+	if (m_curRow < m_ListInfo.GetItemCount())
+	{
+
+		pData = (FIELD_ITEM*)m_ListInfo.GetItemData(m_curRow);
+	}
+
+	return pData;
 }
