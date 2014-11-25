@@ -169,60 +169,33 @@ bool CField::ReadUserSet(const std::string& strName, const std::string& strPwd)
 		return false;
 }
 
-
-const char* CField::GetFieldString(const FIELD_ITEM* pField, uint8 iColumn)const
+bool CField::IsVaild(uint8 index, uint8 iColumn /*= 0*/)const
 {
-	if (!pField)
-			return NULL;
-
-	switch (iColumn)
-	{
-	case FieldColumn_Nick:
-		return pField->strNameNick;
-	case FieldColumn_Account:
-		return pField->strAccount;
-	case FieldColumn_PwdLogin:
-		return pField->strLoginPwd;
-	case FieldColumn_PwdPay:
-		return pField->strPayPwd;
-	case FieldColumn_PwdOther:
-		return pField->strOtherPwd;
-	case FieldColumn_Relation:
-		return pField->strRelation;
-	case FieldColumn_Describe:
-		return pField->strDescribe;
-	default:
-		return NULL;
-	}
-}
-
-bool CField::IsVaild(uint8 iRow, uint8 iColumn /*= 0*/)const
-{
-	if (iRow >= GetFieldRow() || iColumn >= FieldColumn_Max)
+	if (index >= GetFieldRow() || iColumn >= FieldColumn_Max)
 		return false;
 	else
 		return true;
 }
 
-const FIELD_ITEM* CField::GetItem(uint8 iRow)const
+const FIELD_ITEM* CField::GetItem(uint8 index)const
 {
-	if (!IsVaild(iRow))
+	if (!IsVaild(index))
 		return NULL;
-	return &listItem[iRow];
+	return &listItem[index];
 }
 
-bool CField::IsShowRow(uint8 iRow)const
+bool CField::IsShowRow(uint8 index)const
 {
-	const FIELD_ITEM* pField = GetItem(iRow);
+	const FIELD_ITEM* pField = GetItem(index);
 	if (pField && (m_userSet.iShowLevel&pField->iLv == pField->iLv))
 		return true;
 	else
 		return false;
 }
 
-STDSTR CField::GetFieldHideParts(uint8 iRow, uint8 iColumn, bool isNeedHide)const
+STDSTR CField::GetFieldHideParts(uint8 index, uint8 iColumn, bool isNeedHide)const
 {
-	const FIELD_ITEM* pField = GetItem(iRow);
+	const FIELD_ITEM* pField = GetItem(index);
 	if (!pField)
 		return STDSTR();
 
@@ -231,7 +204,10 @@ STDSTR CField::GetFieldHideParts(uint8 iRow, uint8 iColumn, bool isNeedHide)cons
 
 STDSTR CField::GetFieldHideParts(const FIELD_ITEM* pField, uint8 iColumn, bool isNeedHide) const
 {
-	STDSTR strTemp = GetFieldString(pField, iColumn);
+	STDSTR strTemp("");
+	if (pField)
+		strTemp = pField->GetText(iColumn);
+
 	if (strTemp.empty())
 		return strTemp;
 
@@ -252,13 +228,13 @@ STDSTR CField::GetFieldHideParts(const FIELD_ITEM* pField, uint8 iColumn, bool i
 	return strTemp;
 }
 
-bool CField::IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)const
+bool CField::IsNeedHideParts(bool isNeedHide, uint8 index, uint8 iColumn, const FIELD_ITEM* pField/* = NULL*/)const
 {
 	if (!isNeedHide)
 		return false;
 
 	if (!pField)
-		if (!(pField = GetItem(iRow)))
+		if (!(pField = GetItem(index)))
 			return false;
 
 	if ((m_userSet.iHideParts&pField->iLv) == pField->iLv && (iColumn == FieldColumn_Account ||
@@ -269,13 +245,13 @@ bool CField::IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const F
 }
 
 
-bool CField::ModifyField(const FIELD_ITEM& mNewField)
+const FIELD_ITEM* CField::ModifyField(const FIELD_ITEM& mNewField)
 {
 	bool isNew(false);
 	if (m_userSet.iCurFiledId + 1 == mNewField.iFieldId)
 		isNew = true;
 	else if (!IsVaildId(mNewField.iFieldId))
-		return false;
+		return NULL;
 
 	uint32 iCount = listItem.size();
 	if (isNew)
@@ -290,13 +266,12 @@ bool CField::ModifyField(const FIELD_ITEM& mNewField)
 			if (mNewField.iFieldId == listItem[index].iFieldId && strcmp(mNewField.strNameNick, listItem[index].strNameNick) == 0)
 			{
 				listItem[index].ReplaceField(mNewField);
-				return true;
+				return &listItem[index];
 			}
 		}
 	}
 	
-
-	return false;
+	return NULL;
 }
 
 bool CField::DeleteField(const uint32 iFieldId)
@@ -327,6 +302,14 @@ bool CField::IsCanUseNickName(const char* pszNewNickName) const
 	}
 
 	return true;
+}
+
+bool CField::IsVaildFiled(const FIELD_ITEM* pData)const
+{
+	if (pData && pData->iFieldId <= m_iUserID)
+		return true;
+	else
+		return false;
 }
 
 
@@ -731,12 +714,12 @@ bool UserFieldManage::VerifyAccount(CONST_STDSTR& strAccount)
 	return false;
 }
 
-bool UserFieldManage::UserFieldModify(const FIELD_ITEM& mField)
+const FIELD_ITEM* UserFieldManage::UserFieldModify(const FIELD_ITEM& mField)
 {
 	if (m_pCurUser)
 		return m_pCurUser->ModifyField(mField);
 	else
-		return false;
+		return NULL;
 }
 
 bool UserFieldManage::UserFieldDelete(const uint32& iFieldId)

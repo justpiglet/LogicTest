@@ -25,22 +25,22 @@ public:
 	CField(uint32 iUserId);
 	~CField();
 	uint16 GetFieldRow() const { return listItem.size(); }
-	bool IsShowRow(uint8 iRow) const;
-	bool IsVaild(uint8 iRow, uint8 iColumn = 0) const;
+	bool IsShowRow(uint8 index) const;
+	bool IsVaild(uint8 index, uint8 iColumn = 0) const;
 	inline bool IsVaildId(uint32 iId)const { return iId <= m_userSet.iCurFiledId; }
 
-	const char* GetFieldString(const FIELD_ITEM* pField, uint8 iColumn)const;
-	STDSTR GetFieldHideParts(uint8 iRow, uint8 iColumn, bool isNeedHide)const;
-	STDSTR GetFieldHideParts(const FIELD_ITEM* pField, uint8 iColumn, bool isNeedHide)const;
+	STDSTR GetFieldHideParts(const FIELD_ITEM* pField, uint8 iColumn, bool isNeedHide) const;
+	STDSTR GetFieldHideParts(uint8 index, uint8 iColumn, bool isNeedHide)const;
 
-	const FIELD_ITEM* GetItem(uint8 iRow)const;
+	const FIELD_ITEM* GetItem(uint8 index)const;
 
 	bool IsCanUseNickName(const char*)const;
 
-	bool ModifyField(const FIELD_ITEM&);
+	const FIELD_ITEM* ModifyField(const FIELD_ITEM&);
 	bool DeleteField(const uint32 iId);
 
 	inline uint32 GetShowPwdTime()const { return m_userSet.iShowItemTime; }
+	bool IsVaildFiled(const FIELD_ITEM*)const;
 protected:
 	void WriteBuffer(const std::string& strName, const std::string& strPwd);
 	bool ReadBuffer(const std::string& strName, const std::string& strPwd);
@@ -48,7 +48,7 @@ protected:
 	void WriteUserSet(const std::string& strName, const std::string& strPwd);
 	bool ReadUserSet(const std::string& strName, const std::string& strPwd);
 
-	bool IsNeedHideParts(bool isNeedHide, uint8 iRow, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
+	bool IsNeedHideParts(bool isNeedHide, uint8 index, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
 private:
 	void GetDataToChar(std::string&);
 	bool ParsingString(const std::string&);
@@ -95,7 +95,7 @@ public:
 	uint32 GetUserCount(bool isUse = true);
 	bool VerifyAccount(CONST_STDSTR& strAccount);
 
-	bool UserFieldModify(const FIELD_ITEM&);
+	const FIELD_ITEM* UserFieldModify(const FIELD_ITEM&);
 	bool UserFieldDelete(const uint32& iFieldId);
 private:
 	UserFieldManage();

@@ -5,10 +5,13 @@
 #pragma once
 #include "afxcmn.h"
 #include "base/basedefine.h"
+#include "Field/UserFieldManage.h"
 
 __interface IMainDlgHandle
 {
 	virtual void MainDlgLogoin()=0;
+	virtual void UpdateListControl() = 0;
+	virtual void UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData)=0;
 };
 
 // CFieldEditorDlg ¶Ô»°¿ò
@@ -45,8 +48,9 @@ protected:
 
 	virtual void MainDlgLogoin() ;
 
-protected:
-	void UpdateListControl();
+public:
+	virtual void UpdateListControl();
+	virtual void UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData);
 private:
 
 public:
@@ -68,12 +72,13 @@ private:
 	void UpdateButton();
 private:
 	void LoginSuccessUpdate(const std::string&);
+	uint32 GetClickRow(CPoint point);
 private:
 	EOpSatus m_status;
 	CListCtrl m_ListInfo;
 	func m_fun[2][4];
 	TCHAR* m_butName[2][4];
-
+	const CField* m_pCurField;
 	int32 m_curRow;
 	//IMainDlgHandle* g_pMainDlgHandle;
 public:

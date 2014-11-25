@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 #include "UserLogin.h"
 #include "Depend/cantools/tools.h"
+#include "FieldEditorDlg.h"
 
 TCHAR* g_ItemLvName[] = { _T("NULL"), _T("Nomal"), _T("Email"), _T("Web"), _T("Secrect") };
 uint32 g_ItemLvValue[] = { 0, 1, 2, 4 ,8};
@@ -16,7 +17,7 @@ uint32 g_ItemLvValue[] = { 0, 1, 2, 4 ,8};
 IMPLEMENT_DYNAMIC(CCreateNewField, CDialogEx)
 
 CCreateNewField::CCreateNewField(EDlg_Mode mMode, CWnd* pParent /*= NULL*/)
-: CDialogEx(CCreateNewField::IDD, pParent), m_mode(mMode), m_pReadField(NULL), m_iShowPwdTime(-1)
+: CDialogEx(CCreateNewField::IDD, pParent), m_mode(mMode), m_pReadField(NULL), m_iShowPwdTime(-1), m_iCurRow(-1)
 {
 	
 }
@@ -64,6 +65,11 @@ void CCreateNewField::OnBnClickedOk()
 
 		ReadEdit(IDC_FIELD_RELATION, mField.strRelation, MAX_LEN_NAME);
 		ReadEdit(IDC_FIELD_COMMENT, mField.strDescribe, MAX_LEN_TEXT);
+
+		const FIELD_ITEM* pData = UserFieldManage::Share()->UserFieldModify(mField);
+
+		if (g_mainDlg)
+			g_mainDlg->UpdateListControlOneRow(m_iCurRow, pData);
 	}
 
 	CDialogEx::OnOK();
@@ -154,8 +160,9 @@ bool CCreateNewField::VerifyPassword()
 	return false;
 }
 
-void CCreateNewField::SetReadInfo(const FIELD_ITEM* pFiled)
+void CCreateNewField::SetDataInfo(uint32 iRow, const FIELD_ITEM* pFiled/*=NULL*/)
 {
+	m_iCurRow = iRow;
 	if (m_mode != EDlg_Mode_Read)
 		return;
 
@@ -169,16 +176,14 @@ void CCreateNewField::SetReadInfo(const FIELD_ITEM* pFiled)
 			((CComboBox*)GetDlgItem(IDC_FIELD_LV_LIST))->SetCurSel(i);
 
 	ShowPassword(pFiled, true);
-	
+
 	((CEdit*)GetDlgItem(IDC_FIELD_RELATION))->SetWindowText(CString(pFiled->strRelation));
 	((CEdit*)GetDlgItem(IDC_FIELD_COMMENT))->SetWindowText(CString(pFiled->strDescribe));
-	
 }
 
 
 void CCreateNewField::OnBnClickedShowpwdBtn()
 {
-
 	if (m_mode == EDlg_Mode_Read && m_pReadField != NULL)
 	{
 		ShowPassword(m_pReadField, false);

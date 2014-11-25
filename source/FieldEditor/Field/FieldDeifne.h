@@ -69,6 +69,7 @@ struct FIELD_ITEM
 
 	LIST_PWD_RECORD listRecord[FieldColumn_PwdEnd - FieldColumn_PwdBegin + 1]; //MAX_RECORD_COUNT
 
+public:
 	FIELD_ITEM() :iFieldId(0), iLv(SHOW_ITEM_LV_NULL)
 	{
 		memset(strNameNick, 0, DEFINE_LEN_NAME);
@@ -78,6 +79,28 @@ struct FIELD_ITEM
 		memset(strOtherPwd, 0, DEFINE_LEN_PWD);
 		memset(strRelation, 0, DEFINE_LEN_NAME);
 		memset(strDescribe, 0, MAX_LEN_TEXT);
+	}
+	const char* GetText(uint32 iColumn) const
+	{
+		switch (iColumn)
+		{
+		case FieldColumn_Nick:
+			return this->strNameNick;
+		case FieldColumn_Account:
+			return this->strAccount;
+		case FieldColumn_PwdLogin:
+			return this->strLoginPwd;
+		case FieldColumn_PwdPay:
+			return this->strPayPwd;
+		case FieldColumn_PwdOther:
+			return this->strOtherPwd;
+		case FieldColumn_Relation:
+			return this->strRelation;
+		case FieldColumn_Describe:
+			return this->strDescribe;
+		default:
+			return NULL;
+		}
 	}
 
 	void ReplaceFiled(char* pDest, uint32 iLenD, const char* pSrc, uint32 iLenS, FieldColumn mColumn)
@@ -114,7 +137,7 @@ struct FIELD_ITEM
 		ReplaceFiled(this->strOtherPwd, MAX_LEN_PWD, mNew.strOtherPwd, MAX_LEN_PWD, FieldColumn_PwdOther);
 	}
 
-	bool IsEmpty(){ return this->iLv == SHOW_ITEM_LV_NULL; }
+	bool IsEmpty()const{ return this->iLv == SHOW_ITEM_LV_NULL; }
 };
 
 typedef std::vector<FIELD_ITEM>	VEC_ITEMS;

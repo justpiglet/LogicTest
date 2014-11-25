@@ -20,7 +20,8 @@ public:
 	CCreateNewField(EDlg_Mode mMode,CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CCreateNewField();
 
-	void SetReadInfo(const FIELD_ITEM*);
+	//EDlg_Mode！=read ，pField can NULL
+	void SetDataInfo(uint32 iRow,const FIELD_ITEM*pField=NULL);
 // 对话框数据
 	enum { IDD = IDD_CREATE_FIELD_DLG };
 
@@ -39,6 +40,7 @@ private:
 private:
 	EDlg_Mode m_mode;
 	const FIELD_ITEM* m_pReadField;
+	uint32 m_iCurRow;
 	int32 m_iShowPwdTime;
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);

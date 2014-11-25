@@ -7,7 +7,7 @@
 #include "FieldEditorDlg.h"
 #include "afxdialogex.h"
 #include "depend/cantools/jsoncpp/json/reader.h"
-#include "Field/UserFieldManage.h"
+
 #include "Field/GobalConfig.h"
 
 #include "CreateUser.h"
@@ -25,7 +25,7 @@ uint8 g_FieldLen[FieldColumn_Max] = { 100, 160, 130, 130, 130, 200, 200 };
 
 IMainDlgHandle* g_mainDlg=NULL;
 CFieldEditorDlg::CFieldEditorDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CFieldEditorDlg::IDD, pParent), m_status(EOpSatus_NULL), m_curRow(-1)
+	: CDialogEx(CFieldEditorDlg::IDD, pParent), m_status(EOpSatus_NULL), m_curRow(-1), m_pCurField(NULL)
 {
 	AfxInitRichEdit2();
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -89,8 +89,15 @@ BOOL CFieldEditorDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化代码
 	for (int i(0); i < FieldColumn_Max;++i)
-		m_ListInfo.InsertColumn(i, g_FieldName[i], LVCFMT_LEFT, g_FieldLen[i], -1);
+		m_ListInfo.InsertColumn(i, g_FieldName[i], LVCFMT_LEFT, g_FieldLen[i]);
 	
+	m_ListInfo.InsertItem(0, _T("bbbb"));
+	for (int iaa(1); iaa < FieldColumn_Max; ++iaa)
+		m_ListInfo.SetItemText(0, iaa, _T("aaaaa"));
+
+	m_ListInfo.InsertItem(1, _T("ccc"));
+	for (int iaa(1); iaa < FieldColumn_Max; ++iaa)
+		m_ListInfo.SetItemText(1, iaa, _T("aaaaa"));
 	//GetDlgItem(IDC_BUTTON2)->SetWindowText(_T("(&L)Change"));
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -140,13 +147,22 @@ void CFieldEditorDlg::OnBnClickedOk()
 	CDialogEx::OnOK();
 }
 
+uint32 CFieldEditorDlg::GetClickRow(CPoint point)
+{
+	m_ListInfo.ScreenToClient(&point);
 
+	LVHITTESTINFO lvinfo;
+	lvinfo.pt = point;
+	lvinfo.flags = LVHT_ABOVE;
+	return  m_ListInfo.SubItemHitTest(&lvinfo);
+}
 
 
 void CFieldEditorDlg::OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
 	// TODO:  在此添加控件通知处理程序代码
+	
 	bool isAll(true),isShow(false);
 	if (pNMItemActivate->iItem != -1)
 	{
@@ -191,8 +207,8 @@ void CFieldEditorDlg::OnNMDblclkListInfo(NMHDR *pNMHDR, LRESULT *pResult)
 void CFieldEditorDlg::OnMenuClickPeepFieldInfo()
 {
 	// TODO:  在此添加命令处理程序代码
-	int a = 9;
-	a = a;
+	CCreateNewField dlg(EDlg_Mode_Read);
+
 }
 
 
@@ -206,31 +222,38 @@ void CFieldEditorDlg::OnMenuClickPeepPwd()
 void CFieldEditorDlg::UpdateListControl()
 {
 	m_ListInfo.DeleteAllItems();
-	const CField* pField=UserFieldManage::Share()->GetCurUserFields();
-	if (!pField)
+	if (!m_pCurField)
 		return;
 
-	uint16 iCount = pField->GetFieldRow();
-	for (int iRow(0), iColumn(0); iRow < iCount; ++iRow)
+	uint16 iCount = m_pCurField->GetFieldRow();
+	for (int iRow(0), iColumn(0), index(0); iRow < iCount; ++index)
 	{
-		if (pField->IsShowRow(iRow))
+		if (m_pCurField->IsShowRow(index))
 		{
-			const void* pData = pField->GetItem(iRow);
+			const void* pData = m_pCurField->GetItem(index);
 			if (pData)
 			{
-				m_ListInfo.SetItemData(iRow, (DWORD)pData);
-				for (iColumn = 0; iColumn < FieldColumn_Max; ++iColumn)
-				{
-					if (iColumn == 0)
-						m_ListInfo.InsertItem(iRow, CString(pField->GetFieldHideParts(iRow, iColumn, true).c_str()));
-					else
-						m_ListInfo.SetItemText(iRow, iColumn, CString(pField->GetFieldHideParts(iRow, iColumn, true).c_str()));
-
-				}
+				UpdateListControlOneRow(iRow, (FIELD_ITEM*)pData);
+				++iRow;
 			}// end if (pData)
 
-		}//end if if (UserFieldManage::Share()->IsShowRow(iRow))
+		}//end if if (UserFieldManage::Share()->IsShowRow(index))
 
+	}
+}
+
+void CFieldEditorDlg::UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData)
+{
+	if (!m_pCurField || iRow>m_ListInfo.GetItemCount())
+		return;
+
+	m_ListInfo.SetItemData(iRow, (DWORD)pData);
+	for (uint32 iColumn = 0; iColumn < FieldColumn_Max; ++iColumn)
+	{
+		//if (iColumn == 0)
+			//m_ListInfo.InsertItem(iRow, CString(m_pCurField->GetFieldHideParts((FIELD_ITEM*)pData, iColumn, true).c_str()));
+		//else
+			m_ListInfo.SetItemText(iRow, iColumn, CString(m_pCurField->GetFieldHideParts((FIELD_ITEM*)pData, iColumn, true).c_str()));
 	}
 }
 
@@ -333,6 +356,7 @@ void CFieldEditorDlg::MainDlgLogoin()
 
 void CFieldEditorDlg::LoginSuccessUpdate(const std::string& strName)
 {
+	m_pCurField = UserFieldManage::Share()->GetCurUserFields();
 	m_status = EOpSatus_Logoin;
 	SetWindowTextA(m_hWnd, strName.c_str());
 	UpdateButton();
