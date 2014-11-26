@@ -143,8 +143,8 @@ bool CCreateUser::GetCreateUersInfo(std::string& strA, std::string& strP, std::s
 void CCreateUser::Exchange(CString& strSrc, std::string& strDest)
 {
 #ifdef _UNICODE
-	uint16 iLen(strSrc.GetLength());
-	char * pszTemp = _CANNP_NAME::code::UnicodeToAscii(strSrc.GetBuffer(), iLen);
+	uint16 iwLen(strSrc.GetLength()),iLen(0);
+	char * pszTemp = _CANNP_NAME::code::UnicodeToAscii(strSrc.GetBuffer(), iwLen, iLen);
 	strDest.append(pszTemp, iLen);
 	delete pszTemp;
 #else

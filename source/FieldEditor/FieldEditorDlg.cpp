@@ -33,21 +33,21 @@ CFieldEditorDlg::CFieldEditorDlg(CWnd* pParent /*=NULL*/)
 	m_fun[0][0] = &CFieldEditorDlg::Logoin;
 	m_fun[0][1] = &CFieldEditorDlg::CreateNewUser;
 	m_fun[0][2] = &CFieldEditorDlg::DoNothing;
-	m_fun[0][3] = &CFieldEditorDlg::Setting;
+	m_fun[0][3] = &CFieldEditorDlg::DoNothing;
 
 	m_fun[1][0] = &CFieldEditorDlg::LogoinOut;
 	m_fun[1][1] = &CFieldEditorDlg::CreateNewField;
-	m_fun[1][2] = &CFieldEditorDlg::TrashBasket;
+	m_fun[1][2] = &CFieldEditorDlg::DoNothing;
 	m_fun[1][3] = &CFieldEditorDlg::SettingUpdate;
 
 	m_butName[0][0] = _T("(&L)Login");
 	m_butName[0][1] = _T("(&N)New");
 	m_butName[0][2] = _T("");
-	m_butName[0][3] = _T("(&S)Setting");
+	m_butName[0][3] = _T("");
 
 	m_butName[1][0] = _T("(&L)LogoinOut");
 	m_butName[1][1] = _T("(&N)NewField");
-	m_butName[1][2] = _T("(&T)Trash");
+	m_butName[1][2] = _T("");
 	m_butName[1][3] = _T("(&S)Setting");
 
 	g_mainDlg = this;
@@ -83,7 +83,8 @@ BOOL CFieldEditorDlg::OnInitDialog()
 	//  执行此操作
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
-
+	
+	SetWindowText(_T("Please Login"));
 	UserFieldManage::Share()->InitData();
 	UpdateButton();
 
@@ -240,13 +241,17 @@ void CFieldEditorDlg::UpdateListControl()
 
 bool CFieldEditorDlg::UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData)
 {
-	if (!m_pCurField || !pData || iRow>m_ListInfo.GetItemCount() || !m_pCurField->IsShowRow(pData))
+	uint32 iListCount = m_ListInfo.GetItemCount();
+	if (!m_pCurField || !pData || iRow>iListCount || !m_pCurField->IsShowRow(pData))
 		return false;
-
+	
 	for (uint32 iColumn = 0; iColumn < FieldColumn_Max; ++iColumn)
 	{
 		if (iColumn == 0)
-			m_ListInfo.InsertItem(iRow, CString(m_pCurField->GetFieldHideParts((FIELD_ITEM*)pData, iColumn, true).c_str()));
+		{
+			if (iRow == iListCount)
+				m_ListInfo.InsertItem(iRow, CString(m_pCurField->GetFieldHideParts((FIELD_ITEM*)pData, iColumn, true).c_str()));
+		}
 		else
 			m_ListInfo.SetItemText(iRow, iColumn, CString(m_pCurField->GetFieldHideParts((FIELD_ITEM*)pData, iColumn, true).c_str()));
 	}
@@ -291,7 +296,11 @@ void CFieldEditorDlg::Setting()
 
 void CFieldEditorDlg::LogoinOut()
 {
-
+	UserFieldManage::Share()->UserLoginOut();
+	m_ListInfo.DeleteAllItems();
+	m_status = EOpSatus_NULL;
+	UpdateButton();
+	SetWindowText(_T("Please Login"));
 }
 
 void CFieldEditorDlg::CreateNewUser()

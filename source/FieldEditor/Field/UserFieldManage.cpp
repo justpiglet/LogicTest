@@ -215,7 +215,7 @@ STDSTR CField::GetFieldHideParts(const FIELD_ITEM* pField, uint8 iColumn, bool i
 	{
 		uint32 iLen = strTemp.length();
 		uint32 index = iLen / 4;
-		uint32 iCount = max(1, index);
+		uint32 iCount = min(max(1, index),4);
 
 		STDSTR strOut("");
 		strOut.append(strTemp.c_str(), iCount);
@@ -260,6 +260,7 @@ const FIELD_ITEM* CField::ModifyField(const FIELD_ITEM& mNewField)
 			listItem.push_back(mNewField);
 
 		m_userSet.iCurFiledId = m_userSet.iCurFiledId + 1;
+		UserFieldManage::Share()->NeedSaveFieldInfo(true);
 		return &listItem[iCount];
 	}
 	else
@@ -466,6 +467,12 @@ uint8 UserFieldManage::UserLogoin(const char* szName, const char* szPwd, ELOGOIN
 	}
 
 	return ER_ERROR_ACCOUNT;
+}
+
+void UserFieldManage::UserLoginOut()
+{
+	m_pCurUser = NULL;
+	m_pCurAccount = NULL;
 }
 
 void UserFieldManage::SaveConfigField()
@@ -747,6 +754,8 @@ void UserFieldManage::NeedSaveFieldInfo(bool isSet /*= false*/)
 			m_pCurUser->WriteBuffer(m_pCurAccount->strName, m_strBasePwd);
 	}	
 }
+
+
 
 
 

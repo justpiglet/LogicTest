@@ -45,9 +45,10 @@ BOOL CUserLogin::OnInitDialog()
 		{
 
 #ifdef _UNICODE
+			uint16 iwLen(0);
 			for (int i = 0; i < iCount; ++i)
 			{
-				wchar_t* pWchar = _CANNP_NAME::code::AsciiToUnicode(m_vecAccount[i].c_str(), m_vecAccount[i].length());
+				wchar_t* pWchar = _CANNP_NAME::code::AsciiToUnicode(m_vecAccount[i].c_str(), m_vecAccount[i].length(), iwLen);
 				m_AccountList.InsertString(i, pWchar);
 				delete pWchar;
 			}
@@ -68,7 +69,8 @@ BOOL CUserLogin::OnInitDialog()
 		if (UserFieldManage::Share()->VerifyAccount(m_strAccount))
 		{
 #ifdef _UNICODE
-			wchar_t* pWchar = _CANNP_NAME::code::AsciiToUnicode(m_strAccount.c_str(), m_strAccount.length());
+			uint16 iwLen(0);
+			wchar_t* pWchar = _CANNP_NAME::code::AsciiToUnicode(m_strAccount.c_str(), m_strAccount.length(), iwLen);
 			m_AccountList.InsertString(0, pWchar);
 			delete pWchar;
 #else
@@ -105,7 +107,8 @@ void CUserLogin::OnBnClickedLogoinBt()
 	else
 	{
 #ifdef _UNICODE
-		STDSTR strPwd = _CANNP_NAME::code::UnicodeToAscii(cstrPwd.GetBuffer(), cstrPwd.GetLength());
+		uint16 iaLen(0);
+		STDSTR strPwd = _CANNP_NAME::code::UnicodeToAscii(cstrPwd.GetBuffer(), cstrPwd.GetLength(), iaLen);
 #else
 		STDSTR strPwd = cstrPwd.GetBuffer();
 #endif

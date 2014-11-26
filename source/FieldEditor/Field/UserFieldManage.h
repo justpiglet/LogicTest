@@ -85,6 +85,8 @@ public:
 	uint8 UserLogoin(const char* szName, const char* szPwd, ELOGOIN_MODE mmode=ELOGOIN_MODE_NOR);
 	bool UserLogoinSuccess(Account_Info* pInfo);
 	
+	void UserLoginOut();
+
 	const CField* GetCurUserFields(){ return m_pCurUser; }
 	const Account_Info* GetCurAccount(){ return m_pCurAccount; }
 

@@ -239,8 +239,9 @@ bool CCreateNewField::ReadEdit(uint32 iItemId, void* pDest, uint16 Len)
 
 	STDSTR strText("");
 #ifdef _UNICODE
-	char* pText = _CANNP_NAME::code::UnicodeToAscii(cstrText.GetBuffer(), cstrText.GetLength());
-	memcpy_s(pDest, Len, pText, cstrText.GetLength());
+	uint16 iAcLen(cstrText.GetLength());
+	char* pText = _CANNP_NAME::code::UnicodeToAscii(cstrText.GetBuffer(), cstrText.GetLength(), iAcLen);
+	memcpy_s(pDest, Len, pText, iAcLen);
 	delete pText;
 #else
 	memcpy_s(pDest, Len, cstrText.GetBuffer(), cstrText.GetLength());
