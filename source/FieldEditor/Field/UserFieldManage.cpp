@@ -237,8 +237,8 @@ bool CField::IsNeedHideParts(bool isNeedHide, uint8 index, uint8 iColumn, const 
 		if (!(pField = GetItem(index)))
 			return false;
 
-	if ((m_userSet.iHideParts&pField->iLv) == pField->iLv && (iColumn == FieldColumn_Account ||
-		iColumn == FieldColumn_Relation || iColumn == FieldColumn_Describe))
+	uint32 columnVal = 1 << iColumn;
+	if ((m_userSet.iHideParts&columnVal) == columnVal)
 		return true;
 	else
 		return false;
@@ -259,6 +259,7 @@ const FIELD_ITEM* CField::ModifyField(const FIELD_ITEM& mNewField)
 		if (IsCanUseNickName(mNewField.strNameNick))
 			listItem.push_back(mNewField);
 
+		m_userSet.iCurFiledId = m_userSet.iCurFiledId + 1;
 		return &listItem[iCount];
 	}
 	else

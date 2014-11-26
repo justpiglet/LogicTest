@@ -81,7 +81,9 @@ BOOL CUserLogin::OnInitDialog()
 			
 	}
 	
-	return TRUE;
+	GetDlgItem(IDC_LOGOIN_PWD)->SetFocus();
+
+	return FALSE;
 }
 
 
@@ -91,12 +93,17 @@ BOOL CUserLogin::OnInitDialog()
 void CUserLogin::OnBnClickedLogoinBt()
 {
 	uint32 iSel=m_AccountList.GetCurSel();
+	CString cstrPwd, strMessage;
+	GetDlgItem(IDC_LOGOIN_PWD)->GetWindowText(cstrPwd);
+
 	if (iSel == -1)
-		MessageBox(_T("Please Select Account!"));
+		strMessage = _T("Please Select Account!");
+	else if (cstrPwd.IsEmpty())
+	{
+		strMessage = _T("PassWord is empty!");
+	}
 	else
 	{
-		CString cstrPwd;
-		GetDlgItem(IDC_LOGOIN_PWD)->GetWindowText(cstrPwd);
 #ifdef _UNICODE
 		STDSTR strPwd = _CANNP_NAME::code::UnicodeToAscii(cstrPwd.GetBuffer(), cstrPwd.GetLength());
 #else
@@ -105,10 +112,18 @@ void CUserLogin::OnBnClickedLogoinBt()
 		m_iStatus = UserFieldManage::Share()->UserLogoin(m_vecAccount[iSel].c_str(), strPwd.c_str(),m_mode);
 
 		if (m_iStatus == ER_ERROR_ACCOUNT || m_iStatus == ER_ERROR)
-			MessageBox(_T("Account Error!"));
+			strMessage = _T("Account Error!");
 		else if (m_iStatus == ER_ERROR_PWD)
-			MessageBox(_T("Password Error!"));
+			strMessage = _T("Password Error!");
+	}
+	if (strMessage.IsEmpty())
+	{
+		CDialogEx::OnOK();
+	}
+	else
+	{
+		MessageBox(strMessage);
 	}
 
-	CDialogEx::OnOK();
+	
 }

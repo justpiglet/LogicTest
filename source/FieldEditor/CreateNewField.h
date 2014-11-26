@@ -37,15 +37,20 @@ private:
 
 	void ShowPassword(const FIELD_ITEM* pFiled, bool isHidePart = true);
 	bool ReadEdit(uint32 iItemId,void* pDest,uint16 iLen);
+	void ShowReadFieldInfo();
 private:
-	EDlg_Mode m_mode;
-	const FIELD_ITEM* m_pReadField;
-	uint32 m_iCurRow;
-	int32 m_iShowPwdTime;
+	EDlg_Mode			m_mode;
+	const FIELD_ITEM*	m_pReadField;
+	uint32				m_iCurRow;
+	int32				m_iShowPwdTime;
+	uint32				m_iFieldID;
+
+	//HANDLE m_event;
 public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedModifyBtn();
 	afx_msg void OnBnClickedDeleteBtn();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedShowpwdBtn();
+	afx_msg void OnClose();
 };
