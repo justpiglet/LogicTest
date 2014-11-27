@@ -9,7 +9,7 @@
 #include "depend/cantools/jsoncpp/json/reader.h"
 
 #include "Field/GobalConfig.h"
-
+#include "Setting.h"
 
 
 #ifdef _DEBUG
@@ -302,7 +302,7 @@ void CFieldEditorDlg::DoNothing()
 
 void CFieldEditorDlg::Setting()
 {
-
+	
 }
 
 void CFieldEditorDlg::LogoinOut()
@@ -338,7 +338,18 @@ void CFieldEditorDlg::DeleteAccount()
 
 void CFieldEditorDlg::SettingUpdate()
 {
+	CUserLogin lDlg(ELOGOIN_MODE_OPERATE, UserFieldManage::Share()->GetAccountName());
+	if (lDlg.DoModal() == IDOK)
+	{
+		if (lDlg.IsLogoinSuccess() == true)
+		{
+			CSetting sDlg;
+			if (sDlg.DoModal() == IDOK)
+			{
 
+			}
+		}
+	}
 }
 
 void CFieldEditorDlg::UpdateButton()

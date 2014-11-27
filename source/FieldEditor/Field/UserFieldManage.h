@@ -41,6 +41,8 @@ public:
 
 	inline uint32 GetShowPwdTime()const { return m_userSet.iShowItemTime; }
 	bool IsVaildFiled(const FIELD_ITEM*)const;
+
+	inline const User_Set* GetUserSetInfo()const{ return &m_userSet; }
 protected:
 	void WriteBuffer(const std::string& strName, const std::string& strPwd);
 	bool ReadBuffer(const std::string& strName, const std::string& strPwd);
@@ -49,6 +51,8 @@ protected:
 	bool ReadUserSet(const std::string& strName, const std::string& strPwd);
 
 	bool IsNeedHideParts(bool isNeedHide, uint8 index, uint8 iColumn, const FIELD_ITEM* pField = NULL)const;
+
+	bool ModifyUserSet(uint32, uint32, uint32);
 private:
 	void GetDataToChar(std::string&);
 	bool ParsingString(const std::string&);
@@ -100,6 +104,8 @@ public:
 
 	const FIELD_ITEM* UserFieldModify(const FIELD_ITEM&);
 	bool UserFieldDelete(const uint32& iFieldId);
+
+	bool SetUserSettingInfo(uint32, uint32, uint32);
 private:
 	UserFieldManage();
 	~UserFieldManage();

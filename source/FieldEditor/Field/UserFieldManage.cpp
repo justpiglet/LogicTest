@@ -320,6 +320,15 @@ bool CField::IsVaildFiled(const FIELD_ITEM* pData)const
 		return false;
 }
 
+bool CField::ModifyUserSet(uint32 iHideVal, uint32 iLv, uint32 iTime)
+{
+	m_userSet.iHideParts = iHideVal;
+	m_userSet.iShowLevel = iLv;
+	m_userSet.iShowItemTime = iTime;
+
+	return true;
+}
+
 //////////////////////////////////////////////////////////////////////////
 UserFieldManage* UserFieldManage::m_gShare=NULL;
 UserFieldManage::UserFieldManage() :m_pCurUser(NULL)
@@ -757,6 +766,20 @@ void UserFieldManage::NeedSaveFieldInfo(bool isSet /*= false*/)
 		else
 			m_pCurUser->WriteBuffer(m_pCurAccount->strName, m_strBasePwd);
 	}	
+}
+
+bool UserFieldManage::SetUserSettingInfo(uint32 iHideVal, uint32 iLv, uint32 iTime)
+{
+	if (m_pCurUser)
+	{
+		if (m_pCurUser->ModifyUserSet(iHideVal, iLv, iTime))
+		{
+			m_pCurUser->WriteUserSet(m_pCurAccount->strName, m_strBasePwd);
+			return true;
+		}
+	}
+		
+	return false;
 }
 
 

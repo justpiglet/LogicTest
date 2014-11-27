@@ -1,5 +1,6 @@
 #pragma once
 #include "Field/UserFieldManage.h"
+#include "afxwin.h"
 
 // CSetting 对话框
 
@@ -8,7 +9,7 @@ class CSetting : public CDialogEx
 	DECLARE_DYNAMIC(CSetting)
 
 public:
-	CSetting(const User_Set* puSet, CWnd* pParent = NULL);   // 标准构造函数
+	CSetting( CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CSetting();
 
 // 对话框数据
@@ -22,8 +23,12 @@ protected:
 private:
 	void SetFieldCheckStatus(uint32 iVal);
 	void SetLevelCheckStatus(uint32 iVal);
+
+	uint32 GetFieldCheckStatus();
+	uint32 GetLevelCheckStatus();
 private:
-	const User_Set* m_pUSet;
+	
 public:
 	afx_msg void OnBnClickedApplyBtn();
+	CComboBox m_TimeList;
 };
