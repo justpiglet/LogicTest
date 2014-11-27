@@ -69,7 +69,7 @@ private:
 
 	void LogoinOut();
 	void CreateNewField();
-	void TrashBasket();
+	void DeleteAccount();
 	void SettingUpdate();
 
 	void UpdateButton();

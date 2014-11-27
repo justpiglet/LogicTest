@@ -35,7 +35,7 @@ CFieldEditorDlg::CFieldEditorDlg(CWnd* pParent /*=NULL*/)
 
 	m_fun[1][0] = &CFieldEditorDlg::LogoinOut;
 	m_fun[1][1] = &CFieldEditorDlg::CreateNewField;
-	m_fun[1][2] = &CFieldEditorDlg::DoNothing;
+	m_fun[1][2] = &CFieldEditorDlg::DeleteAccount;
 	m_fun[1][3] = &CFieldEditorDlg::SettingUpdate;
 
 	m_butName[0][0] = _T("(&L)Login");
@@ -45,7 +45,7 @@ CFieldEditorDlg::CFieldEditorDlg(CWnd* pParent /*=NULL*/)
 
 	m_butName[1][0] = _T("(&L)LogoinOut");
 	m_butName[1][1] = _T("(&N)NewField");
-	m_butName[1][2] = _T("");
+	m_butName[1][2] = _T("(&D)Delete User");
 	m_butName[1][3] = _T("(&S)Setting");
 
 	g_mainDlg = this;
@@ -331,7 +331,7 @@ void CFieldEditorDlg::CreateNewField()
 	OpenFieldInfoDlg(EDlg_Mode_New, m_ListInfo.GetItemCount());
 }
 
-void CFieldEditorDlg::TrashBasket()
+void CFieldEditorDlg::DeleteAccount()
 {
 
 }
