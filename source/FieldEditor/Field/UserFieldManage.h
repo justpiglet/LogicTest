@@ -27,13 +27,13 @@ public:
 	uint16 GetFieldRow() const { return listItem.size(); }
 	bool IsShowRow(const FIELD_ITEM* pField) const;
 	bool IsVaild(uint8 index, uint8 iColumn = 0) const;
-	inline bool IsVaildId(uint32 iId)const { return iId <= m_userSet.iCurFiledId; }
+	inline bool IsVaildId(uint32 iId)const { return iId <= iCurFiledId; }
 
 	STDSTR GetFieldHideParts(const FIELD_ITEM* pField, uint8 iColumn, bool isNeedHide) const;
 	STDSTR GetFieldHideParts(uint8 index, uint8 iColumn, bool isNeedHide)const;
 
 	const FIELD_ITEM* GetItem(uint8 index)const;
-	uint32 GetCurMaxFieldId()const { return m_userSet.iCurFiledId; }
+	uint32 GetCurMaxFieldId()const { return iCurFiledId; }
 	bool IsCanUseNickName(const char*)const;
 
 	const FIELD_ITEM* ModifyField(const FIELD_ITEM&);
@@ -87,8 +87,9 @@ public:
 	
 	void UserLoginOut();
 
-	const CField* GetCurUserFields(){ return m_pCurUser; }
-	const Account_Info* GetCurAccount(){ return m_pCurAccount; }
+	inline const CField* GetCurUserFields(){ return m_pCurUser; }
+	inline const Account_Info* GetCurAccount(){ return m_pCurAccount; }
+	inline const char* GetAccountName(){ if (m_pCurAccount)return m_pCurAccount->strName; else return NULL; }
 
 	void SaveConfigField();
 	bool LoadConfigField(const std::string& strName);

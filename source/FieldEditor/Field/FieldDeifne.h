@@ -155,13 +155,17 @@ public:
 typedef std::vector<FIELD_ITEM>	VEC_ITEMS;
 struct User_Field
 {
+	uint32		iCurFiledId;
 	VEC_ITEMS	listItem;
+	User_Field() :iCurFiledId(0)
+	{
+
+	}
 };
 
 struct User_Set
 {
 	//uint32		iLastLogoinTime;
-	uint32		iCurFiledId;
 	uint32		iVaildLoginTime;
 	uint32		iShowItemTime;
 	uint32		iShowLevel; //SHOW_ITEM_LV SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_HIGHT
@@ -169,8 +173,7 @@ struct User_Set
 	
 	User_Set() 
 		//: iLastLogoinTime(time(NULL))
-		: iCurFiledId(0)
-		, iVaildLoginTime(0)
+		: iVaildLoginTime(0)
 		, iShowItemTime(5)
 		, iShowLevel(SHOW_ITEM_LV_NOR | SHOW_ITEM_LV_EMAIL)
 		, iHideParts( (1 << FieldColumn_PwdLogin) | (1 << FieldColumn_PwdPay) | (1 << FieldColumn_PwdOther) )

@@ -10,9 +10,7 @@
 
 #include "Field/GobalConfig.h"
 
-#include "CreateUser.h"
-#include "UserLogin.h"
-#include "CreateNewField.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -159,7 +157,7 @@ void CFieldEditorDlg::OnNMRClickListInfo(NMHDR *pNMHDR, LRESULT *pResult)
 	bool isAll(true),isShow(false);
 	if (pNMItemActivate->iItem != -1)
 	{
-		//isShow = true;
+		isShow = true;
 	}
 	else
 	{
@@ -206,14 +204,27 @@ void CFieldEditorDlg::OnNMDblclkListInfo(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 }
 
-
+void CFieldEditorDlg::OpenFieldInfoDlg(EDlg_Mode mMode, uint32 iRow)
+{
+	CUserLogin lDlg(ELOGOIN_MODE_OPERATE, UserFieldManage::Share()->GetAccountName());
+	if (lDlg.DoModal() == IDOK)
+	{
+		if (lDlg.IsLogoinSuccess() == true)
+		{
+			const FIELD_ITEM* pItem = NULL;
+			CCreateNewField dlg(mMode);
+			if (mMode == EDlg_Mode_Read)
+				pItem = GetCurFieldItem();
+			dlg.SetDataInfo(iRow, pItem);
+			dlg.DoModal();
+		}
+	}
+}
 
 void CFieldEditorDlg::OnMenuClickPeepFieldInfo()
 {
 	// TODO:  在此添加命令处理程序代码
-	CCreateNewField dlg(EDlg_Mode_Read);
-	dlg.SetDataInfo(m_curRow, GetCurFieldItem());
-	dlg.DoModal();
+	OpenFieldInfoDlg(EDlg_Mode_Read, m_curRow);
 	m_curRow = -1;
 }
 
@@ -317,9 +328,7 @@ void CFieldEditorDlg::CreateNewUser()
 
 void CFieldEditorDlg::CreateNewField()
 {
-	CCreateNewField dlg(EDlg_Mode_New);
-	dlg.SetDataInfo(m_ListInfo.GetItemCount());
-	dlg.DoModal();
+	OpenFieldInfoDlg(EDlg_Mode_New, m_ListInfo.GetItemCount());
 }
 
 void CFieldEditorDlg::TrashBasket()

@@ -23,6 +23,8 @@ bool CField::ParsingString(const std::string& strSrc)
 	if (m_iUserID != iIDTemp)
 		return false;
 
+	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iCurFiledId, sizeof(iCurFiledId));
+
 	uint32 iItemCount(0),iItemR(0);
 	UserFieldManage::ParsingStringCopy(strSrc, iOffset, &iItemCount, sizeof(iItemCount));
 	
@@ -83,6 +85,8 @@ void CField::GetDataToChar(std::string& strOut)
 	uint32 iItemCount = listItem.size();
 
 	strOut.append((char*)&m_iUserID, sizeof(m_iUserID));
+	strOut.append((char*)&iCurFiledId, sizeof(iCurFiledId));
+
 	strOut.append((char*)&iItemCount, sizeof(uint32));
 
 	if (iItemCount == 0)
@@ -136,7 +140,7 @@ void CField::WriteUserSet(const std::string& strName, const std::string& strPwd)
 	uint32 iOffset(0);
 
 	strOut.append((char*)&m_iUserID, sizeof(m_iUserID));
-	strOut.append((char*)&m_userSet.iCurFiledId, sizeof(m_userSet.iCurFiledId));
+	//strOut.append((char*)&m_userSet.iCurFiledId, sizeof(m_userSet.iCurFiledId));
 	strOut.append((char*)&m_userSet.iVaildLoginTime, sizeof(m_userSet.iVaildLoginTime));
 	strOut.append((char*)&m_userSet.iShowItemTime, sizeof(m_userSet.iShowItemTime));
 	strOut.append((char*)&m_userSet.iShowLevel, sizeof(m_userSet.iShowLevel));
@@ -158,7 +162,7 @@ bool CField::ReadUserSet(const std::string& strName, const std::string& strPwd)
 		if (iIdTemp != m_iUserID)
 			return false;
 
-		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iCurFiledId, sizeof(m_userSet.iCurFiledId));
+		//UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iCurFiledId, sizeof(m_userSet.iCurFiledId));
 		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iVaildLoginTime, sizeof(m_userSet.iVaildLoginTime));
 		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iShowItemTime, sizeof(m_userSet.iShowItemTime));
 		UserFieldManage::ParsingStringCopy(strDe, iOffset, &m_userSet.iShowLevel, sizeof(m_userSet.iShowLevel));
@@ -248,7 +252,7 @@ bool CField::IsNeedHideParts(bool isNeedHide, uint8 index, uint8 iColumn, const 
 const FIELD_ITEM* CField::ModifyField(const FIELD_ITEM& mNewField)
 {
 	bool isNew(false);
-	if (m_userSet.iCurFiledId + 1 == mNewField.iFieldId)
+	if (iCurFiledId + 1 == mNewField.iFieldId)
 		isNew = true;
 	else if (!IsVaildId(mNewField.iFieldId))
 		return NULL;
@@ -259,8 +263,8 @@ const FIELD_ITEM* CField::ModifyField(const FIELD_ITEM& mNewField)
 		if (IsCanUseNickName(mNewField.strNameNick))
 			listItem.push_back(mNewField);
 
-		m_userSet.iCurFiledId = m_userSet.iCurFiledId + 1;
-		UserFieldManage::Share()->NeedSaveFieldInfo(true);
+		iCurFiledId = iCurFiledId + 1;
+		
 		return &listItem[iCount];
 	}
 	else

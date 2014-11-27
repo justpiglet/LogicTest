@@ -6,6 +6,9 @@
 #include "afxcmn.h"
 #include "base/basedefine.h"
 #include "Field/UserFieldManage.h"
+#include "CreateUser.h"
+#include "UserLogin.h"
+#include "CreateNewField.h"
 
 __interface IMainDlgHandle
 {
@@ -70,6 +73,7 @@ private:
 	void SettingUpdate();
 
 	void UpdateButton();
+	void OpenFieldInfoDlg(EDlg_Mode mMode,uint32 iRow);
 private:
 	void LoginSuccessUpdate(const std::string&);
 	uint32 GetClickRow(CPoint point);
