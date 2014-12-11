@@ -15,6 +15,7 @@ __interface IMainDlgHandle
 	virtual void MainDlgLogoin()=0;
 	virtual void UpdateListControl() = 0;
 	virtual bool UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData) = 0;
+	virtual bool DeleteListControlOneRow(uint32 iRow) = 0;
 };
 
 // CFieldEditorDlg ¶Ô»°¿ò
@@ -54,6 +55,7 @@ protected:
 public:
 	virtual void UpdateListControl();
 	virtual bool UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pData);
+	virtual bool DeleteListControlOneRow(uint32 iRow);
 private:
 
 public:

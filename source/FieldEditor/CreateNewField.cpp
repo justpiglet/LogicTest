@@ -89,13 +89,13 @@ void CCreateNewField::OnBnClickedOk()
 			g_mainDlg->UpdateListControlOneRow(m_iCurRow, pData);
 	}
 
-	KillTimer(EVENT_CREATE_FILED_TIMER);
+	CloseTimer();
 	CDialogEx::OnOK();
 }
 
 void CCreateNewField::OnClose()
 {
-	KillTimer(EVENT_CREATE_FILED_TIMER);
+	CloseTimer();
 	CDialogEx::OnClose();
 }
 
@@ -103,7 +103,8 @@ void CCreateNewField::OnClose()
 BOOL CCreateNewField::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
-	SetTimer(EVENT_CREATE_FILED_TIMER, 1000, NULL);
+	if (EDlg_Mode_Read == m_mode)
+		SetTimer(EVENT_CREATE_FILED_TIMER, 1000, NULL);
 
 	((CEdit*)GetDlgItem(IDC_FIELD_NICKNAME))->SetLimitText(MAX_LEN_NAME);
 	((CEdit*)GetDlgItem(IDC_FIELD_ACCOUNT))->SetLimitText(MAX_LEN_NAME);
@@ -114,8 +115,8 @@ BOOL CCreateNewField::OnInitDialog()
 	((CEdit*)GetDlgItem(IDC_FIELD_COMMENT))->SetLimitText(MAX_LEN_TEXT);
 
 	CComboBox* pBom = (CComboBox*)GetDlgItem(IDC_FIELD_LV_LIST);
-	for (uint8 i = SHOW_ITEM_LV_NOR; i < SHOW_ITEM_LV_SECRET;++i)
-		pBom->InsertString(i-1,g_ItemLvName[i]);
+	for (uint8 i = 0; i <=SHOW_ITEM_LV_COUNT; ++i)
+		pBom->InsertString(i,g_ItemLvName[i+1]);
 	pBom->SetCurSel(0);
 
 	ShowReadFieldInfo();
@@ -166,6 +167,7 @@ void CCreateNewField::OnTimer(UINT_PTR nIDEvent)
 void CCreateNewField::OnBnClickedModifyBtn()
 {
 	// TODO:  在此添加控件通知处理程序代码
+	CloseTimer();
 	m_mode = EDlg_Mode_Modify;
 	UpdateGui();
 	ShowPassword(m_pReadField, false);
@@ -178,7 +180,12 @@ void CCreateNewField::OnBnClickedDeleteBtn()
 	if (!m_pReadField)
 		return;
 
-	UserFieldManage::Share()->UserFieldDelete(m_pReadField->iFieldId);
+	if (UserFieldManage::Share()->UserFieldDelete(m_pReadField->iFieldId))
+	{
+		if (g_mainDlg)
+			g_mainDlg->DeleteListControlOneRow(m_iCurRow);
+	}
+	OnOK();
 }
 
 bool CCreateNewField::VerifyPassword()
@@ -267,4 +274,10 @@ void CCreateNewField::ShowReadFieldInfo()
 		((CEdit*)GetDlgItem(IDC_FIELD_RELATION))->SetWindowText(CString(m_pReadField->strRelation));
 		((CEdit*)GetDlgItem(IDC_FIELD_COMMENT))->SetWindowText(CString(m_pReadField->strDescribe));
 	}
+}
+
+void CCreateNewField::CloseTimer()
+{
+	if (EDlg_Mode_Read == m_mode)
+		KillTimer(EVENT_CREATE_FILED_TIMER);
 }

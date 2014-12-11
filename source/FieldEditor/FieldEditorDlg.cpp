@@ -7,6 +7,7 @@
 #include "FieldEditorDlg.h"
 #include "afxdialogex.h"
 #include "depend/cantools/jsoncpp/json/reader.h"
+#include "Depend/cantools/tools.h"
 
 #include "Field/GobalConfig.h"
 #include "Setting.h"
@@ -73,6 +74,43 @@ END_MESSAGE_MAP()
 
 // CFieldEditorDlg 消息处理程序
 
+void TestWriteEncry()
+{
+	std::ofstream wFile("Dont_Delete/test.json", std::ios::binary | std::ios::out | std::ios::trunc);
+	std::string strEnPwd(""), strValue("");
+	CGobalConfig::Share()->CreateRandStr(78, strEnPwd);
+	_CANNP_NAME::encrypt::EncryptBuffer(strEnPwd.c_str(), strEnPwd.length(), strEnPwd.c_str(), strValue);
+	int iLen(strEnPwd.length() + strValue.length());
+	wFile.write((char*)&iLen, sizeof(iLen));
+	wFile.write(strEnPwd.c_str(), strEnPwd.length());
+	wFile.write(strValue.c_str(), strValue.length());
+	wFile.close();
+
+}
+
+bool TestReadEncry()
+{
+	std::ifstream rFile("Dont_Delete/test.json", std::ios::binary | std::ios::in );
+	if (!rFile)
+		return false;
+
+	char szBuffer[512] = "";
+	int iLen(0);
+	rFile.read((char*)&iLen, sizeof(iLen));
+	rFile.read(szBuffer, iLen);
+	 
+	std::string strEnPwd(""), strValue(""),strDeValue("");
+	strEnPwd.append(szBuffer, 78);
+	strValue.append(szBuffer + 78, iLen - 78);
+	_CANNP_NAME::encrypt::DecryptBuffer(strValue.c_str(), 78, strEnPwd.c_str(), strDeValue);
+	if (strDeValue.compare(strEnPwd) == 0)
+	{
+		printf("ok");
+		return true;
+	}
+	return false;
+}
+
 BOOL CFieldEditorDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -82,6 +120,10 @@ BOOL CFieldEditorDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 	
+	//while (!TestReadEncry())
+		//TestWriteEncry();
+
+
 	SetWindowText(_T("Please Login"));
 	UserFieldManage::Share()->InitData();
 	UpdateButton();
@@ -269,6 +311,16 @@ bool CFieldEditorDlg::UpdateListControlOneRow(uint32 iRow, const FIELD_ITEM* pDa
 
 	m_ListInfo.SetItemData(iRow, (DWORD_PTR)pData);
 
+	return true;
+}
+
+bool CFieldEditorDlg::DeleteListControlOneRow(uint32 iRow)
+{
+	uint32 iListCount = m_ListInfo.GetItemCount();
+	if (!m_pCurField || iRow > iListCount )
+		return false;
+
+	m_ListInfo.DeleteItem(iRow);
 	return true;
 }
 

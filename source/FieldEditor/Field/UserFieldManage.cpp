@@ -3,8 +3,8 @@
 #include "depend/cantools/tools.h"
 
 #define FLORD_NAME "Dont_Delete"
-#define CONFIG_FILE "ConfigFile"
-#define SETTING_FILE "ConfigFile"
+#define CONFIG_FILE  "20141209CanFieldEditorGlobalConfig"
+#define SETTING_FILE "20141209CanFieldEditorSettingConfig"
 
 CField::CField(uint32 iId) :m_iUserID(iId)
 {
@@ -537,17 +537,20 @@ void UserFieldManage::WriteInfo(const std::string& strName, const std::string& s
 	
 	CGobalConfig::Share()->CreateRandStr(MAX_LEN_PWD, strEnPwd);
 
+	//Calculate Head Info
 	_CANNP_NAME::encrypt::EncryptAES(strEnPwd.c_str(), strEnPwd.c_str(), strValue);
-
 	strHead.append(strValue);
 	strHead.append(strEnPwd);
 	if (isMainConfig)
 		strHead.append(strBasePwd);
+
+	//Encry and Write Head Info
 	_CANNP_NAME::encrypt::EncryptBuffer(strHead.c_str(), strHead.length(), strName.c_str(), strHeadEn);
 	iLen = strHeadEn.length();
 	wFile.write((char*)&iLen, sizeof(iLen));
 	wFile.write(strHeadEn.c_str(), iLen);
 
+	//Write Buffer
 	strEnPwd.append(strBasePwd);
 	_CANNP_NAME::encrypt::EncryptBuffer(strSrc.c_str(), strSrc.length(), strEnPwd.c_str(), strEn);
 	iLen = strSrc.length();
@@ -566,8 +569,15 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 	if (!rFile)
 		return false;
 	
-	strOut.clear();
+	std::streampos ps = rFile.tellg();
+	rFile.seekg(0, std::ios::end);
+	std::streampos psEnd = rFile.tellg();
+	if (psEnd - ps < MAX_LEN_AES + MAX_LEN_PWD)
+		return false;
 
+	rFile.seekg(ps, std::ios::beg);
+
+	strOut.clear();
 	uint32 iLen(0);
 	std::string strDes(""), strPwd(""), strValue("");
 	
@@ -575,8 +585,9 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 	char* pHeads = new char[iLen + 1];
 	rFile.read(pHeads, iLen);
 	pHeads[iLen] = '\0';
-
-	_CANNP_NAME::encrypt::DecryptBuffer(pHeads, iLen, strName.c_str(), strDes);
+	std::string strHead("");
+	strHead.append(pHeads, iLen);
+	_CANNP_NAME::encrypt::DecryptBuffer(strHead.c_str(), iLen, strName.c_str(), strDes);
 	delete pHeads;
 
 	strValue = strDes.substr(0, MAX_LEN_AES);
@@ -592,14 +603,8 @@ bool UserFieldManage::ReadInfo(const std::string& strName, std::string& strOut, 
 		rFile.read((char*)&iDecLen, sizeof(iDecLen));
 		rFile.read((char*)&iEncLen, sizeof(iEncLen));
 
-		std::streampos ps = rFile.tellg();
-		rFile.seekg(0, std::ios::end);
-		std::streampos psEnd = rFile.tellg();
-
-		if (iEncLen == psEnd - ps)
+		if (iEncLen == (psEnd - ps - sizeof(iLen) - iLen - sizeof(iDecLen) - sizeof(iEncLen)))
 		{
-			rFile.seekg(ps, std::ios::beg);
-
 			char* pBuffer = new char[iEncLen + 1];
 			pBuffer[iEncLen] = '\0';
 			rFile.read(pBuffer, iEncLen);
@@ -751,8 +756,11 @@ const FIELD_ITEM* UserFieldManage::UserFieldModify(const FIELD_ITEM& mField)
 
 bool UserFieldManage::UserFieldDelete(const uint32& iFieldId)
 {
-	if (m_pCurUser)
-		return m_pCurUser->DeleteField(iFieldId);
+	if (m_pCurUser && m_pCurUser->DeleteField(iFieldId))
+	{
+		NeedSaveFieldInfo(false);
+		return true;
+	}
 	else
 		return false;
 }
